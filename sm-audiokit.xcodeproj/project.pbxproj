@@ -14,6 +14,7 @@
 		FC5C3B272746C94100DDE223 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FC5C3B262746C94100DDE223 /* Assets.xcassets */; };
 		FC5C3B2A2746C94100DDE223 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FC5C3B282746C94100DDE223 /* LaunchScreen.storyboard */; };
 		FCE6CD702746CA2A00B7B3BE /* AudioKit in Frameworks */ = {isa = PBXBuildFile; productRef = FCE6CD6F2746CA2A00B7B3BE /* AudioKit */; };
+		FCFD5BC7274F85A200F6D7A4 /* AudioManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCFD5BC6274F85A200F6D7A4 /* AudioManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -25,6 +26,7 @@
 		FC5C3B262746C94100DDE223 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		FC5C3B292746C94100DDE223 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		FC5C3B2B2746C94100DDE223 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		FCFD5BC6274F85A200F6D7A4 /* AudioManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,6 +60,7 @@
 		FC5C3B1C2746C93F00DDE223 /* sm-audiokit */ = {
 			isa = PBXGroup;
 			children = (
+				FCFD5BC8275005BA00F6D7A4 /* Audio */,
 				FC5C3B1D2746C93F00DDE223 /* AppDelegate.swift */,
 				FC5C3B1F2746C93F00DDE223 /* SceneDelegate.swift */,
 				FC5C3B212746C93F00DDE223 /* ViewController.swift */,
@@ -67,6 +70,14 @@
 				FC5C3B2B2746C94100DDE223 /* Info.plist */,
 			);
 			path = "sm-audiokit";
+			sourceTree = "<group>";
+		};
+		FCFD5BC8275005BA00F6D7A4 /* Audio */ = {
+			isa = PBXGroup;
+			children = (
+				FCFD5BC6274F85A200F6D7A4 /* AudioManager.swift */,
+			);
+			path = Audio;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -148,6 +159,7 @@
 			files = (
 				FC5C3B222746C93F00DDE223 /* ViewController.swift in Sources */,
 				FC5C3B1E2746C93F00DDE223 /* AppDelegate.swift in Sources */,
+				FCFD5BC7274F85A200F6D7A4 /* AudioManager.swift in Sources */,
 				FC5C3B202746C93F00DDE223 /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
