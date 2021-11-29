@@ -19,8 +19,7 @@ class SamplePlayer {
         get { player.isPlaying }
     }
     var sampleId: String?
-    //// Not needed?
-//    var playbackId: String?
+    var playbackId: String?
 
     var startTime: AVAudioTime?
     var queuedTime: UInt64?
@@ -45,9 +44,9 @@ class SamplePlayer {
 //    args.playbackRate || (args.pitchShift ? 1.059463 ** args.pitchShift : 1), // number (playback rate)
 //    args.fadeInDuration || 0,
 
-    func play(sample: Sample, channel: String, at atTime: Float, volume: Float?, offset: Float?, playbackRate: Float?, pitchShift: Float?, fadeInDuration: Double = 0) {
+    func play(sample: Sample, channel: String,playbackId: String, at atTime: Float, volume: Float?, offset: Float?, playbackRate: Float?, pitchShift: Float?, fadeInDuration: Double = 0) {
         self.sampleId = sample.id
-//        self.playbackId = playbackId
+        self.playbackId = playbackId
         do {
             try player.load(file: sample.file)
         } catch {
