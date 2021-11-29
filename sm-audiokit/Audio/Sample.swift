@@ -28,14 +28,16 @@ struct Sample {
     var lengthInSeconds: Double {
         get { Double(file.length) / fileFormat.sampleRate }
     }
+    
+    let type: SampleTypes
 
     //// Failable initalizer, lets us pass a nil optional
     //// in case we can't load the file.
-    init?(id: String, fileURL: URL, defaultVolume: Float = 1.0) {
+    init?(id: String, fileURL: URL,type: SampleTypes, defaultVolume: Float = 1.0) {
         self.id = id
         self.fileURL = fileURL
         self.defaultVolume = defaultVolume
-        
+        self.type = type
         do {
             self.file = try AVAudioFile(forReading: fileURL)
         } catch {

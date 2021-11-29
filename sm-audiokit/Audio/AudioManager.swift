@@ -8,22 +8,18 @@
 import Foundation
 import AudioKit
 
-enum SampleTypes: String {
-    case guitar = "Guitar"
-    case bass = "Bass"
-    case drums = "Drums"
-}
-
 class AudioManager {
     static let shared = { AudioManager() }()
     let engine = AudioEngine()
     
     let mainMixer: Mixer
     
-    var sampleBank: [AudioPlayer] = []
+    var sampleManager: SampleManager
     
     init() {
-        mainMixer = Mixer(sampleBank, name: SampleTypes.guitar.rawValue)
+        sampleManager = SampleManager()
+        mainMixer = Mixer()
+        sampleManager.getAllNodes().map({mainMixer.addInput($0.player)})
         engine.output = mainMixer
     }
     

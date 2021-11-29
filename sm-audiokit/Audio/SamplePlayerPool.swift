@@ -12,15 +12,16 @@ import AVFoundation
 class SamplePlayerPool {
 
     var pool = [SamplePlayer]()
-    var lastUsedPlayerIndex = 0
     var polyphonyLimit: Int
-
-    init(polyphonyLimit: Int = 30) {
+    let type: SampleTypes
+    
+    init(polyphonyLimit: Int = 30, type: SampleTypes) {
         self.polyphonyLimit = polyphonyLimit
         for _ in 0..<polyphonyLimit {
             let player = SamplePlayer()
             self.pool.append(player)
         }
+        self.type = type
     }
 
     func getAvailablePlayer() -> SamplePlayer? {
