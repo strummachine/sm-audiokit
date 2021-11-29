@@ -11,7 +11,7 @@ import AVFAudio
 struct Sample {
 
     var id: String
-    var defaultVolume: Double = 1
+    var defaultVolume: Float = 1.0
 
     var fileURL: URL
     var file: AVAudioFile
@@ -31,7 +31,7 @@ struct Sample {
 
     //// Failable initalizer, lets us pass a nil optional
     //// in case we can't load the file.
-    init?(id: String, fileURL: URL, defaultVolume: Double = 1.0) {
+    init?(id: String, fileURL: URL, defaultVolume: Float = 1.0) {
         self.id = id
         self.fileURL = fileURL
         self.defaultVolume = defaultVolume
