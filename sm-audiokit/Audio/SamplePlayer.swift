@@ -48,6 +48,8 @@ class SamplePlayer {
         self.sampleId = sample.id
         self.playbackId = playbackId
         do {
+            let buffer = AVAudioPCMBuffer(file: sample.file)
+            buffer?.fad
             try player.load(file: sample.file)
         } catch {
             print("Error: Cannot load sample:\(error)")
@@ -56,6 +58,8 @@ class SamplePlayer {
         player.volume = volume ?? sample.defaultVolume
         timePitch.rate = playbackRate ?? 1.0
         timePitch.pitch = pitchShift ?? 0.0
+        
+        player.schedule(at: atTime, completionCallbackType: AVAudioPlayerNodeCompletionCallbackType.dataPlayedBack)
         
 //        player.fade.inTime = fadeInDuration == 0 ? 0.001 : fadeInDuration
 //        player.play(at: timeToPlay)
@@ -105,6 +109,8 @@ class SamplePlayer {
             }
         }
     }
+    
+    //TODO:- Need scheduled fades at scheduled playback (even fades can be scheduled themeselves)
     
     func pause() {
         fadeOut(fadeDuration: 0.5) {

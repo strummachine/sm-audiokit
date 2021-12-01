@@ -33,6 +33,8 @@ class SampleManager {
     }
     
     //// Do we really need to return a sample here?
+    ///
+    ///No, we need durations and potentially that it loaded correctly
     func loadSample(id: String, url: URL, type: SampleTypes, defaultVolume: Float = 1.0) -> Sample? {
         let sample = Sample(id: id, fileURL: url, type: type, defaultVolume: defaultVolume)
         sampleBank[id] = sample
