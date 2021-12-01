@@ -48,18 +48,28 @@ class SamplePlayer {
         self.sampleId = sample.id
         self.playbackId = playbackId
         do {
-            let buffer = AVAudioPCMBuffer(file: sample.file)
-            buffer?.fad
-            try player.load(file: sample.file)
+            guard let buffer = try AVAudioPCMBuffer(file: sample.file) else {
+                print("Error: Cannot load buffer")
+                return
+            }
+            //TODO:- We will make a new buffer with appropriate fadeIn and then load player
+            //buffer?.smFadeIn(inTime: <#T##Double#>)
+            player.load(buffer: buffer)
         } catch {
-            print("Error: Cannot load sample:\(error)")
+            print("Error: Cannot load sample:\(error.localizedDescription)")
         }
 
         player.volume = volume ?? sample.defaultVolume
         timePitch.rate = playbackRate ?? 1.0
         timePitch.pitch = pitchShift ?? 0.0
         
-        player.schedule(at: atTime, completionCallbackType: AVAudioPlayerNodeCompletionCallbackType.dataPlayedBack)
+        let outputFormat = player.avAudioNode.outputFormat(forBus: 0)
+        let delayTime = 0.0
+        let now = player.avAudioNode.lastRenderTime?.sampleTime
+        
+        
+//        let scheduledTime = AVAudioTime(hostTime: <#T##UInt64#>)
+//        player.schedule(at: atTime, completionCallbackType: .dataPlayedBack)
         
 //        player.fade.inTime = fadeInDuration == 0 ? 0.001 : fadeInDuration
 //        player.play(at: timeToPlay)
@@ -68,46 +78,8 @@ class SamplePlayer {
 
     }
     
-    func fadeOut(fadeDuration: TimeInterval? = 1.0, completion: (()->Void)? = nil) {
-        guard let fadeDuration = fadeDuration else {
-            return
-        }
-        fadeTimer?.invalidate()
-        let increment: Float = Float(0.1 / fadeDuration)
-        
-        fadeTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { fadeOut in
-            let newVolume = self.player.volume - increment
-            if newVolume > 0.0 {
-                self.player.volume = newVolume
-            }
-            else {
-                self.player.volume = 0.0
-                fadeOut.invalidate()
-                self.fadeTimer = nil
-                completion?()
-            }
-        }
-    }
-    
-    func fadeIn(fadeDuration: TimeInterval? = 1.0, completion: (()->Void)? = nil) {
-        guard let fadeDuration = fadeDuration else {
-            return
-        }
-        fadeTimer?.invalidate()
-        let increment: Float = Float(0.1 / fadeDuration)
-        
-        fadeTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { fadeIn in
-            let newVolume = self.player.volume + increment
-            if newVolume < 1.0 {
-                self.player.volume = newVolume
-            }
-            else {
-                self.player.volume = 1.0
-                fadeIn.invalidate()
-                self.fadeTimer = nil
-                completion?()
-            }
-        }
+    func play(startTime: AVAudioTime) {
+        player.play(from: nil, to: nil, at: startTime, completionCallbackType: .dataPlayedBack)
     }
     
     //TODO:- Need scheduled fades at scheduled playback (even fades can be scheduled themeselves)
