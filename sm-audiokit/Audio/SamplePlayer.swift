@@ -84,11 +84,11 @@ class SamplePlayer {
     
     //TODO:- Need scheduled fades at scheduled playback (even fades can be scheduled themeselves)
     
-    func pause() {
-        fadeOut(fadeDuration: 0.5) {
-            self.player.pause()
-        }
-    }
+//    func pause() {
+//        fadeOut(fadeDuration: 0.5) {
+//            self.player.pause()
+//        }
+//    }
 
 
 }

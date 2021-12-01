@@ -8,6 +8,7 @@
 import Foundation
 import AudioKit
 import AVFoundation
+import AudioKitEX
 
 enum SampleTypes: String {
     case guitar = "Guitar"
@@ -25,6 +26,7 @@ class SampleManager {
     
     //TODO:- I think the wisest thing here is we can init with the AudioPackage manifest!
     init() {
+        
         samplePlayers = [.guitar: SamplePlayerPool(polyphonyLimit: polyphonyLimit, type: .guitar)]
         //// We can optionally init the other players as necessary
         ///
@@ -54,22 +56,8 @@ class SampleManager {
         guard let sample = self.sampleBank[sampleId] else { return }
         guard let player = self.samplePlayers[sample.type]?.getAvailablePlayer() else { return }
         
-        player.play(sample: sample, channel: channel, playbackId: playbackId, at: atTime, volume: volume, offset: offset, playbackRate: playbackRate, pitchShift: pitchShift, fadeInDuration: fadeInDuration)
+//        player.play(sample: sample, channel: channel, playbackId: playbackId, at: atTime, volume: volume, offset: offset, playbackRate: playbackRate, pitchShift: pitchShift, fadeInDuration: fadeInDuration)
     }
-
-//FIXME:- Need to put in fade scheduler into sampler
-    
-//    func fadePlayback(
-//        playbackId: String,
-//        atTime: AVAudioTime,
-//        endVolume: Double,
-//        fadeDuration: Double
-//    ) {
-//        let player = self.players?.getPlaybackById(playbackId)
-//        player?.fade(at: atTime,
-//                     to: endVolume,
-//                     duration: fadeDuration)
-//    }
     
     //TODO:- we can do better
     public func getAllNodes() -> [SamplePlayer] {

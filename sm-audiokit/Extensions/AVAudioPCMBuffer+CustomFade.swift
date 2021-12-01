@@ -10,6 +10,8 @@ import AVFAudio
 import AudioKit
 
 extension AVAudioPCMBuffer {
+    // We need Fade OUTS not fade INs
+    
     /// - Returns: A new buffer from this one that has Web Audio fade applied, sm = StrumMachine
        public func smFadeIn(inTime: Double) -> AVAudioPCMBuffer? {
            guard let floatData = floatChannelData, inTime > 0 else {
@@ -31,16 +33,21 @@ extension AVAudioPCMBuffer {
 
            var fadeInPower: Double = 1.0
            
+           
+           // WebAudioEquation: value = to + (from - to) * e ^ (-3 * time / duration)
+           // PolynomialEquation: value = 0.99 * to + (from - 0.99 * to) * ( (time - 3.6 * duration) / (3.6 * duration) ) ^ 10
+           
            let toGain = 1.0
            let fromGain = 0.01
            let e = M_E
            let fadeDuration = inTime
            
-           
 //           let raisedTo = (-3 * )
            
            fadeInPower = toGain + (fromGain - toGain) * e
-           fadeInPower = exp(log(10) * sampleTime / inTime)
+           
+           //// Default exponential curve
+           //fadeInPower = exp(log(10) * sampleTime / inTime)
 
            // where in the buffer to end the fade in
            let fadeInSamples = Int(sampleRate * inTime)

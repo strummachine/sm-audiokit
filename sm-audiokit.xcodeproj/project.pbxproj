@@ -19,18 +19,7 @@
 		FC5C3B252746C93F00DDE223 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FC5C3B232746C93F00DDE223 /* Main.storyboard */; };
 		FC5C3B272746C94100DDE223 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FC5C3B262746C94100DDE223 /* Assets.xcassets */; };
 		FC5C3B2A2746C94100DDE223 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FC5C3B282746C94100DDE223 /* LaunchScreen.storyboard */; };
-		FCCC49DF27578D9F00CE1D9E /* kick.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = FCCC49D327578D9F00CE1D9E /* kick.mp3 */; };
-		FCCC49E027578D9F00CE1D9E /* S-2----.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = FCCC49D427578D9F00CE1D9E /* S-2----.mp3 */; };
 		FCCC49E127578D9F00CE1D9E /* testbed_mp3.audio-package in Resources */ = {isa = PBXBuildFile; fileRef = FCCC49D527578D9F00CE1D9E /* testbed_mp3.audio-package */; };
-		FCCC49E227578D9F00CE1D9E /* test-tone.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = FCCC49D627578D9F00CE1D9E /* test-tone.mp3 */; };
-		FCCC49E327578D9F00CE1D9E /* S0-----.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = FCCC49D727578D9F00CE1D9E /* S0-----.mp3 */; };
-		FCCC49E427578D9F00CE1D9E /* S--4---.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = FCCC49D827578D9F00CE1D9E /* S--4---.mp3 */; };
-		FCCC49E527578D9F00CE1D9E /* S--2---.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = FCCC49D927578D9F00CE1D9E /* S--2---.mp3 */; };
-		FCCC49E627578D9F00CE1D9E /* S3-----.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = FCCC49DA27578D9F00CE1D9E /* S3-----.mp3 */; };
-		FCCC49E727578D9F00CE1D9E /* snare.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = FCCC49DB27578D9F00CE1D9E /* snare.mp3 */; };
-		FCCC49E827578D9F00CE1D9E /* hat-open.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = FCCC49DC27578D9F00CE1D9E /* hat-open.mp3 */; };
-		FCCC49E927578D9F00CE1D9E /* hat-closed.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = FCCC49DD27578D9F00CE1D9E /* hat-closed.mp3 */; };
-		FCCC49EA27578D9F00CE1D9E /* S--0---.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = FCCC49DE27578D9F00CE1D9E /* S--0---.mp3 */; };
 		FCE6CD702746CA2A00B7B3BE /* AudioKit in Frameworks */ = {isa = PBXBuildFile; productRef = FCE6CD6F2746CA2A00B7B3BE /* AudioKit */; };
 		FCFD5BC7274F85A200F6D7A4 /* AudioManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCFD5BC6274F85A200F6D7A4 /* AudioManager.swift */; };
 /* End PBXBuildFile section */
@@ -50,18 +39,7 @@
 		FC5C3B262746C94100DDE223 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		FC5C3B292746C94100DDE223 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		FC5C3B2B2746C94100DDE223 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		FCCC49D327578D9F00CE1D9E /* kick.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = kick.mp3; sourceTree = "<group>"; };
-		FCCC49D427578D9F00CE1D9E /* S-2----.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "S-2----.mp3"; sourceTree = "<group>"; };
 		FCCC49D527578D9F00CE1D9E /* testbed_mp3.audio-package */ = {isa = PBXFileReference; lastKnownFileType = file; path = "testbed_mp3.audio-package"; sourceTree = "<group>"; };
-		FCCC49D627578D9F00CE1D9E /* test-tone.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "test-tone.mp3"; sourceTree = "<group>"; };
-		FCCC49D727578D9F00CE1D9E /* S0-----.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "S0-----.mp3"; sourceTree = "<group>"; };
-		FCCC49D827578D9F00CE1D9E /* S--4---.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "S--4---.mp3"; sourceTree = "<group>"; };
-		FCCC49D927578D9F00CE1D9E /* S--2---.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "S--2---.mp3"; sourceTree = "<group>"; };
-		FCCC49DA27578D9F00CE1D9E /* S3-----.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "S3-----.mp3"; sourceTree = "<group>"; };
-		FCCC49DB27578D9F00CE1D9E /* snare.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = snare.mp3; sourceTree = "<group>"; };
-		FCCC49DC27578D9F00CE1D9E /* hat-open.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "hat-open.mp3"; sourceTree = "<group>"; };
-		FCCC49DD27578D9F00CE1D9E /* hat-closed.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "hat-closed.mp3"; sourceTree = "<group>"; };
-		FCCC49DE27578D9F00CE1D9E /* S--0---.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "S--0---.mp3"; sourceTree = "<group>"; };
 		FCFD5BC6274F85A200F6D7A4 /* AudioManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -121,17 +99,6 @@
 		FCCC49D227578D7600CE1D9E /* samples */ = {
 			isa = PBXGroup;
 			children = (
-				FCCC49DD27578D9F00CE1D9E /* hat-closed.mp3 */,
-				FCCC49DC27578D9F00CE1D9E /* hat-open.mp3 */,
-				FCCC49D327578D9F00CE1D9E /* kick.mp3 */,
-				FCCC49DE27578D9F00CE1D9E /* S--0---.mp3 */,
-				FCCC49D927578D9F00CE1D9E /* S--2---.mp3 */,
-				FCCC49D827578D9F00CE1D9E /* S--4---.mp3 */,
-				FCCC49D427578D9F00CE1D9E /* S-2----.mp3 */,
-				FCCC49D727578D9F00CE1D9E /* S0-----.mp3 */,
-				FCCC49DA27578D9F00CE1D9E /* S3-----.mp3 */,
-				FCCC49DB27578D9F00CE1D9E /* snare.mp3 */,
-				FCCC49D627578D9F00CE1D9E /* test-tone.mp3 */,
 				FCCC49D527578D9F00CE1D9E /* testbed_mp3.audio-package */,
 			);
 			path = samples;
@@ -214,21 +181,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FCCC49E827578D9F00CE1D9E /* hat-open.mp3 in Resources */,
-				FCCC49DF27578D9F00CE1D9E /* kick.mp3 in Resources */,
-				FCCC49E027578D9F00CE1D9E /* S-2----.mp3 in Resources */,
-				FCCC49E627578D9F00CE1D9E /* S3-----.mp3 in Resources */,
 				FC5C3B2A2746C94100DDE223 /* LaunchScreen.storyboard in Resources */,
-				FCCC49E727578D9F00CE1D9E /* snare.mp3 in Resources */,
-				FCCC49E227578D9F00CE1D9E /* test-tone.mp3 in Resources */,
 				FC5C3B272746C94100DDE223 /* Assets.xcassets in Resources */,
-				FCCC49E327578D9F00CE1D9E /* S0-----.mp3 in Resources */,
-				FCCC49EA27578D9F00CE1D9E /* S--0---.mp3 in Resources */,
-				FCCC49E427578D9F00CE1D9E /* S--4---.mp3 in Resources */,
-				FCCC49E927578D9F00CE1D9E /* hat-closed.mp3 in Resources */,
 				FCCC49E127578D9F00CE1D9E /* testbed_mp3.audio-package in Resources */,
 				FC5C3B252746C93F00DDE223 /* Main.storyboard in Resources */,
-				FCCC49E527578D9F00CE1D9E /* S--2---.mp3 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

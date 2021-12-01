@@ -6,6 +6,8 @@
 //
 
 import Foundation
+import CoreAudio
+import AudioToolbox
 
 struct Parser {
         private var data: Data
@@ -75,29 +77,86 @@ struct AudioPackage {
         }
     }
     
-    public func extractAudioPackage() {
+    public func extractAudioPackage() -> URL? {
 
         guard let data = data else {
             fatalError("Cannot unwrap data")
         }
         let bytes = data.bytes
-        let manifestLengthArray = Array(bytes[...3])
-        let manifestLength: UInt32 = manifestLengthArray.object()
-       
-        let manifestBinary = Array(bytes[4...])
-        let manifestString = String(decoding: manifestBinary, as: UTF8.self)
+        let manifestLengthArray: [UInt8] = Array(bytes[..<4])
+        let manifestLength = manifestLengthArray.reduce(0) { soFar, byte in
+            return soFar << 8 | Int32(byte)
+        }
+        print("LENGTH:\(manifestLength)")
         
-        let manifestBinaryData = Data(manifestString.utf8)
+        var length: Int = Int(manifestLength)
+        length += 3
+        let manifestJSON = bytes[4...length]
+        let manifestJSONString = "{\"packets\" : \(String(decoding: manifestJSON, as: UTF8.self))}"
         
+        print(manifestJSONString)
+        let manifestJSONData = Data(manifestJSONString.utf8)
+
         do {
-            let jsonData = try JSONSerialization.jsonObject(with: manifestBinaryData, options: []) as? [String: Any]
-//            let jsonString = String(decoding: jsonData, as: UTF8.self)
-//            print("STRING:\(jsonString)")
-            print(jsonData?.debugDescription)
+            let audioPackets = try JSONDecoder().decode(AudioPackets.self, from: manifestJSONData)
+            print("audio packets: \(audioPackets.packets)")
+            var recordings: [AudioRecording] = []
+            for (index, packet) in audioPackets.packets.enumerated() {
+                let totalBytesReadUntilNow = audioPackets.packets[0..<index].map(\.length).reduce(0, +)
+                var bytesForAudioPacket: [UInt8] = []
+                let actualLength = length - 3
+                print("Range: \((4+actualLength+totalBytesReadUntilNow ..< 4+actualLength+totalBytesReadUntilNow+packet.length))")
+                for i in (4+actualLength+totalBytesReadUntilNow ..< 4+actualLength+totalBytesReadUntilNow+packet.length) {
+                    bytesForAudioPacket.append(bytes[i])
+                }
+                recordings.append(.init(packet: packet, mp3Data: Data(bytesForAudioPacket)))
+            }
+            
+            print("recordings: \(recordings.map(\.mp3Data.count))")
+            let url = writeFileToDisk(with: recordings[0])
+            return url
         } catch {
             print("ERROR: cannot serizlize json:\(error.localizedDescription)")
         }
+        return nil
     }
+    
+    public func writeFileToDisk(with recording: AudioRecording) -> URL? {
+        let fileURL = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false).appendingPathComponent("\(recording.packet.name).mp3")
+        
+        do {
+            try recording.mp3Data.write(to: fileURL, options: .atomic)
+            return fileURL
+        } catch {
+            print("ERROR: cannot write mp3:\(error)")
+            return nil
+        }
+        
+    }
+    
+//    public func audioFileReaderWithData(audioData: Data) {
+//        var refAudioFileID: AudioFileID
+//        var inputFileID: ExtAudioFileRef
+//        var outputFileID: ExtAudioFileRef
+//
+//        var result: OSStatus = AudioFileOpenWithCallbacks(audioData, AudioFile_ReadProc.self, 0, AudioFile_GetSizeProc.self, 0, kAudioFileMP3Type, &refAudioFileID)
+//    }
+}
+
+
+
+struct AudioPackets: Codable {
+    let packets: [AudioPacket]
+}
+
+struct AudioPacket: Codable {
+    let name: String
+    let length: Int
+}
+
+struct AudioRecording {
+    let packet: AudioPacket
+    let mp3Data: Data
 }
 
 extension Data {
