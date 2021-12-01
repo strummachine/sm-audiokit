@@ -44,7 +44,7 @@ class SamplePlayer {
 //    args.playbackRate || (args.pitchShift ? 1.059463 ** args.pitchShift : 1), // number (playback rate)
 //    args.fadeInDuration || 0,
 
-    func play(sample: Sample, channel: String,playbackId: String, at atTime: Float, volume: Float?, offset: Float?, playbackRate: Float?, pitchShift: Float?, fadeInDuration: Double = 0) {
+    func load(sample: Sample, channel: String,playbackId: String, at atTime: Float, volume: Float?, offset: Float?, playbackRate: Float?, pitchShift: Float?, fadeInDuration: Double = 0) {
         self.sampleId = sample.id
         self.playbackId = playbackId
         do {
