@@ -8,12 +8,14 @@
 import Foundation
 import AudioKit
 import AVFoundation
+import AudioKitEX
 
 class SamplePlayer {
     var player = AudioPlayer()
     var timePitch: TimePitch
+    var fader: Fader
     var outputNode: Node {
-        get { timePitch }
+        get { fader }
     }
     var isPlaying: Bool {
         get { player.isPlaying }
@@ -28,11 +30,12 @@ class SamplePlayer {
 
     init() {
         timePitch = TimePitch(player)
-
+        fader = Fader(timePitch, gain: 1.0)
         player.completionHandler = {
-          self.player.stop()
-          self.sampleId = nil
-//          self.playbackId = nil
+            self.player.stop()
+            self.sampleId = nil
+            self.playbackId = nil
+            self.fader.gain = 1.0
         }
     }
     
@@ -59,7 +62,7 @@ class SamplePlayer {
             print("Error: Cannot load sample:\(error.localizedDescription)")
         }
 
-        player.volume = volume ?? sample.defaultVolume
+        fader.gain = volume ?? sample.defaultVolume
         timePitch.rate = playbackRate ?? 1.0
         timePitch.pitch = pitchShift ?? 0.0
         
@@ -81,6 +84,8 @@ class SamplePlayer {
     func play(startTime: AVAudioTime) {
         player.play(from: nil, to: nil, at: startTime, completionCallbackType: .dataPlayedBack)
     }
+    
+//    func fadeOut(
     
     //TODO:- Need scheduled fades at scheduled playback (even fades can be scheduled themeselves)
     

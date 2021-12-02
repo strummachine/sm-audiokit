@@ -8,6 +8,7 @@
 import Foundation
 import AudioKit
 import AVFAudio
+import AudioKitEX
 
 class AudioManager {
     static let shared = { AudioManager() }()
@@ -15,11 +16,13 @@ class AudioManager {
     
     let mainMixer: Mixer
     var audioPlayer: AudioPlayer = AudioPlayer()
+    var fader: Fader
     var sampleManager: SampleManager
     
     init() {
         sampleManager = SampleManager()
-        mainMixer = Mixer(audioPlayer)
+        fader = Fader(audioPlayer, gain: 1.0)
+        mainMixer = Mixer(fader)
         //sampleManager.getAllNodes().map({mainMixer.addInput($0.player)})
         
         engine.output = mainMixer
@@ -38,8 +41,17 @@ class AudioManager {
     
     public func loadPlayer(with file: AVAudioFile) {
         do {
-           try audioPlayer.load(file: file)
+            try audioPlayer.load(file: file)
+            let duration = audioPlayer.duration
+            print("Duration:\(duration)")
+            audioPlayer.completionHandler = {
+                self.fader.gain = 4.0
+            }
             audioPlayer.play()
+            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(2000)) {
+                self.fader.$leftGain.ramp(to: 0.0, duration: 0.50)
+                self.fader.$rightGain.ramp(to: 0.0, duration: 0.50)
+            }
         } catch {
             print("Error: can't load audio player:\(error.localizedDescription)")
         }

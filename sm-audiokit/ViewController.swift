@@ -10,11 +10,10 @@ import AVFoundation
 class ViewController: UIViewController {
 
     @IBOutlet weak var scheduleSampleTextField: UITextField!
-    var audioPackage: AudioPackage
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         // Do any additional setup after loading the view.
     }
 
