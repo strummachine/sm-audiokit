@@ -23,7 +23,7 @@ class AudioManager {
         sampleManager = SampleManager()
         fader = Fader(audioPlayer, gain: 1.0)
         mainMixer = Mixer(fader)
-        //sampleManager.getAllNodes().map({mainMixer.addInput($0.player)})
+        sampleManager.attachSamplePlayersToMixer(mixer: mainMixer)
         
         engine.output = mainMixer
     }
@@ -42,13 +42,14 @@ class AudioManager {
     public func loadPlayer(with file: AVAudioFile) {
         do {
             try audioPlayer.load(file: file)
-            let duration = audioPlayer.duration
+            let duration: Int = Int(audioPlayer.duration*1000)
             print("Duration:\(duration)")
             audioPlayer.completionHandler = {
                 self.fader.gain = 4.0
             }
             audioPlayer.play()
-            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(2000)) {
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(duration)) {
                 self.fader.$leftGain.ramp(to: 0.0, duration: 0.50)
                 self.fader.$rightGain.ramp(to: 0.0, duration: 0.50)
             }

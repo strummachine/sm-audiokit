@@ -116,7 +116,6 @@ class AudioPackageExtractor {
     
     private static func writeFileToDisk(with mp3Data: Data,and name: String) -> URL? {
         let fileURL = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false).appendingPathComponent("\(name).mp3")
-        
         do {
             try mp3Data.write(to: fileURL, options: .atomic)
             return fileURL

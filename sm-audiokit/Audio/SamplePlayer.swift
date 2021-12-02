@@ -47,7 +47,9 @@ class SamplePlayer {
 //    args.playbackRate || (args.pitchShift ? 1.059463 ** args.pitchShift : 1), // number (playback rate)
 //    args.fadeInDuration || 0,
 
-    func load(sample: Sample, channel: String,playbackId: String, at atTime: Float, volume: Float?, offset: Float?, playbackRate: Float?, pitchShift: Float?, fadeInDuration: Double = 0) {
+    //TODO:- Make special return object status of calling these methods, duration, success etc...
+    
+    func load(sample: Sample, channel: String,playbackId: String, at atTime: Float, volume: Float? = 1.0, offset: Float? = 0.0, playbackRate: Float? = 1.0, pitchShift: Float? = 0.0, fadeInDuration: Double? = 0.0) {
         self.sampleId = sample.id
         self.playbackId = playbackId
         do {
@@ -83,8 +85,8 @@ class SamplePlayer {
         player.play(from: nil, to: nil, at: startTime, completionCallbackType: .dataPlayedBack)
     }
     
-    func pause() {
-        
+    func play(with fadeDuration: Float? = 0.5) {
+        player.play()
     }
     
     func fadeOut(with duration:Float) {
