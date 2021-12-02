@@ -16,7 +16,8 @@ class AudioPackageExtractor {
         guard let pathForFile = Bundle.main.path(forResource: "testbed_mp3", ofType: "audio-package") else {
             fatalError("Can't open audio-package")
         }
-        ////2. Convert to URL
+      
+        ////2. Convert file path to URL
         let url = URL(fileURLWithPath: pathForFile)
         
         ////3. Load contents of file into Data object
@@ -25,35 +26,28 @@ class AudioPackageExtractor {
             return nil
         }
 
-        ////4. Convert Data to [UInt8] for easier access
-        let bytes = data.bytes
-        
-        ////5. Extract JSON Manifest as Tuple of the JSON string and byte-offset of first file
-        let manifestResult = AudioPackageExtractor.extractJSONManifest(with: bytes)
+        ////4. Extract JSON Manifest as Tuple of the JSON string and byte-offset of first file
+        let manifestResult = AudioPackageExtractor.extractJSONManifest(with: data.bytes)
         let manifestJSONData = manifestResult.0
         let firstFileByteOffset = manifestResult.1
         
-        ////6. Decode JSON Manifest as AudioPackageSamples struct
+        ////5. Decode JSON Manifest as AudioPackageSamples struct
         guard let audioPackageSamples = AudioPackageExtractor.decodeJSONManifest(with: manifestJSONData) else {
             return nil
         }
 
-        ////7. Prep array of [AudioPackage] for successfull read and return
+        ////6. Prep array of [AudioPackage] for successfull read and return
         var packages: [AudioPackage] = []
         
-        ////8. Loop through each sample to extract MP3 data from audio-package
+        ////7. Loop through each sample to extract MP3 data from audio-package
+        var nextFileByteOffset = firstFileByteOffset
         for (index, sample) in audioPackageSamples.samples.enumerated() {
             
-            ////9. Get current bytes read to read mp3 chunk properly
-            let totalBytesReadUntilNow = audioPackageSamples.samples[0..<index].map(\.length).reduce(0, +)
-            var bytesForAudioPacket: [UInt8] = []
-            
-            ////10. Check between mp3 chunks and store data into temporary array.
-            for i in ( (firstFileByteOffset + totalBytesReadUntilNow) ..< (firstFileByteOffset+totalBytesReadUntilNow + sample.length) ) {
-                bytesForAudioPacket.append(bytes[i])
-            }
-            
-            ////11. Write the MP3 file to disk, this is easier than putting into CoreAudioBuffer
+            ////8. Calculate byte range for this file and slice byte array accordingly
+            let byteRange = nextFileByteOffset..<(nextFileByteOffset+sample.length)
+            let bytesForAudioPacket: [UInt8] = Array(data.bytes[byteRange])
+              
+            ////9. Write the MP3 file to disk; this is easier than putting into CoreAudioBuffer
             ///TODO:- may do if let here if we want to allow some failures to write, however
             ///letting the whole function return nil is probably what we want if we can't successfully write a file.
             guard let url = AudioPackageExtractor.writeFileToDisk(with: Data(bytesForAudioPacket), and: sample.name) else {
@@ -61,6 +55,9 @@ class AudioPackageExtractor {
                 return nil
             }
             packages.append(.init(sample: sample, mp3Data: Data(bytesForAudioPacket), url: url))
+          
+            ////10. Calculate byte offset for start of next file
+            nextFileByteOffset += sample.length
         }
         
         print("packages: \(packages.map(\.mp3Data.count))")
