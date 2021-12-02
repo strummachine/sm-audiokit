@@ -30,6 +30,7 @@ class SampleManager {
             fatalError("Error: Cannot unwrap audioPackages")
         }
         
+        //TODO:- NO need for typed sample players
         for package in audioPackages {
             var type: SampleTypes
             if package.sample.name.contains("--") {

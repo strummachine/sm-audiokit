@@ -42,7 +42,18 @@ class ViewController: UIViewController {
     }
     
     @IBAction func tappedScheduled200ms(_ sender: Any) {
-    
+        let testToneArray = self.audioPackages.filter({$0.sample.name == "test-tone"})
+        let testTone = testToneArray[0]
+        
+        do {
+            let file = try AVAudioFile(forReading: testTone.url)
+            self.playingSampleLabel.text = "Playing sample:\(testTone.sample.name)"
+            // Fade Duration: How long the fade lasts
+            // Fade Start: Duration of file - Fade start = When fade starts after file is playing
+            AudioManager.shared.loadPlayer(with: file, fadeDuration: 0.25, fadeStart: 500)
+        } catch {
+            print("Error: Can't load file:\(error.localizedDescription)")
+        }
     }
     
     @IBAction func tappedScheduledSample(_ sender: Any) {
