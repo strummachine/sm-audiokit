@@ -97,8 +97,8 @@ class AudioPackageExtractor {
         length += 3
         
         let manifestJSON = bytes[4...length]
-        let manifestJSONString = "{\"AudioPackageSamples\" : \(String(decoding: manifestJSON, as: UTF8.self))}"
-//        print(manifestJSONString)
+        let manifestJSONString = "{\"samples\" : \(String(decoding: manifestJSON, as: UTF8.self))}"
+        print(manifestJSONString)
 
         return (Data(manifestJSONString.utf8),length)
     }
@@ -109,7 +109,7 @@ class AudioPackageExtractor {
             print("AudioPackage Samples: \(audioPackageSamples.samples)")
             return audioPackageSamples
         } catch {
-            print("Error: Cannot serialize JSON:\(error.localizedDescription)")
+            print("Error: Cannot serialize JSON:\(error)")
             return nil
         }
     }

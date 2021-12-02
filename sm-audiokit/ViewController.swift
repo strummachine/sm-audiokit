@@ -18,18 +18,21 @@ class ViewController: UIViewController {
     }
 
     @IBAction func tappedRandomSample(_ sender: Any) {
-        guard let package = AudioPackage() else {
-            fatalError("Cannot unwrap package")
+        if let audioPackages = AudioPackageExtractor.extractAudioPackage() {
+            let shuffled = audioPackages.shuffled()
+            let random = shuffled[0]
+            
+            do {
+                let file = try AVAudioFile(forReading: random.url)
+                AudioManager.shared.loadPlayer(with: file)
+            } catch {
+                print("Error: Can't load file:\(error.localizedDescription)")
+            }
         }
-        guard let url = package.extractAudioPackage() else {
-            fatalError("Can't unwrap url")
+        else {
+            print("Can't unwrap audiopackages")
         }
-        do {
-            let audioFile = try AVAudioFile(forReading: url)
-            AudioManager.shared.loadPlayer(with: audioFile)
-        } catch {
-            print("Error: cannot load audio file:\(error)")
-        }
+
     }
     
     @IBAction func tappedScheduled200ms(_ sender: Any) {
