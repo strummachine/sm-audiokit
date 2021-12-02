@@ -57,7 +57,7 @@ class AudioPackageExtractor {
             }
           
             ////10. Grab duration of MP3 file
-            let sampleSeconds = CMTimeGetSeconds(AVURLAsset(url: url).duration)
+            let sampleSeconds = Float(CMTimeGetSeconds(AVURLAsset(url: url).duration))
           
             ////11. Add package info and data to result array
             results.append(Sample(
