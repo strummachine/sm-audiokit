@@ -28,11 +28,10 @@ class AudioPackageExtractor {
         ////4. Convert Data to [UInt8] for easier access
         let bytes = data.bytes
         
-        ////5. Extract JSON Manifest as Tuple of Data and Length
+        ////5. Extract JSON Manifest as Tuple of the JSON string and byte-offset of first file
         let manifestResult = AudioPackageExtractor.extractJSONManifest(with: bytes)
-        
         let manifestJSONData = manifestResult.0
-        let manifestLength = manifestResult.1
+        let firstFileByteOffset = manifestResult.1
         
         ////6. Decode JSON Manifest as AudioPackageSamples struct
         guard let audioPackageSamples = AudioPackageExtractor.decodeJSONManifest(with: manifestJSONData) else {
@@ -42,26 +41,19 @@ class AudioPackageExtractor {
         ////7. Prep array of [AudioPackage] for successfull read and return
         var packages: [AudioPackage] = []
         
-        ////8. Correct length for mp3 file parsing
-        //// Manifest length - corrected length, + first 4 bytes of start of audio-package
-        ////TODO:- This should probably be corrected at some point
-        let adjustedManifestLength = ((manifestLength - 3) + 4)
-        
-        ////9. Loop through each sample to extract MP3 data from audio-package
+        ////8. Loop through each sample to extract MP3 data from audio-package
         for (index, sample) in audioPackageSamples.samples.enumerated() {
             
-            ////10. Get current bytes read to read mp3 chunk properly
+            ////9. Get current bytes read to read mp3 chunk properly
             let totalBytesReadUntilNow = audioPackageSamples.samples[0..<index].map(\.length).reduce(0, +)
             var bytesForAudioPacket: [UInt8] = []
             
-            //print("Range: \((adjustedManifestLength+totalBytesReadUntilNow ..< adjustedManifestLength+totalBytesReadUntilNow+sample.length))")
-            
-            ////11. Check between mp3 chunks and store data into temporary array.
-            for i in ( (adjustedManifestLength + totalBytesReadUntilNow) ..< (adjustedManifestLength+totalBytesReadUntilNow + sample.length) ) {
+            ////10. Check between mp3 chunks and store data into temporary array.
+            for i in ( (firstFileByteOffset + totalBytesReadUntilNow) ..< (firstFileByteOffset+totalBytesReadUntilNow + sample.length) ) {
                 bytesForAudioPacket.append(bytes[i])
             }
             
-            ////12. Write the MP3 file to disk, this is easier than putting into CoreAudioBuffer
+            ////11. Write the MP3 file to disk, this is easier than putting into CoreAudioBuffer
             ///TODO:- may do if let here if we want to allow some failures to write, however
             ///letting the whole function return nil is probably what we want if we can't successfully write a file.
             guard let url = AudioPackageExtractor.writeFileToDisk(with: Data(bytesForAudioPacket), and: sample.name) else {
@@ -91,16 +83,13 @@ class AudioPackageExtractor {
         let manifestLength = manifestLengthArray.reduce(0) { soFar, byte in
             return soFar << 8 | Int32(byte)
         }
+        let firstFileByteOffset = Int(manifestLength) + 4
         
-        var length: Int = Int(manifestLength)
-        //TODO:- I still don't know why we are missing 3 bytes for the JSON Payload, we actually need to omit these during the mp3 data extraction so this is a very weird problem
-        length += 3
-        
-        let manifestJSON = bytes[4...length]
+        let manifestJSON = bytes[4..<firstFileByteOffset]
         let manifestJSONString = "{\"samples\" : \(String(decoding: manifestJSON, as: UTF8.self))}"
         print(manifestJSONString)
 
-        return (Data(manifestJSONString.utf8),length)
+        return (Data(manifestJSONString.utf8), firstFileByteOffset)
     }
     
     private static func decodeJSONManifest(with manifestData:Data) -> AudioPackageSamples? {
