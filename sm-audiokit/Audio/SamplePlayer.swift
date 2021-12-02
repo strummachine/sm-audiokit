@@ -55,8 +55,6 @@ class SamplePlayer {
                 print("Error: Cannot load buffer")
                 return
             }
-            //TODO:- We will make a new buffer with appropriate fadeIn and then load player
-            //buffer?.smFadeIn(inTime: <#T##Double#>)
             player.load(buffer: buffer)
         } catch {
             print("Error: Cannot load sample:\(error.localizedDescription)")
@@ -85,17 +83,19 @@ class SamplePlayer {
         player.play(from: nil, to: nil, at: startTime, completionCallbackType: .dataPlayedBack)
     }
     
-//    func fadeOut(
+    func pause() {
+        
+    }
     
-    //TODO:- Need scheduled fades at scheduled playback (even fades can be scheduled themeselves)
+    func fadeOut(with duration:Float) {
+        fader.$leftGain.ramp(to: 0.0, duration: duration)
+        fader.$rightGain.ramp(to: 0.0, duration: duration)
+    }
     
-//    func pause() {
-//        fadeOut(fadeDuration: 0.5) {
-//            self.player.pause()
-//        }
-//    }
-
-
+    func fadeIn(with duration:Float) {
+        fader.$leftGain.ramp(to: 1.0, duration: duration)
+        fader.$leftGain.ramp(to: 1.0, duration: duration)
+    }
 }
 
 
