@@ -73,6 +73,7 @@
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="playingSampleLabel" destination="htT-Vj-ToQ" id="mXC-y4-bOR"/>
                         <outlet property="scheduleSampleTextField" destination="Ftb-2J-NXZ" id="C7j-5t-OGI"/>
                     </connections>
                 </viewController>

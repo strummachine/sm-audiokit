@@ -11,28 +11,34 @@ class ViewController: UIViewController {
 
     @IBOutlet weak var scheduleSampleTextField: UITextField!
     
+    @IBOutlet weak var playingSampleLabel: UILabel!
+    
+    var audioPackages: [AudioPackage] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        guard let packages = AudioPackageExtractor.extractAudioPackage() else {
+            fatalError("Can't unwrap audio packages")
+        }
+        audioPackages = packages
+        NotificationCenter.default.addObserver(self, selector: #selector(updateLabel), name: Notification.Name("PlayerCompletion"), object: nil)
         // Do any additional setup after loading the view.
     }
 
     @IBAction func tappedRandomSample(_ sender: Any) {
-        if let audioPackages = AudioPackageExtractor.extractAudioPackage() {
-            let shuffled = audioPackages.shuffled()
+        DispatchQueue.main.async {
+            let shuffled = self.audioPackages.shuffled()
             let random = shuffled[0]
-            
             do {
                 let file = try AVAudioFile(forReading: random.url)
-                AudioManager.shared.loadPlayer(with: file)
+                self.playingSampleLabel.text = "Playing sample:\(random.sample.name)"
+                // Fade Duration: How long the fade lasts
+                // Fade Start: Duration of file - Fade start = When fade starts after file is playing
+                AudioManager.shared.loadPlayer(with: file, fadeDuration: 0.25, fadeStart: 500)
             } catch {
                 print("Error: Can't load file:\(error.localizedDescription)")
             }
         }
-        else {
-            print("Can't unwrap audiopackages")
-        }
-
     }
     
     @IBAction func tappedScheduled200ms(_ sender: Any) {
@@ -41,6 +47,12 @@ class ViewController: UIViewController {
     
     @IBAction func tappedScheduledSample(_ sender: Any) {
     
+    }
+    
+    @objc func updateLabel() {
+        DispatchQueue.main.async {
+            self.playingSampleLabel.text = "Ready"
+        }
     }
 }
 

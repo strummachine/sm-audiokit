@@ -39,19 +39,23 @@ class AudioManager {
         engine.stop()
     }
     
-    public func loadPlayer(with file: AVAudioFile) {
+    public func loadPlayer(with file: AVAudioFile, fadeDuration: Float, fadeStart: Int) {
         do {
             try audioPlayer.load(file: file)
+            
             let duration: Int = Int(audioPlayer.duration*1000)
-            print("Duration:\(duration)")
+            let fadeDelay = duration - fadeStart
+            print("Fade Delay:\(fadeDelay)")
+            
             audioPlayer.completionHandler = {
                 self.fader.gain = 4.0
+                NotificationCenter.default.post(name: Notification.Name("PlayerCompletion"), object: nil)
             }
             audioPlayer.play()
             
-            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(duration)) {
-                self.fader.$leftGain.ramp(to: 0.0, duration: 0.50)
-                self.fader.$rightGain.ramp(to: 0.0, duration: 0.50)
+            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(fadeDelay)) {
+                self.fader.$leftGain.ramp(to: 0.0, duration: fadeDuration)
+                self.fader.$rightGain.ramp(to: 0.0, duration: fadeDuration)
             }
         } catch {
             print("Error: can't load audio player:\(error.localizedDescription)")
