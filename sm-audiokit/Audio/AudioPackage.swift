@@ -8,10 +8,11 @@
 import Foundation
 import CoreAudio
 import AudioToolbox
+import AVFoundation
 
 class AudioPackageExtractor {
     
-    public static func extractAudioPackage() -> [AudioPackage]? {
+    public static func extractAudioPackage() -> [Sample]? {
         ////1. Get path for audio-package file
         guard let pathForFile = Bundle.main.path(forResource: "testbed_mp3", ofType: "audio-package") else {
             fatalError("Can't open audio-package")
@@ -31,17 +32,17 @@ class AudioPackageExtractor {
         let manifestJSONData = manifestResult.0
         let firstFileByteOffset = manifestResult.1
         
-        ////5. Decode JSON Manifest as AudioPackageSamples struct
-        guard let audioPackageSamples = AudioPackageExtractor.decodeJSONManifest(with: manifestJSONData) else {
+        ////5. Decode JSON Manifest as AudioPackageManifest struct
+        guard let packageManifest = AudioPackageExtractor.decodeJSONManifest(with: manifestJSONData) else {
             return nil
         }
 
-        ////6. Prep array of [AudioPackage] for successfull read and return
-        var packages: [AudioPackage] = []
+        ////6. Prep array of [Sample] for successfull read and return
+        var results: [Sample] = []
         
         ////7. Loop through each sample to extract MP3 data from audio-package
         var nextFileByteOffset = firstFileByteOffset
-        for (index, sample) in audioPackageSamples.samples.enumerated() {
+        for (index, sample) in packageManifest.samples.enumerated() {
             
             ////8. Calculate byte range for this file and slice byte array accordingly
             let byteRange = nextFileByteOffset..<(nextFileByteOffset+sample.length)
@@ -54,14 +55,22 @@ class AudioPackageExtractor {
                 print("Error: Cannot write file to disk")
                 return nil
             }
-            packages.append(.init(sample: sample, mp3Data: Data(bytesForAudioPacket), url: url))
           
-            ////10. Calculate byte offset for start of next file
+            ////10. Grab duration of MP3 file
+            let sampleSeconds = CMTimeGetSeconds(AVURLAsset(url: url).duration)
+          
+            ////11. Add package info and data to result array
+            results.append(Sample(
+                id: sample.name,
+                url: url,
+                duration: sampleSeconds
+            ))
+          
+            ////12. Calculate byte offset for start of next file
             nextFileByteOffset += sample.length
         }
         
-        print("packages: \(packages.map(\.mp3Data.count))")
-        return packages
+        return results
     }
     
     private static func loadDatafromURL(with url:URL) -> Data? {
@@ -84,16 +93,15 @@ class AudioPackageExtractor {
         
         let manifestJSON = bytes[4..<firstFileByteOffset]
         let manifestJSONString = "{\"samples\" : \(String(decoding: manifestJSON, as: UTF8.self))}"
-        print(manifestJSONString)
 
         return (Data(manifestJSONString.utf8), firstFileByteOffset)
     }
     
-    private static func decodeJSONManifest(with manifestData:Data) -> AudioPackageSamples? {
+    private static func decodeJSONManifest(with manifestData:Data) -> AudioPackageManifest? {
         do {
-            let audioPackageSamples = try JSONDecoder().decode(AudioPackageSamples.self, from: manifestData)
-            print("AudioPackage Samples: \(audioPackageSamples.samples)")
-            return audioPackageSamples
+            let packageManifest = try JSONDecoder().decode(AudioPackageManifest.self, from: manifestData)
+            print("AudioPackage Samples: \(packageManifest.samples)")
+            return packageManifest
         } catch {
             print("Error: Cannot serialize JSON:\(error)")
             return nil
@@ -121,17 +129,11 @@ class AudioPackageExtractor {
     //    }
 }
 
-struct AudioPackage {
-    let sample: AudioPackageSample
-    let mp3Data: Data
-    let url: URL
+struct AudioPackageManifest: Codable {
+    let samples: [AudioPackageManifestSampleDefinition]
 }
 
-struct AudioPackageSamples: Codable {
-    let samples: [AudioPackageSample]
-}
-
-struct AudioPackageSample: Codable {
+struct AudioPackageManifestSampleDefinition: Codable {
     let name: String
     let length: Int
 }
