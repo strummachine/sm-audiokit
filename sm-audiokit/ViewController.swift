@@ -13,28 +13,25 @@ class ViewController: UIViewController {
     
     @IBOutlet weak var playingSampleLabel: UILabel!
     
-    var availableSamples: [Sample] = []
+  var availableSamples: [String: Sample] = [:]
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        guard let samples = AudioPackageExtractor.extractAudioPackage() else {
-            fatalError("Can't unwrap audio packages")
-        }
-        availableSamples = samples
+        availableSamples = AudioManager.shared.sampleBank
         NotificationCenter.default.addObserver(self, selector: #selector(updateLabel), name: Notification.Name("PlayerCompletion"), object: nil)
         // Do any additional setup after loading the view.
+        AudioManager.shared.channels["guitar"]?.setPan(0.9)
+        AudioManager.shared.channels["drums"]?.setPan(-0.9)
     }
 
     @IBAction func tappedRandomSample(_ sender: Any) {
         DispatchQueue.main.async {
-            let shuffled = self.availableSamples.shuffled()
-            let randomFile = shuffled[0]
+          let shuffled = self.availableSamples.shuffled()
+          let randomFile = shuffled[0].value
             do {
-                let file = try AVAudioFile(forReading: randomFile.url)
                 self.playingSampleLabel.text = "Playing sample:\(randomFile.id)"
-                // Fade Duration: How long the fade lasts
-                // Fade Start: Duration of file - Fade start = When fade starts after file is playing
-                AudioManager.shared.loadPlayer(with: file, fadeDuration: 0.25, fadeStart: 500)
+              let channelName = randomFile.id.hasSuffix("--") ? "guitar" : "drums"
+                AudioManager.shared.playSample(sampleId: randomFile.id, channel: channelName, playbackId: "asdf", atTime: 0.0)
             } catch {
                 print("Error: Can't load file:\(error.localizedDescription)")
             }
@@ -42,22 +39,33 @@ class ViewController: UIViewController {
     }
     
     @IBAction func tappedScheduled200ms(_ sender: Any) {
-        let testToneArray = self.availableSamples.filter({$0.id == "test-tone"})
-        let testTone = testToneArray[0]
+        guard let testTone = self.availableSamples["test-tone"] else { return }
         
         do {
-            let file = try AVAudioFile(forReading: testTone.url)
             self.playingSampleLabel.text = "Playing sample:\(testTone.id)"
-            // Fade Duration: How long the fade lasts
-            // Fade Start: Duration of file - Fade start = When fade starts after file is playing
-            AudioManager.shared.loadPlayer(with: file, fadeDuration: 0.25, fadeStart: 500)
+            AudioManager.shared.playSample(sampleId: testTone.id, channel: "test", playbackId: "asdf", atTime: 0.0)
         } catch {
             print("Error: Can't load file:\(error.localizedDescription)")
         }
     }
     
+    // This button commandeered to play a bunch of scheduled samples
     @IBAction func tappedScheduledSample(_ sender: Any) {
-    
+        self.playingSampleLabel.text = "Rocking out..."
+        for beat in 0...31 {
+            if beat % 4 == 0 {
+                AudioManager.shared.playSample(sampleId: "kick", channel: "drums", playbackId: ("kick"+String(beat)), atTime: (Float(beat) * 0.2))
+            }
+            if beat % 4 == 2 {
+                AudioManager.shared.playSample(sampleId: "snare", channel: "drums", playbackId: ("snare"+String(beat)), atTime: (Float(beat) * 0.2))
+            }
+            if beat % 8 != 7 {
+                AudioManager.shared.playSample(sampleId: "hat-closed", channel: "drums", playbackId: ("hat"+String(beat)), atTime: (Float(beat) * 0.2))
+            } else {
+                AudioManager.shared.playSample(sampleId: "hat-open", channel: "drums", playbackId: "hat-open-pb", atTime: (Float(beat) * 0.2))
+                AudioManager.shared.stopPlayback(playbackId: "hat-open-pb", atTime: (Float(beat + 1) * 0.2))
+            }
+        }
     }
     
     @objc func updateLabel() {
