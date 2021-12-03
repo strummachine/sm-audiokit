@@ -68,6 +68,7 @@ class AudioManager {
         let startTime = AVAudioTime()
         guard let playback = SamplePlayback(sample: sample, channel: channel, playbackId: playbackId, atTime: startTime, volume: volume, offset: offset, playbackRate: playbackRate, fadeInDuration: fadeInDuration) else { return }
         playbacks[playbackId] = playback
+        // TODO: Remove playback from dictionary when completed? (for GC?)
     }
     
     // MARK: Playback manipulation

@@ -12,7 +12,7 @@ import AudioKitEX
 
 class SamplePlayback {
     var player: AudioPlayer
-    var varispeed: VariSpeed  // not TimePitch as we want to adjust playback rate and pitch together
+    var varispeed: VariSpeed  // not TimePitch as we want to adjust playback rate and pitch together by adjusting sample rate
     var fader: Fader
     var outputNode: Node {
         get { fader }
@@ -24,13 +24,8 @@ class SamplePlayback {
     var duration: Float
     var playbackId: String
 
-    // TODO: no idea if these are the right types...
-    var startTime: AVAudioTime?
-    var queuedTime: UInt64?
-    
-    var fadeTimer: Timer?
+    var startTime: AVAudioTime
 
-    // TODO: "channel" should probably be the Channel class instance
     init?(
         sample: Sample,
         channel: Channel,
@@ -44,9 +39,10 @@ class SamplePlayback {
           self.sampleId = sample.id
           self.duration = sample.duration - offset
           self.playbackId = playbackId
+          self.startTime = atTime
       
           // TODO: if AudioPlayer doesn't load, don't instantiate the class; throw an error, catch it up the stack
-          player = AudioPlayer(url: sample.url, buffered: true) as! AudioPlayer
+          player = AudioPlayer(url: sample.url, buffered: true)!
         
           // Apply pitch shift
           varispeed = VariSpeed(player)
@@ -64,8 +60,6 @@ class SamplePlayback {
           // TODO: apply fadeInDuration, but NOT FOR v1 - I don't use fade-ins in production Strum Machine at this point, actually
           // The following code may or may not be a helpful start...
           //player.fade.inTime = fadeInDuration == 0 ? 0.001 : fadeInDuration
-        
-          self.startTime = atTime
         }
 
     func fade(at: AVAudioTime, to: Float, duration: Float) {
