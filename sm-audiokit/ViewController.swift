@@ -13,43 +13,38 @@ class ViewController: UIViewController {
     
     @IBOutlet weak var playingSampleLabel: UILabel!
     
-  var availableSamples: [String: Sample] = [:]
+    var availableSamples: [String: Sample] = [:]
     
     override func viewDidLoad() {
         super.viewDidLoad()
         availableSamples = AudioManager.shared.sampleBank
         NotificationCenter.default.addObserver(self, selector: #selector(updateLabel), name: Notification.Name("PlayerCompletion"), object: nil)
         // Do any additional setup after loading the view.
-        AudioManager.shared.channels["guitar"]?.setPan(0.9)
-        AudioManager.shared.channels["drums"]?.setPan(-0.9)
+//        AudioManager.shared.channels["guitar"]?.setPan(0.9)
+//        AudioManager.shared.channels["drums"]?.setPan(0.1)
     }
 
     @IBAction func tappedRandomSample(_ sender: Any) {
         DispatchQueue.main.async {
-          let shuffled = self.availableSamples.shuffled()
-          let randomFile = shuffled[0].value
-            do {
-                self.playingSampleLabel.text = "Playing sample:\(randomFile.id)"
-              let channelName = randomFile.id.hasSuffix("--") ? "guitar" : "drums"
-                AudioManager.shared.playSample(sampleId: randomFile.id, channel: channelName, playbackId: "asdf", atTime: 0.0)
-            } catch {
-                print("Error: Can't load file:\(error.localizedDescription)")
-            }
+            let shuffled = self.availableSamples.shuffled()
+            let randomSample = shuffled[0].value
+            self.playingSampleLabel.text = "Playing sample: \(randomSample.id)"
+            // TODO: Using any channel other than "test" crashes the app. Why?
+//            let channelName = randomSample.id.hasSuffix("--") ? "guitar" : "drums"
+//            let channelName = "guitar"
+            let channelName = "test"
+            AudioManager.shared.playSample(sampleId: randomSample.id, channel: channelName, playbackId: UUID().uuidString, atTime: 0.0)
         }
     }
     
     @IBAction func tappedScheduled200ms(_ sender: Any) {
         guard let testTone = self.availableSamples["test-tone"] else { return }
         
-        do {
-            self.playingSampleLabel.text = "Playing sample:\(testTone.id)"
-            AudioManager.shared.playSample(sampleId: testTone.id, channel: "test", playbackId: "asdf", atTime: 0.0)
-        } catch {
-            print("Error: Can't load file:\(error.localizedDescription)")
-        }
+        self.playingSampleLabel.text = "Playing sample: \(testTone.id)"
+        AudioManager.shared.playSample(sampleId: testTone.id, channel: "test", playbackId: UUID().uuidString, atTime: 0.0)
     }
     
-    // This button commandeered to play a bunch of scheduled samples
+    // This button has been commandeered to play a bunch of scheduled samples
     @IBAction func tappedScheduledSample(_ sender: Any) {
         self.playingSampleLabel.text = "Rocking out..."
         AudioManager.shared.setBrowserTime(5.0)

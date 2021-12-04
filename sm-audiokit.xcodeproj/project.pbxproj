@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		A363E86027599F98000C1AD2 /* Channel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A363E85F27599F98000C1AD2 /* Channel.swift */; };
 		A363E8642759AB91000C1AD2 /* CordovaPathConversion.swift in Sources */ = {isa = PBXBuildFile; fileRef = A363E8632759AB91000C1AD2 /* CordovaPathConversion.swift */; };
+		A39538FF275AF0A7002FE88C /* SampleStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = A39538FE275AF0A7002FE88C /* SampleStorage.swift */; };
 		FC06C3462757B04C00BA39FC /* AVAudioPCMBuffer+CustomFade.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC06C3452757B04C00BA39FC /* AVAudioPCMBuffer+CustomFade.swift */; };
 		FC470E8A2754F4D100C4E197 /* Sample.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC470E892754F4D100C4E197 /* Sample.swift */; };
 		FC470E8E2754F9C000C4E197 /* SamplePlayback.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC470E8D2754F9C000C4E197 /* SamplePlayback.swift */; };
@@ -27,6 +28,7 @@
 /* Begin PBXFileReference section */
 		A363E85F27599F98000C1AD2 /* Channel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Channel.swift; sourceTree = "<group>"; };
 		A363E8632759AB91000C1AD2 /* CordovaPathConversion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CordovaPathConversion.swift; sourceTree = "<group>"; };
+		A39538FE275AF0A7002FE88C /* SampleStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleStorage.swift; sourceTree = "<group>"; };
 		FC06C3452757B04C00BA39FC /* AVAudioPCMBuffer+CustomFade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AVAudioPCMBuffer+CustomFade.swift"; sourceTree = "<group>"; };
 		FC470E892754F4D100C4E197 /* Sample.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sample.swift; sourceTree = "<group>"; };
 		FC470E8D2754F9C000C4E197 /* SamplePlayback.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SamplePlayback.swift; sourceTree = "<group>"; };
@@ -113,6 +115,7 @@
 				A363E85F27599F98000C1AD2 /* Channel.swift */,
 				FC470E8D2754F9C000C4E197 /* SamplePlayback.swift */,
 				FC470E912755361200C4E197 /* AudioPackageExtractor.swift */,
+				A39538FE275AF0A7002FE88C /* SampleStorage.swift */,
 			);
 			path = Audio;
 			sourceTree = "<group>";
@@ -199,6 +202,7 @@
 				A363E86027599F98000C1AD2 /* Channel.swift in Sources */,
 				FC5C3B222746C93F00DDE223 /* ViewController.swift in Sources */,
 				FC5C3B1E2746C93F00DDE223 /* AppDelegate.swift in Sources */,
+				A39538FF275AF0A7002FE88C /* SampleStorage.swift in Sources */,
 				FC06C3462757B04C00BA39FC /* AVAudioPCMBuffer+CustomFade.swift in Sources */,
 				FCFD5BC7274F85A200F6D7A4 /* AudioManager.swift in Sources */,
 				FC470E922755361200C4E197 /* AudioPackageExtractor.swift in Sources */,

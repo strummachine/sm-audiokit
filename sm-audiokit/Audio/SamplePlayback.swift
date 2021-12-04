@@ -54,7 +54,7 @@ class SamplePlayback {
       
           channel.attach(player: player, outputNode: outputNode)
         
-          // TODO: pass `offset` to from parameter
+          // TODO: pass `offset` to `from` parameter
           player.play(from: nil, to: nil, at: startTime, completionCallbackType: .dataPlayedBack)
           
           // TODO: apply fadeInDuration, but NOT FOR v1 - I don't use fade-ins in production Strum Machine at this point, actually
@@ -77,16 +77,16 @@ class SamplePlayback {
     }
 
     func stop(at: AVAudioTime?) {
-      // TODO: does AudioPlayer.stop() do a quick ramp-down to avoid clicks?
-      if (at == nil) {
-        self.player.stop()
-      } else {
-        // TODO: convert AVAudioTime to dispatch time
-        let stopTime = DispatchTime.now()
-        DispatchQueue.main.asyncAfter(deadline: stopTime) {
-          self.player.stop()
+        // TODO: does AudioPlayer.stop() do a quick ramp-down to avoid clicks?
+        if (at == nil) {
+            self.player.stop()
+        } else {
+            // TODO: convert AVAudioTime to dispatch time
+            let stopTime = DispatchTime.now()
+            DispatchQueue.main.asyncAfter(deadline: stopTime) {
+                self.player.stop()
+            }
         }
-      }
     }
 }
 

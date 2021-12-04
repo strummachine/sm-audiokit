@@ -42,32 +42,19 @@ class AudioPackageExtractor {
         
         ////7. Loop through each sample to extract MP3 data from audio-package
         var nextFileByteOffset = firstFileByteOffset
-        for (index, sample) in packageManifest.samples.enumerated() {
-            
+        for sampleDef in packageManifest.samples {
             ////8. Calculate byte range for this file and slice byte array accordingly
-            let byteRange = nextFileByteOffset..<(nextFileByteOffset+sample.length)
+            let byteRange = nextFileByteOffset..<(nextFileByteOffset+sampleDef.length)
             let bytesForAudioPacket: [UInt8] = Array(data.bytes[byteRange])
-              
-            ////9. Write the MP3 file to disk; this is easier than putting into CoreAudioBuffer
-            ///TODO:- may do if let here if we want to allow some failures to write, however
-            ///letting the whole function return nil is probably what we want if we can't successfully write a file.
-            guard let url = AudioPackageExtractor.writeFileToDisk(with: Data(bytesForAudioPacket), and: sample.name) else {
-                print("Error: Cannot write file to disk")
-                return nil
-            }
           
-            ////10. Grab duration of MP3 file
-            let sampleSeconds = Float(CMTimeGetSeconds(AVURLAsset(url: url).duration))
+            ////9. Save audio data to disk and create Sample
+            let sample = SampleStorage.storeSample(sampleId: sampleDef.name, audioData: Data(bytesForAudioPacket))
           
-            ////11. Add package info and data to result array
-            results.append(Sample(
-                id: sample.name,
-                url: url,
-                duration: sampleSeconds
-            ))
+            ////10. Add Sample to results
+            results.append(sample)
           
-            ////12. Calculate byte offset for start of next file
-            nextFileByteOffset += sample.length
+            ////11. Calculate byte offset for start of next file
+            nextFileByteOffset += sampleDef.length
         }
         
         return results
@@ -104,17 +91,6 @@ class AudioPackageExtractor {
             return packageManifest
         } catch {
             print("Error: Cannot serialize JSON:\(error)")
-            return nil
-        }
-    }
-    
-    private static func writeFileToDisk(with mp3Data: Data,and name: String) -> URL? {
-        let fileURL = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false).appendingPathComponent("\(name).mp3")
-        do {
-            try mp3Data.write(to: fileURL, options: .atomic)
-            return fileURL
-        } catch {
-            print("ERROR: cannot write mp3:\(error)")
             return nil
         }
     }
