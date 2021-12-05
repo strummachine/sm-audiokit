@@ -48,18 +48,19 @@ class ViewController: UIViewController {
     @IBAction func tappedScheduledSample(_ sender: Any) {
         self.playingSampleLabel.text = "Rocking out..."
         AudioManager.shared.setBrowserTime(5.0)
+        let bpm = Float(137.0)
         for beat in 0...31 {
             if beat % 4 == 0 {
-                AudioManager.shared.playSample(sampleId: "kick", channel: "drums", playbackId: ("kick"+String(beat)), atTime: 5.1 + (Float(beat) * 0.2))
+                AudioManager.shared.playSample(sampleId: "kick", channel: "test", playbackId: ("kick"+String(beat)), atTime: 5.1 + (Float(beat) / bpm))
             }
             if beat % 4 == 2 {
-                AudioManager.shared.playSample(sampleId: "snare", channel: "drums", playbackId: ("snare"+String(beat)), atTime: 5.1 + (Float(beat) * 0.2))
+                AudioManager.shared.playSample(sampleId: "snare", channel: "test", playbackId: ("snare"+String(beat)), atTime: 5.1 + (Float(beat) / bpm))
             }
             if beat % 8 != 7 {
-                AudioManager.shared.playSample(sampleId: "hat-closed", channel: "drums", playbackId: ("hat"+String(beat)), atTime: 5.1 + (Float(beat) * 0.2))
+                AudioManager.shared.playSample(sampleId: "hat-closed", channel: "test", playbackId: ("hat"+String(beat)), atTime: 5.1 + (Float(beat) / bpm))
             } else {
-                AudioManager.shared.playSample(sampleId: "hat-open", channel: "drums", playbackId: "hat-open-pb", atTime: 5.1 + (Float(beat) * 0.2))
-                AudioManager.shared.setPlaybackVolume(playbackId: "hat-open-pb", atTime: 5.1 + (Float(beat + 1) * 0.2), volume: 0.0, fadeDuration: 0.05)
+                AudioManager.shared.playSample(sampleId: "hat-open", channel: "test", playbackId: "hat-open-pb", atTime: 5.1 + (Float(beat) / bpm))
+                AudioManager.shared.setPlaybackVolume(playbackId: "hat-open-pb", atTime: 5.1 + (Float(beat + 1) / bpm), volume: 0.0, fadeDuration: 0.05)
             }
         }
     }
