@@ -47,9 +47,10 @@ class AudioManager {
 //        }
     }
 
-    func loadSample(sampleId: String, audioData: Data) {
+    func loadSample(sampleId: String, audioData: Data) -> Sample {
         let sample = SampleStorage.storeSample(sampleId: sampleId, audioData: audioData)
         sampleBank[sample.id] = sample
+        return sample
     }
 
     func setupChannels(_ channelNames: [String]) {
@@ -78,15 +79,15 @@ class AudioManager {
                     volume: Float = 1.0,
                     offset: Float = 0.0,
                     playbackRate: Float = 1.0,
-                    fadeInDuration: Float = 0.0) {
+                    fadeInDuration: Float = 0.0) -> SamplePlayback? {
         // Grab sample and channel
         // TODO: this should probably throw if either isn't found
-        guard let sample = self.sampleBank[sampleId] else { return }
-        guard let channel = self.channels[channel] else { return }
+        let sample = self.sampleBank[sampleId]!
+        let channel = self.channels[channel]!
 
         let startTime = browserTimeToAudioTime(atTime)
 
-        guard let playback = SamplePlayback(
+        let playback = SamplePlayback(
             sample: sample,
             channel: channel,
             playbackId: playbackId,
@@ -95,10 +96,11 @@ class AudioManager {
             offset: offset,
             playbackRate: playbackRate,
             fadeInDuration: fadeInDuration
-        ) else { return }
+        )!
         
         playbacks[playbackId] = playback
         // TODO: Remove playback from dictionary when completed? (for GC?)
+        return playback
     }
 
     // MARK: Playback manipulation
