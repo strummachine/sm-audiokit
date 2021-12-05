@@ -7,23 +7,24 @@
 
 import Foundation
 import AudioKit
-
-enum SampleTypes: String {
-    case guitar = "Guitar"
-    case bass = "Bass"
-    case drums = "Drums"
-}
+import AVFAudio
+import AudioKitEX
 
 class AudioManager {
     static let shared = { AudioManager() }()
     let engine = AudioEngine()
     
     let mainMixer: Mixer
-    
-    var sampleBank: [AudioPlayer] = []
+    var audioPlayer: AudioPlayer = AudioPlayer()
+    var fader: Fader
+    var sampleManager: SampleManager
     
     init() {
-        mainMixer = Mixer(sampleBank, name: SampleTypes.guitar.rawValue)
+        sampleManager = SampleManager()
+        fader = Fader(audioPlayer, gain: 1.0)
+        mainMixer = Mixer(fader)
+        sampleManager.attachSamplePlayersToMixer(mixer: mainMixer)
+        
         engine.output = mainMixer
     }
     
@@ -37,4 +38,28 @@ class AudioManager {
     public func stop() {
         engine.stop()
     }
+    
+    public func loadPlayer(with file: AVAudioFile, fadeDuration: Float, fadeStart: Int) {
+        do {
+            try audioPlayer.load(file: file)
+            
+            let duration: Int = Int(audioPlayer.duration*1000)
+            let fadeDelay = duration - fadeStart
+            print("Fade Delay:\(fadeDelay)")
+            
+            audioPlayer.completionHandler = {
+                self.fader.gain = 4.0
+                NotificationCenter.default.post(name: Notification.Name("PlayerCompletion"), object: nil)
+            }
+            audioPlayer.play()
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(fadeDelay)) {
+                self.fader.$leftGain.ramp(to: 0.0, duration: fadeDuration)
+                self.fader.$rightGain.ramp(to: 0.0, duration: fadeDuration)
+            }
+        } catch {
+            print("Error: can't load audio player:\(error.localizedDescription)")
+        }
+    }
+    
 }
