@@ -20,6 +20,7 @@
 		FC5C3B252746C93F00DDE223 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FC5C3B232746C93F00DDE223 /* Main.storyboard */; };
 		FC5C3B272746C94100DDE223 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FC5C3B262746C94100DDE223 /* Assets.xcassets */; };
 		FC5C3B2A2746C94100DDE223 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FC5C3B282746C94100DDE223 /* LaunchScreen.storyboard */; };
+		FCB4616F275CC07C00DF60C5 /* DispatchTime+Offset.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCB4616E275CC07C00DF60C5 /* DispatchTime+Offset.swift */; };
 		FCCC49E127578D9F00CE1D9E /* testbed_mp3.audio-package in Resources */ = {isa = PBXBuildFile; fileRef = FCCC49D527578D9F00CE1D9E /* testbed_mp3.audio-package */; };
 		FCE6CD702746CA2A00B7B3BE /* AudioKit in Frameworks */ = {isa = PBXBuildFile; productRef = FCE6CD6F2746CA2A00B7B3BE /* AudioKit */; };
 		FCFD5BC7274F85A200F6D7A4 /* AudioManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCFD5BC6274F85A200F6D7A4 /* AudioManager.swift */; };
@@ -41,6 +42,7 @@
 		FC5C3B262746C94100DDE223 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		FC5C3B292746C94100DDE223 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		FC5C3B2B2746C94100DDE223 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		FCB4616E275CC07C00DF60C5 /* DispatchTime+Offset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DispatchTime+Offset.swift"; sourceTree = "<group>"; };
 		FCCC49D527578D9F00CE1D9E /* testbed_mp3.audio-package */ = {isa = PBXFileReference; lastKnownFileType = file; path = "testbed_mp3.audio-package"; sourceTree = "<group>"; };
 		FCFD5BC6274F85A200F6D7A4 /* AudioManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -61,6 +63,7 @@
 			isa = PBXGroup;
 			children = (
 				FC06C3452757B04C00BA39FC /* AVAudioPCMBuffer+CustomFade.swift */,
+				FCB4616E275CC07C00DF60C5 /* DispatchTime+Offset.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -203,6 +206,7 @@
 				FC5C3B222746C93F00DDE223 /* ViewController.swift in Sources */,
 				FC5C3B1E2746C93F00DDE223 /* AppDelegate.swift in Sources */,
 				A39538FF275AF0A7002FE88C /* SampleStorage.swift in Sources */,
+				FCB4616F275CC07C00DF60C5 /* DispatchTime+Offset.swift in Sources */,
 				FC06C3462757B04C00BA39FC /* AVAudioPCMBuffer+CustomFade.swift in Sources */,
 				FCFD5BC7274F85A200F6D7A4 /* AudioManager.swift in Sources */,
 				FC470E922755361200C4E197 /* AudioPackageExtractor.swift in Sources */,

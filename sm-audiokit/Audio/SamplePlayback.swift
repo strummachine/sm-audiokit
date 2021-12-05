@@ -25,6 +25,8 @@ class SamplePlayback {
     var playbackId: String
 
     var startTime: AVAudioTime
+    
+    var speedRateTimer: Timer?
 
     init?(
         sample: Sample,
@@ -62,22 +64,26 @@ class SamplePlayback {
           //player.fade.inTime = fadeInDuration == 0 ? 0.001 : fadeInDuration
         }
 
-    func fade(at: AVAudioTime, to: Float, duration: Float) {
-        DispatchQueue.main.asyncAfter(deadline: .now()) {
+    func fade(at: Float, to: Float, duration: Float) {
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.offSetNow(with: at)) {
             self.fader.$leftGain.ramp(to: to, duration: duration)
             self.fader.$rightGain.ramp(to: to, duration: duration)
         }
     }
   
-    func changePlaybackRate(at: AVAudioTime, to: Float, duration: Float ) {
-        DispatchQueue.main.asyncAfter(deadline: .now()) {
+    func changePlaybackRate(at: Float, to: Float, duration: Float ) {
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.offSetNow(with: at)) {
           // TODO: (low priority) how to ramp playback rate?
           //self.varispeed.$rate.ramp(to: to, duration: duration)
+            self.playBackRateRamp(duration: TimeInterval(duration), toRate: to) {
+                print("Varispeed ramped to:\(self.varispeed.rate)")
+            }
         }
     }
 
     func stop(at: AVAudioTime?) {
         // TODO: does AudioPlayer.stop() do a quick ramp-down to avoid clicks?
+        // TODO:- It does not sadly we have to perform the fade
         if (at == nil) {
             self.player.stop()
         } else {
@@ -88,6 +94,35 @@ class SamplePlayback {
             }
         }
     }
+    
+    private func playBackRateRamp(duration: TimeInterval? = 1.0,toRate: Float, completion: (()->Void)? = nil) {
+        speedRateTimer?.invalidate()
+        
+        let increment = 0.1 / duration!
+        speedRateTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { speedRate in
+            let newRate = self.varispeed.rate - Float(increment)
+            self.varispeed.rate = newRate
+            if newRate == toRate {
+                speedRate.invalidate()
+                self.speedRateTimer = nil
+                completion?()
+            }
+        }
+    }
 }
+
+//TODO:- In order for Varispeed to ramp like gain we would have to not only extend the class in AudioKit but actually change the implementation in AudioKit Itself.
+
+//extension VariSpeed {
+//    public static let rateRange: ClosedRange<AUValue> = 0.25 ... 4.0
+//    public static let rateDef = NodeParameterDef(
+//        identifier: "variSpeedRate",
+//        name: "VariSpeed Rate",
+//        address: akGetParameterAddress("VariSpeed Rate"),
+//        defaultValue: 1.0, range:
+//            rateRange,
+//        unit: .rate)
+//    @Parameter(rateDef) public var rateChange: AUValue
+//}
 
 
