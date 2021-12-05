@@ -63,14 +63,17 @@ class SamplePlayback {
         }
 
     func fade(at: AVAudioTime, to: Float, duration: Float) {
-        DispatchQueue.main.asyncAfter(deadline: .now()) {
+        // TODO: Needs fixing
+        let gap = Int(at.hostTime - self.player.avAudioNode.lastRenderTime!.hostTime)
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now().advanced(by: .nanoseconds(gap))) {
             self.fader.$leftGain.ramp(to: to, duration: duration)
             self.fader.$rightGain.ramp(to: to, duration: duration)
         }
     }
   
     func changePlaybackRate(at: AVAudioTime, to: Float, duration: Float ) {
-        DispatchQueue.main.asyncAfter(deadline: .now()) {
+        let gap = Int(at.hostTime - self.player.avAudioNode.lastRenderTime!.hostTime)
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now().advanced(by: .nanoseconds(gap))) {
           // TODO: (low priority) how to ramp playback rate?
           //self.varispeed.$rate.ramp(to: to, duration: duration)
         }

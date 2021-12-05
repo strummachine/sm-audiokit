@@ -147,13 +147,14 @@ class AudioManager {
 
     func browserTimeToAudioTime(_ browserTime: Float) -> AVAudioTime {
         // TODO: Implement browserTime conversion
-        return AVAudioTime.now()
+        return AVAudioTime(hostTime: UInt64(browserTime * 1000 * 1000 * 1000) + self.browserTimeOffset)
     }
 
-    var browserTimeOffset = -1
+    var browserTimeOffset = UInt64()
 
     func setBrowserTime(_ browserTime: Float) {
         // TODO: calculate and store offset between browserTime and audio clock
+        self.browserTimeOffset = self.engine.mainMixerNode!.avAudioNode.lastRenderTime!.hostTime - UInt64(Int(browserTime * 1000 * 1000 * 1000))
     }
 
     // Some of Luke's old code that had to do with time stuff, in case it's useful (it probably isn't)
