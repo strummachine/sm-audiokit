@@ -20,6 +20,7 @@ class SamplePlayer {
     var isPlaying: Bool {
         get { player.isPlaying }
     }
+    var inUse = false
     var sampleId: String?
     var playbackId: String?
 
@@ -36,6 +37,7 @@ class SamplePlayer {
             self.sampleId = nil
             self.playbackId = nil
             self.fader.gain = 1.0
+            self.inUse = false
         }
     }
     
@@ -52,17 +54,18 @@ class SamplePlayer {
     func load(sample: Sample, channel: String,playbackId: String, at atTime: Float, volume: Float? = 1.0, offset: Float? = 0.0, playbackRate: Float? = 1.0, pitchShift: Float? = 0.0, fadeInDuration: Double? = 0.0) {
         self.sampleId = sample.id
         self.playbackId = playbackId
+        self.inUse = true
         do {
-            guard let buffer = try AVAudioPCMBuffer(file: sample.file) else {
-                print("Error: Cannot load buffer")
-                return
-            }
-            player.load(buffer: buffer)
+//            guard let buffer = try AVAudioPCMBuffer(file: sample.url) else {
+//                print("Error: Cannot load buffer")
+//                return
+//            }
+//            player.load(buffer: buffer)
         } catch {
             print("Error: Cannot load sample:\(error.localizedDescription)")
         }
 
-        fader.gain = volume ?? sample.defaultVolume
+        fader.gain = volume ?? 1.0
         timePitch.rate = playbackRate ?? 1.0
         timePitch.pitch = pitchShift ?? 0.0
         

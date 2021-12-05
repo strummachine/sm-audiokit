@@ -13,23 +13,21 @@ class SamplePlayerPool {
 
     var pool = [SamplePlayer]()
     var polyphonyLimit: Int
-    let type: SampleTypes
     
-    init(polyphonyLimit: Int = 30, type: SampleTypes) {
+    init(polyphonyLimit: Int = 30) {
         self.polyphonyLimit = polyphonyLimit
         for _ in 0..<polyphonyLimit {
             let player = SamplePlayer()
             self.pool.append(player)
         }
-        self.type = type
     }
 
     func getAvailablePlayer() -> SamplePlayer? {
-        
-        if let playerToReturn = pool.first(where: {!$0.isPlaying }) {
+        if let playerToReturn = pool.first(where: {!$0.inUse }) {
             return playerToReturn
         }
         else {
+            // TODO: Can we dynamically create a new player if needed so that we don't get errors?
             print("All sample players are busy. Increase polyphonyLimit in startEngine call")
             return nil
         }

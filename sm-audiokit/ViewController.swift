@@ -13,25 +13,25 @@ class ViewController: UIViewController {
     
     @IBOutlet weak var playingSampleLabel: UILabel!
     
-    var audioPackages: [AudioPackage] = []
+    var availableSamples: [Sample] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        guard let packages = AudioPackageExtractor.extractAudioPackage() else {
+        guard let samples = AudioPackageExtractor.extractAudioPackage() else {
             fatalError("Can't unwrap audio packages")
         }
-        audioPackages = packages
+        availableSamples = samples
         NotificationCenter.default.addObserver(self, selector: #selector(updateLabel), name: Notification.Name("PlayerCompletion"), object: nil)
         // Do any additional setup after loading the view.
     }
 
     @IBAction func tappedRandomSample(_ sender: Any) {
         DispatchQueue.main.async {
-            let shuffled = self.audioPackages.shuffled()
-            let random = shuffled[0]
+            let shuffled = self.availableSamples.shuffled()
+            let randomFile = shuffled[0]
             do {
-                let file = try AVAudioFile(forReading: random.url)
-                self.playingSampleLabel.text = "Playing sample:\(random.sample.name)"
+                let file = try AVAudioFile(forReading: randomFile.url)
+                self.playingSampleLabel.text = "Playing sample:\(randomFile.id)"
                 // Fade Duration: How long the fade lasts
                 // Fade Start: Duration of file - Fade start = When fade starts after file is playing
                 AudioManager.shared.loadPlayer(with: file, fadeDuration: 0.25, fadeStart: 500)
@@ -42,12 +42,12 @@ class ViewController: UIViewController {
     }
     
     @IBAction func tappedScheduled200ms(_ sender: Any) {
-        let testToneArray = self.audioPackages.filter({$0.sample.name == "test-tone"})
+        let testToneArray = self.availableSamples.filter({$0.id == "test-tone"})
         let testTone = testToneArray[0]
         
         do {
             let file = try AVAudioFile(forReading: testTone.url)
-            self.playingSampleLabel.text = "Playing sample:\(testTone.sample.name)"
+            self.playingSampleLabel.text = "Playing sample:\(testTone.id)"
             // Fade Duration: How long the fade lasts
             // Fade Start: Duration of file - Fade start = When fade starts after file is playing
             AudioManager.shared.loadPlayer(with: file, fadeDuration: 0.25, fadeStart: 500)
