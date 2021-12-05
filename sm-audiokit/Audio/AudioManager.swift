@@ -20,9 +20,11 @@ class AudioManager {
     var channels = [String: Channel]()
     var playbacks = [String: SamplePlayback]()
     var sampleBank = [String: Sample]()
+    
+    var browserTimeOffset: Float = 0.0
 
     init() {
-        mainMixer = Mixer()
+        mainMixer = Mixer(audioPlayer)
         engine.output = mainMixer
     }
 
@@ -69,7 +71,7 @@ class AudioManager {
         engine.stop()
     }
 
-    // MARK: Sample playback
+    // MARK:- Sample playback
 
     func playSample(sampleId: String,
                     channel: String,
@@ -84,46 +86,44 @@ class AudioManager {
         guard let sample = self.sampleBank[sampleId] else { return }
         guard let channel = self.channels[channel] else { return }
 
-        let startTime = browserTimeToAudioTime(atTime)
-
         guard let playback = SamplePlayback(
             sample: sample,
             channel: channel,
             playbackId: playbackId,
-            atTime: startTime,
             volume: volume,
             offset: offset,
             playbackRate: playbackRate,
             fadeInDuration: fadeInDuration
         ) else { return }
         
+//        guard let startTime = convertAtTimeForSyncedPlayback(at: atTime, masterPlayer: self.mainMixer.avAudioNode) else {
+//            return
+//        }
+//        playback.play(from: offset, at: startTime)
+        playback.play()
         playbacks[playbackId] = playback
         // TODO: Remove playback from dictionary when completed? (for GC?)
     }
 
-    // MARK: Playback manipulation
+    //MARK:- Playback manipulation
 
     func setPlaybackVolume(playbackId: String, atTime: Float, volume: Float, fadeDuration: Float) {
-        let time = browserTimeToAudioTime(atTime)
-        playbacks[playbackId]?.fade(at: time, to: volume, duration: fadeDuration)
+        playbacks[playbackId]?.fade(at: atTime, to: volume, duration: fadeDuration)
     }
 
     // This one doesn't need to be implemented for v1
     func setPlaybackRate(playbackId: String, atTime: Float, playbackRate: Float, transitionDuration: Float) {
-        let time = browserTimeToAudioTime(atTime)
-        playbacks[playbackId]?.changePlaybackRate(at: time, to: playbackRate, duration: transitionDuration)
+        playbacks[playbackId]?.changePlaybackRate(at: atTime, to: playbackRate, duration: transitionDuration)
     }
 
     func stopPlayback(playbackId: String, atTime: Float, fadeDuration: Float = 0.0) {
-        let time = browserTimeToAudioTime(atTime)
         if fadeDuration > 0 {
-          playbacks[playbackId]?.fade(at: time, to: 0, duration: fadeDuration)
+          playbacks[playbackId]?.fade(at: atTime, to: 0, duration: fadeDuration)
         }
-        playbacks[playbackId]?.stop(at: time.offset(seconds: Double(fadeDuration)))
+        playbacks[playbackId]?.stop(at: atTime)
     }
 
     // MARK: Channels
-
     func setChannelVolume(channel: String, volume: Float) {
       // TODO: Is the change instantaneous or is there already a short ramp?
         channels[channel]?.setVolume(volume)
@@ -143,47 +143,37 @@ class AudioManager {
 
     // MARK: Time Conversion (move elsewhere?)
 
-    func browserTimeToAudioTime(_ browserTime: Float) -> AVAudioTime {
+    func convertAtTimeForSyncedPlayback(at atTime: Float, masterPlayer: AVAudioNode) -> AVAudioTime? {
         // TODO: Implement browserTime conversion
-        return AVAudioTime.now()
+        
+        ////1. Get the output format (really sampleRate)
+        let outputFormat = masterPlayer.outputFormat(forBus: 0)
+        
+        // TODO: need to take browserTimeOffset into account here most likely
+        let scheduledTime = atTime
+        ////2. Multiple our scheduled time (when we want the file to play) by the output sample rate
+        let scheduledSampleTime = Int64(scheduledTime * Float(outputFormat.sampleRate))
+        
+        ////3. Get frame position time of the main player
+        guard let playerFramePositionTime = masterPlayer.lastRenderTime?.sampleTime else {
+            print("Error: cannot unwrap sample time from master player lastRenderTime.sampleTime")
+            return nil
+        }
+        
+        ////4. Create AVAudioFramePosition of the Scheduled Sample Time and the player's frame position
+        let finalSampleTime = AVAudioFramePosition(playerFramePositionTime + scheduledSampleTime)
+        
+        ////5. Return new AVAudioTime object, this AVAudioTime needs to be used for all players playing
+        ////   simultaneously
+        return AVAudioTime(sampleTime: finalSampleTime, atRate: outputFormat.sampleRate)
     }
-
-    var browserTimeOffset = -1
 
     func setBrowserTime(_ browserTime: Float) {
         // TODO: calculate and store offset between browserTime and audio clock
+        let iPhoneNow: Float = Float(DispatchTime.now().rawValue)
+        browserTimeOffset = iPhoneNow - browserTime
     }
 
-    // Some of Luke's old code that had to do with time stuff, in case it's useful (it probably isn't)
-    /*
-        self.browserTimeOffsetNs = DispatchTime.now().uptimeNanoseconds - UInt64(Int64(browserTime * 1000 * 1000 * 1000))
+    //func prepareSamplersFor
 
-        let now = player.avAudioNode.lastRenderTime?.sampleTime
-
-        let scheduledTime = AVAudioTime(hostTime: <#T##UInt64#>)
-        player.schedule(at: atTime, completionCallbackType: .dataPlayedBack)
-     */
-
-    // Maximilian's code around time stuff
-    /*
-
-        //// Sample-frame accurate sync:
-        ///
-
-        //FIXME:- We will have a dedicated method for this, this is temporary.
-        guard let masterPlayer = self.getAvailablePlayer() else {
-            return
-        }
-
-        let avStartTime:
-
-        let outputFormat = masterPlayer.player.avAudioNode.outputFormat(forBus: 0)
-        guard let now = masterPlayer.player.avAudioNode.lastRenderTime?.sampleTime else {
-            return
-        }
-
-        //FIXME:- Need to convert floats to AVFrameTime in order to do math properly.
-        let startTime = AVAudioTime(sampleTime: ((now + startTime) +(delayTime * outputFormat.sampleRate)), atRate: outputFormat.sampleRate)
-
-      */
   }

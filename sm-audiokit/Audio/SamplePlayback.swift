@@ -24,7 +24,8 @@ class SamplePlayback {
     var duration: Float
     var playbackId: String
 
-    var startTime: AVAudioTime
+    // TODO: I recomend we divorce start time from the actual sample
+//    var startTime: AVAudioTime
     
     var speedRateTimer: Timer?
 
@@ -32,7 +33,6 @@ class SamplePlayback {
         sample: Sample,
         channel: Channel,
         playbackId: String,
-        atTime: AVAudioTime,
         volume: Float = 1.0,
         offset: Float = 0.0,
         playbackRate: Float = 1.0,
@@ -41,12 +41,11 @@ class SamplePlayback {
           self.sampleId = sample.id
           self.duration = sample.duration - offset
           self.playbackId = playbackId
-          self.startTime = atTime
       
           // TODO: if AudioPlayer doesn't load, don't instantiate the class; throw an error, catch it up the stack
           player = AudioPlayer(url: sample.url, buffered: true)!
         
-          // Apply pitch shift
+          // Apply time shift
           varispeed = VariSpeed(player)
           if playbackRate != 1.0 {
               varispeed.rate = playbackRate
@@ -56,14 +55,23 @@ class SamplePlayback {
       
           channel.attach(player: player, outputNode: outputNode)
         
-          // TODO: pass `offset` to `from` parameter
-          player.play(from: nil, to: nil, at: startTime, completionCallbackType: .dataPlayedBack)
           
           // TODO: apply fadeInDuration, but NOT FOR v1 - I don't use fade-ins in production Strum Machine at this point, actually
+            
           // The following code may or may not be a helpful start...
           //player.fade.inTime = fadeInDuration == 0 ? 0.001 : fadeInDuration
         }
 
+    func play(from offset: Float, at startTime: AVAudioTime) {
+        // TODO: pass `offset` to `from` parameter
+        let fromTimeInterval = TimeInterval(offset)
+        player.play(from: fromTimeInterval, to: nil, at: startTime, completionCallbackType: .dataPlayedBack)
+    }
+    
+    func play() {
+        player.play()
+    }
+    
     func fade(at: Float, to: Float, duration: Float) {
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.offSetNow(with: at)) {
             self.fader.$leftGain.ramp(to: to, duration: duration)
@@ -75,27 +83,28 @@ class SamplePlayback {
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.offSetNow(with: at)) {
           // TODO: (low priority) how to ramp playback rate?
           //self.varispeed.$rate.ramp(to: to, duration: duration)
-            self.playBackRateRamp(duration: TimeInterval(duration), toRate: to) {
+            self.playbackRateRamp(duration: TimeInterval(duration), toRate: to) {
                 print("Varispeed ramped to:\(self.varispeed.rate)")
             }
         }
     }
 
-    func stop(at: AVAudioTime?) {
+    func stop(at: Float? = 0.0) {
         // TODO: does AudioPlayer.stop() do a quick ramp-down to avoid clicks?
         // TODO:- It does not sadly we have to perform the fade
-        if (at == nil) {
-            self.player.stop()
-        } else {
+        if let atTime = at {
             // TODO: convert AVAudioTime to dispatch time
-            let stopTime = DispatchTime.now()
+            let stopTime = DispatchTime.offSetNow(with: atTime)
             DispatchQueue.main.asyncAfter(deadline: stopTime) {
                 self.player.stop()
             }
         }
+        else {
+            self.player.stop()
+        }
     }
     
-    private func playBackRateRamp(duration: TimeInterval? = 1.0,toRate: Float, completion: (()->Void)? = nil) {
+    private func playbackRateRamp(duration: TimeInterval? = 1.0,toRate: Float, completion: (()->Void)? = nil) {
         speedRateTimer?.invalidate()
         
         let increment = 0.1 / duration!
