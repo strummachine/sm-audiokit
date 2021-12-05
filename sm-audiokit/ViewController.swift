@@ -13,51 +13,55 @@ class ViewController: UIViewController {
     
     @IBOutlet weak var playingSampleLabel: UILabel!
     
-    var availableSamples: [Sample] = []
+    var availableSamples: [String: Sample] = [:]
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        guard let samples = AudioPackageExtractor.extractAudioPackage() else {
-            fatalError("Can't unwrap audio packages")
-        }
-        availableSamples = samples
+        availableSamples = AudioManager.shared.sampleBank
         NotificationCenter.default.addObserver(self, selector: #selector(updateLabel), name: Notification.Name("PlayerCompletion"), object: nil)
         // Do any additional setup after loading the view.
+//        AudioManager.shared.channels["guitar"]?.setPan(0.9)
+//        AudioManager.shared.channels["drums"]?.setPan(0.1)
     }
 
     @IBAction func tappedRandomSample(_ sender: Any) {
         DispatchQueue.main.async {
             let shuffled = self.availableSamples.shuffled()
-            let randomFile = shuffled[0]
-            do {
-                let file = try AVAudioFile(forReading: randomFile.url)
-                self.playingSampleLabel.text = "Playing sample:\(randomFile.id)"
-                // Fade Duration: How long the fade lasts
-                // Fade Start: Duration of file - Fade start = When fade starts after file is playing
-                AudioManager.shared.loadPlayer(with: file, fadeDuration: 0.25, fadeStart: 500)
-            } catch {
-                print("Error: Can't load file:\(error.localizedDescription)")
-            }
+            let randomSample = shuffled[0].value
+            self.playingSampleLabel.text = "Playing sample: \(randomSample.id)"
+            // TODO: Using any channel other than "test" crashes the app. Why?
+//            let channelName = randomSample.id.hasSuffix("--") ? "guitar" : "drums"
+//            let channelName = "guitar"
+            let channelName = "test"
+            AudioManager.shared.playSample(sampleId: randomSample.id, channel: channelName, playbackId: UUID().uuidString, atTime: 0.0)
         }
     }
     
     @IBAction func tappedScheduled200ms(_ sender: Any) {
-        let testToneArray = self.availableSamples.filter({$0.id == "test-tone"})
-        let testTone = testToneArray[0]
+        guard let testTone = self.availableSamples["test-tone"] else { return }
         
-        do {
-            let file = try AVAudioFile(forReading: testTone.url)
-            self.playingSampleLabel.text = "Playing sample:\(testTone.id)"
-            // Fade Duration: How long the fade lasts
-            // Fade Start: Duration of file - Fade start = When fade starts after file is playing
-            AudioManager.shared.loadPlayer(with: file, fadeDuration: 0.25, fadeStart: 500)
-        } catch {
-            print("Error: Can't load file:\(error.localizedDescription)")
-        }
+        self.playingSampleLabel.text = "Playing sample: \(testTone.id)"
+        AudioManager.shared.playSample(sampleId: testTone.id, channel: "test", playbackId: UUID().uuidString, atTime: 0.0)
     }
     
+    // This button has been commandeered to play a bunch of scheduled samples
     @IBAction func tappedScheduledSample(_ sender: Any) {
-    
+        self.playingSampleLabel.text = "Rocking out..."
+        AudioManager.shared.setBrowserTime(5.0)
+        for beat in 0...31 {
+            if beat % 4 == 0 {
+                AudioManager.shared.playSample(sampleId: "kick", channel: "drums", playbackId: ("kick"+String(beat)), atTime: 5.1 + (Float(beat) * 0.2))
+            }
+            if beat % 4 == 2 {
+                AudioManager.shared.playSample(sampleId: "snare", channel: "drums", playbackId: ("snare"+String(beat)), atTime: 5.1 + (Float(beat) * 0.2))
+            }
+            if beat % 8 != 7 {
+                AudioManager.shared.playSample(sampleId: "hat-closed", channel: "drums", playbackId: ("hat"+String(beat)), atTime: 5.1 + (Float(beat) * 0.2))
+            } else {
+                AudioManager.shared.playSample(sampleId: "hat-open", channel: "drums", playbackId: "hat-open-pb", atTime: 5.1 + (Float(beat) * 0.2))
+                AudioManager.shared.setPlaybackVolume(playbackId: "hat-open-pb", atTime: 5.1 + (Float(beat + 1) * 0.2), volume: 0.0, fadeDuration: 0.05)
+            }
+        }
     }
     
     @objc func updateLabel() {

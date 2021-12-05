@@ -18,4 +18,3 @@ struct Sample {
         self.duration = duration
     }
 }
-
