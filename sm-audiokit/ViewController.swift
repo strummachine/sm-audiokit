@@ -18,6 +18,10 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         availableSamples = AudioManager.shared.sampleBank
+        print(availableSamples)
+        AudioManager.shared.setupChannels(["guitar", "drums", "test"])
+        print(AudioManager.shared.channels)
+        AudioManager.shared.start()
         NotificationCenter.default.addObserver(self, selector: #selector(updateLabel), name: Notification.Name("PlayerCompletion"), object: nil)
         // Do any additional setup after loading the view.
 //        AudioManager.shared.channels["guitar"]?.setPan(0.9)

@@ -96,11 +96,11 @@ class AudioManager {
             fadeInDuration: fadeInDuration
         ) else { return }
         
-//        guard let startTime = convertAtTimeForSyncedPlayback(at: atTime, masterPlayer: self.mainMixer.avAudioNode) else {
-//            return
-//        }
-//        playback.play(from: offset, at: startTime)
-        playback.play()
+        guard let startTime = convertAtTimeForSyncedPlayback(at: atTime, masterPlayer: self.mainMixer.avAudioNode) else {
+            return
+        }
+        playback.play(from: offset, at: startTime)
+        //playback.play()
         playbacks[playbackId] = playback
         // TODO: Remove playback from dictionary when completed? (for GC?)
     }

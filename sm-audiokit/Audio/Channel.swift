@@ -22,7 +22,7 @@ class Channel {
     
     func attach(player: AudioPlayer, outputNode: Node) {
         self.mixer.addInput(outputNode)
-        
+        self.mixer.addInput(player)
         // TODO: is this necessary? seems harmless at the very least,
         // and possibly necessary to avoid a memory leak...?
 //        player.completionHandler = {
