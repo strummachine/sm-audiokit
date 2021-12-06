@@ -29,7 +29,7 @@
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="t39-K4-Ai0">
                                         <rect key="frame" x="0.0" y="179" width="414" height="179.5"/>
                                         <state key="normal" title="Button"/>
-                                        <buttonConfiguration key="configuration" style="plain" title="Play-Random-Sample"/>
+                                        <buttonConfiguration key="configuration" style="plain" title="Play-Random-Sample-500ms-delay"/>
                                         <connections>
                                             <action selector="tappedRandomSample:" destination="BYZ-38-t0r" eventType="touchUpInside" id="heu-jE-HfO"/>
                                         </connections>
@@ -37,7 +37,7 @@
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="b8A-ri-Brs">
                                         <rect key="frame" x="0.0" y="358.5" width="414" height="179"/>
                                         <state key="normal" title="Button"/>
-                                        <buttonConfiguration key="configuration" style="plain" title="Play-TestTone"/>
+                                        <buttonConfiguration key="configuration" style="plain" title="Play-TestTone-1500ms-delay"/>
                                         <connections>
                                             <action selector="tappedScheduled200ms:" destination="BYZ-38-t0r" eventType="touchUpInside" id="Kyh-CG-wRk"/>
                                         </connections>

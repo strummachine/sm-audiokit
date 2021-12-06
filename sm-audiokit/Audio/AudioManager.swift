@@ -21,7 +21,7 @@ class AudioManager {
     var playbacks = [String: SamplePlayback]()
     var sampleBank = [String: Sample]()
 
-    var browserTimeOffset = UInt64()
+    var browserTimeOffset = Double()
     
     init() {
         mainMixer = Mixer()
@@ -91,7 +91,7 @@ class AudioManager {
     func playSample(sampleId: String,
                     channel: String,
                     playbackId: String,
-                    atTime: Float,
+                    atTime: Double,
                     volume: Float = 1.0,
                     offset: Float = 0.0,
                     playbackRate: Float = 1.0,
@@ -131,18 +131,18 @@ class AudioManager {
 
     // MARK: Playback manipulation
 
-    func setPlaybackVolume(playbackId: String, atTime: Float, volume: Float, fadeDuration: Float) {
+    func setPlaybackVolume(playbackId: String, atTime: Double, volume: Float, fadeDuration: Float) {
         let time = browserTimeToAudioTime(atTime)
         playbacks[playbackId]?.fade(at: time, to: volume, duration: fadeDuration)
     }
 
     // This one doesn't need to be implemented for v1
-    func setPlaybackRate(playbackId: String, atTime: Float, playbackRate: Float, transitionDuration: Float) {
+    func setPlaybackRate(playbackId: String, atTime: Double, playbackRate: Float, transitionDuration: Float) {
         let time = browserTimeToAudioTime(atTime)
         playbacks[playbackId]?.changePlaybackRate(at: time, to: playbackRate, duration: transitionDuration)
     }
 
-    func stopPlayback(playbackId: String, atTime: Float, fadeDuration: Float = 0.0) {
+    func stopPlayback(playbackId: String, atTime: Double, fadeDuration: Float = 0.0) {
         let time = browserTimeToAudioTime(atTime)
         if fadeDuration > 0 {
           playbacks[playbackId]?.fade(at: time, to: 0, duration: fadeDuration)
@@ -172,25 +172,25 @@ class AudioManager {
 
 // MARK: - Audio Clock Timing Methods
 extension AudioManager {
-    private func getAudioEngineHostTime() throws -> UInt64 {
+    private func getMasterClockSeconds() throws -> Double {
         guard let mainMixerNode = self.engine.mainMixerNode else {
             throw AudioManagerError.cannotUnwrapMainMixerNode
         }
         guard let lastRenderTime = mainMixerNode.avAudioNode.lastRenderTime else {
             throw AudioManagerError.cannotUnwrapLastRenderTime
         }
-        return lastRenderTime.hostTime
+        return AVAudioTime.seconds(forHostTime: lastRenderTime.hostTime)
     }
     
-    public func browserTimeToAudioTime(_ browserTime: Float) -> AVAudioTime {
+    public func browserTimeToAudioTime(_ browserTime: Double) -> AVAudioTime {
         // TODO: Implement browserTime conversion
-        return AVAudioTime(hostTime: browserTime.hostTime + self.browserTimeOffset)
+        return AVAudioTime(hostTime: 0).offset(seconds: self.browserTimeOffset + browserTime)
     }
 
-    public func setBrowserTime(_ browserTime: Float) throws {
+    public func setBrowserTime(_ browserTime: Double) throws {
         do {
-            let audioEngineHostTime = try getAudioEngineHostTime()
-            self.browserTimeOffset = audioEngineHostTime - browserTime.hostTime
+            let audioEngineHostTime = try getMasterClockSeconds()
+            self.browserTimeOffset = audioEngineHostTime - browserTime
         } catch let error as AudioManagerError {
             throw error
         } catch {

@@ -65,8 +65,8 @@ class SamplePlayback {
         print(AudioManager.shared.mainMixer.connectionTreeDescription)
         print("Player:\(self.player.connectionTreeDescription) | \(self.player)")
         
-        
-        self.player.play(from: nil, to: nil, at: startTime, completionCallbackType: .dataPlayedBack)
+
+        self.player.play(from: nil, to: nil, at: AVAudioTime(hostTime: startTime.hostTime), completionCallbackType: .dataPlayedBack)
 
         // TODO: apply fadeInDuration, but NOT FOR v1 - I don't use fade-ins in production Strum Machine at this point, actually
         // The following code may or may not be a helpful start...
@@ -75,16 +75,16 @@ class SamplePlayback {
 
     func fade(at: AVAudioTime, to: Float, duration: Float) {
         // TODO: Needs fixing
-        let gap = Int(at.hostTime - self.player.avAudioNode.lastRenderTime!.hostTime)
-        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + Double(gap) / 1000000000.0) {
+        let gap = AVAudioTime.now().timeIntervalSince(otherTime: at)! * -1
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + gap) {
             self.fader.$leftGain.ramp(to: to, duration: duration)
             self.fader.$rightGain.ramp(to: to, duration: duration)
         }
     }
   
     func changePlaybackRate(at: AVAudioTime, to: Float, duration: Float ) {
-        let gap = Int(at.hostTime - self.player.avAudioNode.lastRenderTime!.hostTime)
-        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + Double(gap) / 1000000000.0) {
+        let gap = AVAudioTime.now().timeIntervalSince(otherTime: at)! * -1
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + gap) {
           // TODO: (low priority) how to ramp playback rate?
           //self.varispeed.$rate.ramp(to: to, duration: duration)
         }

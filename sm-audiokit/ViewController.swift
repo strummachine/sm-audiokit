@@ -45,8 +45,8 @@ class ViewController: UIViewController {
         let channelName = "test"
         
         do {
-            try AudioManager.shared.setBrowserTime(0.01)
-            try AudioManager.shared.playSample(sampleId: randomSample.id, channel: channelName, playbackId: UUID().uuidString, atTime: 0.02)
+            try AudioManager.shared.setBrowserTime(2.01)
+            try AudioManager.shared.playSample(sampleId: randomSample.id, channel: channelName, playbackId: UUID().uuidString, atTime: 2.52)
             self.setLabel(with: "Playing Sample: \(randomSample.id)")
         } catch let error as AudioManagerError{
             print(error.description)
@@ -58,9 +58,10 @@ class ViewController: UIViewController {
     @IBAction func tappedScheduled200ms(_ sender: Any) {
         guard let testTone = self.availableSamples["test-tone"] else { return }
         do {
-            try AudioManager.shared.setBrowserTime(0.01)
-            try AudioManager.shared.playSample(sampleId: testTone.id, channel: "test", playbackId: UUID().uuidString, atTime: 0.02)
-            self.setLabel(with: "Playing sample: \(testTone.id)")
+            try AudioManager.shared.setBrowserTime(2.01)
+            let pb = try AudioManager.shared.playSample(sampleId: testTone.id, channel: "test", playbackId: UUID().uuidString, atTime: 3.52)
+            AudioManager.shared.setPlaybackVolume(playbackId: pb.playbackId, atTime: 4.25, volume: 0.0, fadeDuration: 0.5)
+            self.setLabel(with: "Playing/fading sample: \(testTone.id)")
         } catch let error as AudioManagerError {
             print(error.description)
         } catch {
@@ -72,21 +73,21 @@ class ViewController: UIViewController {
     @IBAction func tappedScheduledSample(_ sender: Any) {
         self.setLabel(with: "Rocking out...")
         do {
-            try AudioManager.shared.setBrowserTime(0.01)
+            try AudioManager.shared.setBrowserTime(-1.01)
             do {
-                let bpm = Float(187.0)
+                let bpm = Double(187.0)
                 for beat in 0...31 {
                     if beat % 4 == 0 {
-                        try AudioManager.shared.playSample(sampleId: "kick", channel: "test", playbackId: ("kick"+String(beat)), atTime: 0.02 + (Float(beat) / bpm))
+                        try AudioManager.shared.playSample(sampleId: "kick", channel: "test", playbackId: ("kick"+String(beat)), atTime: 0.02 + (Double((beat)) / bpm))
                     }
                     if beat % 4 == 2 {
-                        try AudioManager.shared.playSample(sampleId: "snare", channel: "test", playbackId: ("snare"+String(beat)), atTime: 0.02 + (Float(beat) / bpm))
+                        try AudioManager.shared.playSample(sampleId: "snare", channel: "test", playbackId: ("snare"+String(beat)), atTime: 0.02 + (Double((beat)) / bpm))
                     }
                     if beat % 8 != 7 {
-                        try AudioManager.shared.playSample(sampleId: "hat-closed", channel: "test", playbackId: ("hat"+String(beat)), atTime: 0.02 + (Float(beat) / bpm))
+                        try AudioManager.shared.playSample(sampleId: "hat-closed", channel: "test", playbackId: ("hat"+String(beat)), atTime: 0.02 + (Double((beat)) / bpm))
                     } else {
-                        try AudioManager.shared.playSample(sampleId: "hat-open", channel: "test", playbackId: "hat-open-pb", atTime: 0.02 + (Float(beat) / bpm))
-                        AudioManager.shared.setPlaybackVolume(playbackId: "hat-open-pb", atTime: 0.2 + (Float(beat + 1) / bpm), volume: 0.0, fadeDuration: 0.05)
+                        try AudioManager.shared.playSample(sampleId: "hat-open", channel: "test", playbackId: "hat-open-pb", atTime: 0.02 + (Double((beat)) / bpm))
+                        AudioManager.shared.setPlaybackVolume(playbackId: "hat-open-pb", atTime: 0.2 + (Double(Float(beat + 1)) / bpm), volume: 0.0, fadeDuration: 0.05)
                     }
                 }
             } catch let error as AudioManagerError {

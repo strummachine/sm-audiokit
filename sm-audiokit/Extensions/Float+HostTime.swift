@@ -7,8 +7,9 @@
 
 import Foundation
 
-extension Float {
-    var hostTime: UInt64 {
-        return UInt64(Int(self * 1000 * 1000 * 1000))
+extension DispatchTime {
+    // .advanced(by:) is iOS 13+ only, so we do this instead:
+    func advanced(nanoseconds: Int) -> DispatchTime {
+        return self + Double(nanoseconds) / 1000000000.0
     }
 }
