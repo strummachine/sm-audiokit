@@ -13,53 +13,186 @@ import AudioKitEX
 class AudioManager {
     static let shared = { AudioManager() }()
     let engine = AudioEngine()
-    
+
     let mainMixer: Mixer
     var audioPlayer: AudioPlayer = AudioPlayer()
-    var fader: Fader
-    var sampleManager: SampleManager
+
+    var channels = [String: Channel]()
+    var playbacks = [String: SamplePlayback]()
+    var sampleBank = [String: Sample]()
+
+    var browserTimeOffset = UInt64()
     
     init() {
-        sampleManager = SampleManager()
-        fader = Fader(audioPlayer, gain: 1.0)
-        mainMixer = Mixer(fader)
-        sampleManager.attachSamplePlayersToMixer(mixer: mainMixer)
-        
+        mainMixer = Mixer()
         engine.output = mainMixer
     }
-    
-    public func start() {
+
+    func loadTestPackage() {
+        do {
+            let samples = try AudioPackageExtractor.extractAudioPackage()
+            for sample in samples {
+                sampleBank[sample.id] = sample
+            }
+        } catch {
+            print(error.localizedDescription)
+        }
+
+
+    }
+
+    // Not using for now
+    func loadPackages(packagePaths: [String]) {
+//        for path in packagePaths {
+//            guard let samples = AudioPackageExtractor.extractAudioPackage(path: path) else {
+//                fatalError("Error: Cannot unwrap audioPackages")
+//            }
+//            for sample in samples {
+//                sampleBank[sample.id] = sample
+//            }
+//        }
+    }
+
+    func loadSample(sampleId: String, audioData: Data) throws -> Sample {
+        let sampleTuple = SampleStorage.storeSample(sampleId: sampleId, audioData: audioData)
+        if let sample = sampleTuple.0 {
+            sampleBank[sample.id] = sample
+            return sample
+        }
+        else {
+            if let error = sampleTuple.1 {
+                throw error
+            }
+            else {
+                throw AudioPackageError.unknownError
+            }
+        }
+    }
+
+    func setupChannels(_ channelNames: [String]) {
+        for channelName in channelNames {
+            channels[channelName] = Channel(id: channelName, mainMixer: self.mainMixer)
+        }
+    }
+
+    public func start() throws {
         do {
             try engine.start()
         } catch {
-            print("Error: Cannot start audio engine: \(error.localizedDescription)")
+            throw AudioManagerError.audioEngineCannotStart(error: error)
         }
     }
     public func stop() {
         engine.stop()
     }
-    
-    public func loadPlayer(with file: AVAudioFile, fadeDuration: Float, fadeStart: Int) {
+
+    // MARK: Sample playback
+
+    func playSample(sampleId: String,
+                    channel: String,
+                    playbackId: String,
+                    atTime: Float,
+                    volume: Float = 1.0,
+                    offset: Float = 0.0,
+                    playbackRate: Float = 1.0,
+                    fadeInDuration: Float = 0.0) throws  {
+        // Grab sample and channel
+        
+        guard let sample = self.sampleBank[sampleId] else {
+            throw AudioManagerError.cannotFindSample(sampleId: sampleId)
+        }
+        guard let channel = self.channels[channel] else {
+            throw AudioManagerError.cannotFindChannel(channel: channel)
+        }
+
+        let startTime = browserTimeToAudioTime(atTime)
+
         do {
-            try audioPlayer.load(file: file)
-            
-            let duration: Int = Int(audioPlayer.duration*1000)
-            let fadeDelay = duration - fadeStart
-            print("Fade Delay:\(fadeDelay)")
-            
-            audioPlayer.completionHandler = {
-                self.fader.gain = 4.0
-                NotificationCenter.default.post(name: Notification.Name("PlayerCompletion"), object: nil)
-            }
-            audioPlayer.play()
-            
-            DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(fadeDelay)) {
-                self.fader.$leftGain.ramp(to: 0.0, duration: fadeDuration)
-                self.fader.$rightGain.ramp(to: 0.0, duration: fadeDuration)
-            }
+            let playback = try SamplePlayback(
+                sample: sample,
+                channel: channel,
+                playbackId: playbackId,
+                atTime: startTime,
+                volume: volume,
+                offset: offset,
+                playbackRate: playbackRate,
+                fadeInDuration: fadeInDuration
+            )
+            // TODO: Remove playback from dictionary when completed? (for GC?)
+            playbacks[playbackId] = playback
+        } catch let error as SamplePlaybackError {
+            throw error
         } catch {
-            print("Error: can't load audio player:\(error.localizedDescription)")
+            //Generic Error Handling
         }
     }
+
+    // MARK: Playback manipulation
+
+    func setPlaybackVolume(playbackId: String, atTime: Float, volume: Float, fadeDuration: Float) {
+        let time = browserTimeToAudioTime(atTime)
+        playbacks[playbackId]?.fade(at: time, to: volume, duration: fadeDuration)
+    }
+
+    // This one doesn't need to be implemented for v1
+    func setPlaybackRate(playbackId: String, atTime: Float, playbackRate: Float, transitionDuration: Float) {
+        let time = browserTimeToAudioTime(atTime)
+        playbacks[playbackId]?.changePlaybackRate(at: time, to: playbackRate, duration: transitionDuration)
+    }
+
+    func stopPlayback(playbackId: String, atTime: Float, fadeDuration: Float = 0.0) {
+        let time = browserTimeToAudioTime(atTime)
+        if fadeDuration > 0 {
+          playbacks[playbackId]?.fade(at: time, to: 0, duration: fadeDuration)
+        }
+        playbacks[playbackId]?.stop(at: time.offset(seconds: Double(fadeDuration)))
+    }
+
+    // MARK: Channels
+
+    func setChannelVolume(channel: String, volume: Float) {
+      // TODO: Is the change instantaneous or is there already a short ramp
+        channels[channel]?.setVolume(volume)
+    }
+
+    func setChannelPan(channel: String, pan: Float) {
+        channels[channel]?.setPan(pan)
+    }
+
+    func setChannelMuted(channel: String, muted: Bool) {
+        channels[channel]?.setMuted(muted)
+    }
+
+    func setMasterVolume(volume: Float) {
+        mainMixer.volume = volume
+    }    
+}
+
+// MARK: - Audio Clock Timing Methods
+extension AudioManager {
+    private func getAudioEngineHostTime() throws -> UInt64 {
+        guard let mainMixerNode = self.engine.mainMixerNode else {
+            throw AudioManagerError.cannotUnwrapMainMixerNode
+        }
+        guard let lastRenderTime = mainMixerNode.avAudioNode.lastRenderTime else {
+            throw AudioManagerError.cannotUnwrapLastRenderTime
+        }
+        return lastRenderTime.hostTime
+    }
     
+    public func browserTimeToAudioTime(_ browserTime: Float) -> AVAudioTime {
+        // TODO: Implement browserTime conversion
+        return AVAudioTime(hostTime: browserTime.hostTime + self.browserTimeOffset)
+    }
+
+    public func setBrowserTime(_ browserTime: Float) throws {
+        do {
+            let audioEngineHostTime = try getAudioEngineHostTime()
+            self.browserTimeOffset = audioEngineHostTime - browserTime.hostTime
+        } catch let error as AudioManagerError {
+            throw error
+        } catch {
+            //Generic Error handling
+        }
+    }
 }

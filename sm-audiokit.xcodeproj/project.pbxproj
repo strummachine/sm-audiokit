@@ -7,30 +7,34 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A363E86027599F98000C1AD2 /* Channel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A363E85F27599F98000C1AD2 /* Channel.swift */; };
+		A363E8642759AB91000C1AD2 /* CordovaPathConversion.swift in Sources */ = {isa = PBXBuildFile; fileRef = A363E8632759AB91000C1AD2 /* CordovaPathConversion.swift */; };
+		A39538FF275AF0A7002FE88C /* SampleStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = A39538FE275AF0A7002FE88C /* SampleStorage.swift */; };
 		FC06C3462757B04C00BA39FC /* AVAudioPCMBuffer+CustomFade.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC06C3452757B04C00BA39FC /* AVAudioPCMBuffer+CustomFade.swift */; };
 		FC470E8A2754F4D100C4E197 /* Sample.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC470E892754F4D100C4E197 /* Sample.swift */; };
-		FC470E8C2754F92A00C4E197 /* SampleManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC470E8B2754F92A00C4E197 /* SampleManager.swift */; };
-		FC470E8E2754F9C000C4E197 /* SamplePlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC470E8D2754F9C000C4E197 /* SamplePlayer.swift */; };
-		FC470E902755084F00C4E197 /* SamplePlayerPool.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC470E8F2755084F00C4E197 /* SamplePlayerPool.swift */; };
-		FC470E922755361200C4E197 /* AudioPackage.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC470E912755361200C4E197 /* AudioPackage.swift */; };
+		FC470E8E2754F9C000C4E197 /* SamplePlayback.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC470E8D2754F9C000C4E197 /* SamplePlayback.swift */; };
+		FC470E922755361200C4E197 /* AudioPackageExtractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC470E912755361200C4E197 /* AudioPackageExtractor.swift */; };
 		FC5C3B1E2746C93F00DDE223 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC5C3B1D2746C93F00DDE223 /* AppDelegate.swift */; };
 		FC5C3B202746C93F00DDE223 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC5C3B1F2746C93F00DDE223 /* SceneDelegate.swift */; };
 		FC5C3B222746C93F00DDE223 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC5C3B212746C93F00DDE223 /* ViewController.swift */; };
 		FC5C3B252746C93F00DDE223 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FC5C3B232746C93F00DDE223 /* Main.storyboard */; };
 		FC5C3B272746C94100DDE223 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FC5C3B262746C94100DDE223 /* Assets.xcassets */; };
 		FC5C3B2A2746C94100DDE223 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FC5C3B282746C94100DDE223 /* LaunchScreen.storyboard */; };
+		FCB46171275E28BE00DF60C5 /* ErrorTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCB46170275E28BE00DF60C5 /* ErrorTypes.swift */; };
+		FCB46173275E3EA200DF60C5 /* Float+HostTime.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCB46172275E3EA200DF60C5 /* Float+HostTime.swift */; };
 		FCCC49E127578D9F00CE1D9E /* testbed_mp3.audio-package in Resources */ = {isa = PBXBuildFile; fileRef = FCCC49D527578D9F00CE1D9E /* testbed_mp3.audio-package */; };
 		FCE6CD702746CA2A00B7B3BE /* AudioKit in Frameworks */ = {isa = PBXBuildFile; productRef = FCE6CD6F2746CA2A00B7B3BE /* AudioKit */; };
 		FCFD5BC7274F85A200F6D7A4 /* AudioManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCFD5BC6274F85A200F6D7A4 /* AudioManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		A363E85F27599F98000C1AD2 /* Channel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Channel.swift; sourceTree = "<group>"; };
+		A363E8632759AB91000C1AD2 /* CordovaPathConversion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CordovaPathConversion.swift; sourceTree = "<group>"; };
+		A39538FE275AF0A7002FE88C /* SampleStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleStorage.swift; sourceTree = "<group>"; };
 		FC06C3452757B04C00BA39FC /* AVAudioPCMBuffer+CustomFade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AVAudioPCMBuffer+CustomFade.swift"; sourceTree = "<group>"; };
 		FC470E892754F4D100C4E197 /* Sample.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sample.swift; sourceTree = "<group>"; };
-		FC470E8B2754F92A00C4E197 /* SampleManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleManager.swift; sourceTree = "<group>"; };
-		FC470E8D2754F9C000C4E197 /* SamplePlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SamplePlayer.swift; sourceTree = "<group>"; };
-		FC470E8F2755084F00C4E197 /* SamplePlayerPool.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SamplePlayerPool.swift; sourceTree = "<group>"; };
-		FC470E912755361200C4E197 /* AudioPackage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPackage.swift; sourceTree = "<group>"; };
+		FC470E8D2754F9C000C4E197 /* SamplePlayback.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SamplePlayback.swift; sourceTree = "<group>"; };
+		FC470E912755361200C4E197 /* AudioPackageExtractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPackageExtractor.swift; sourceTree = "<group>"; };
 		FC5C3B1A2746C93F00DDE223 /* sm-audiokit.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "sm-audiokit.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		FC5C3B1D2746C93F00DDE223 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		FC5C3B1F2746C93F00DDE223 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -39,6 +43,8 @@
 		FC5C3B262746C94100DDE223 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		FC5C3B292746C94100DDE223 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		FC5C3B2B2746C94100DDE223 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		FCB46170275E28BE00DF60C5 /* ErrorTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorTypes.swift; sourceTree = "<group>"; };
+		FCB46172275E3EA200DF60C5 /* Float+HostTime.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Float+HostTime.swift"; sourceTree = "<group>"; };
 		FCCC49D527578D9F00CE1D9E /* testbed_mp3.audio-package */ = {isa = PBXFileReference; lastKnownFileType = file; path = "testbed_mp3.audio-package"; sourceTree = "<group>"; };
 		FCFD5BC6274F85A200F6D7A4 /* AudioManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -59,6 +65,7 @@
 			isa = PBXGroup;
 			children = (
 				FC06C3452757B04C00BA39FC /* AVAudioPCMBuffer+CustomFade.swift */,
+				FCB46172275E3EA200DF60C5 /* Float+HostTime.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -86,12 +93,14 @@
 				FCCC49D227578D7600CE1D9E /* samples */,
 				FCFD5BC8275005BA00F6D7A4 /* Audio */,
 				FC5C3B1D2746C93F00DDE223 /* AppDelegate.swift */,
+				A363E8632759AB91000C1AD2 /* CordovaPathConversion.swift */,
 				FC5C3B1F2746C93F00DDE223 /* SceneDelegate.swift */,
 				FC5C3B212746C93F00DDE223 /* ViewController.swift */,
 				FC5C3B232746C93F00DDE223 /* Main.storyboard */,
 				FC5C3B262746C94100DDE223 /* Assets.xcassets */,
 				FC5C3B282746C94100DDE223 /* LaunchScreen.storyboard */,
 				FC5C3B2B2746C94100DDE223 /* Info.plist */,
+				FCB46170275E28BE00DF60C5 /* ErrorTypes.swift */,
 			);
 			path = "sm-audiokit";
 			sourceTree = "<group>";
@@ -109,10 +118,10 @@
 			children = (
 				FCFD5BC6274F85A200F6D7A4 /* AudioManager.swift */,
 				FC470E892754F4D100C4E197 /* Sample.swift */,
-				FC470E8B2754F92A00C4E197 /* SampleManager.swift */,
-				FC470E8D2754F9C000C4E197 /* SamplePlayer.swift */,
-				FC470E8F2755084F00C4E197 /* SamplePlayerPool.swift */,
-				FC470E912755361200C4E197 /* AudioPackage.swift */,
+				A363E85F27599F98000C1AD2 /* Channel.swift */,
+				FC470E8D2754F9C000C4E197 /* SamplePlayback.swift */,
+				FC470E912755361200C4E197 /* AudioPackageExtractor.swift */,
+				A39538FE275AF0A7002FE88C /* SampleStorage.swift */,
 			);
 			path = Audio;
 			sourceTree = "<group>";
@@ -196,15 +205,18 @@
 			buildActionMask = 2147483647;
 			files = (
 				FC470E8A2754F4D100C4E197 /* Sample.swift in Sources */,
+				A363E86027599F98000C1AD2 /* Channel.swift in Sources */,
 				FC5C3B222746C93F00DDE223 /* ViewController.swift in Sources */,
-				FC470E902755084F00C4E197 /* SamplePlayerPool.swift in Sources */,
 				FC5C3B1E2746C93F00DDE223 /* AppDelegate.swift in Sources */,
-				FC470E8C2754F92A00C4E197 /* SampleManager.swift in Sources */,
+				A39538FF275AF0A7002FE88C /* SampleStorage.swift in Sources */,
 				FC06C3462757B04C00BA39FC /* AVAudioPCMBuffer+CustomFade.swift in Sources */,
 				FCFD5BC7274F85A200F6D7A4 /* AudioManager.swift in Sources */,
-				FC470E922755361200C4E197 /* AudioPackage.swift in Sources */,
-				FC470E8E2754F9C000C4E197 /* SamplePlayer.swift in Sources */,
+				FCB46173275E3EA200DF60C5 /* Float+HostTime.swift in Sources */,
+				FC470E922755361200C4E197 /* AudioPackageExtractor.swift in Sources */,
+				FC470E8E2754F9C000C4E197 /* SamplePlayback.swift in Sources */,
 				FC5C3B202746C93F00DDE223 /* SceneDelegate.swift in Sources */,
+				FCB46171275E28BE00DF60C5 /* ErrorTypes.swift in Sources */,
+				A363E8642759AB91000C1AD2 /* CordovaPathConversion.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
