@@ -14,9 +14,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
-        AudioManager.shared.start()
-        AudioManager.shared.setupChannels(["guitar", "drums", "test"])
-        AudioManager.shared.loadTestPackage()
+
         return true
     }
 

@@ -95,7 +95,7 @@ class AudioManager {
                     volume: Float = 1.0,
                     offset: Float = 0.0,
                     playbackRate: Float = 1.0,
-                    fadeInDuration: Float = 0.0) throws -> SamplePlayback? {
+                    fadeInDuration: Float = 0.0) throws  {
         // Grab sample and channel
         
         guard let sample = self.sampleBank[sampleId] else {
@@ -120,7 +120,7 @@ class AudioManager {
         
         playbacks[playbackId] = playback
         // TODO: Remove playback from dictionary when completed? (for GC?)
-        return playback
+        //return playback
     }
 
     // MARK: Playback manipulation
@@ -170,8 +170,27 @@ class AudioManager {
         return AVAudioTime(hostTime: UInt64(browserTime * 1000 * 1000 * 1000) + self.browserTimeOffset)
     }
 
-    func setBrowserTime(_ browserTime: Float) {
-        // TODO: calculate and store offset between browserTime and audio clock
-        self.browserTimeOffset = self.engine.mainMixerNode!.avAudioNode.lastRenderTime!.hostTime - browserTime.hostTime;)
+    func setBrowserTime(_ browserTime: Float) throws {
+        do {
+            let audioEngineHostTime = try getAudioEngineHostTime()
+            self.browserTimeOffset = audioEngineHostTime - browserTime.hostTime
+        } catch let error as AudioManagerError {
+            throw error
+        } catch {
+            //Generic Error handling
+        }
+    }
+    
+}
+
+extension AudioManager {
+    private func getAudioEngineHostTime() throws -> UInt64 {
+        guard let mainMixerNode = self.engine.mainMixerNode else {
+            throw AudioManagerError.cannotUnwrapMainMixerNode
+        }
+        guard let lastRenderTime = mainMixerNode.avAudioNode.lastRenderTime else {
+            throw AudioManagerError.cannotUnwrapLastRenderTime
+        }
+        return lastRenderTime.hostTime
     }
 }
