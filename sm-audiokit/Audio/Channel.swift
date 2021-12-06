@@ -26,7 +26,7 @@ class Channel {
         // TODO: is this necessary? seems harmless at the very least,
         // and possibly necessary to avoid a memory leak...?
         player.completionHandler = {
-            self.mixer.removeInput(outputNode)
+//            self.mixer.removeInput(outputNode)
         }
     }
     
