@@ -33,7 +33,9 @@ class ViewController: UIViewController {
 //            let channelName = randomSample.id.hasSuffix("--") ? "guitar" : "drums"
 //            let channelName = "guitar"
             let channelName = "test"
-            AudioManager.shared.playSample(sampleId: randomSample.id, channel: channelName, playbackId: UUID().uuidString, atTime: 0.0)
+            print(AudioManager.shared.channels.debugDescription)
+            AudioManager.shared.setBrowserTime(0.1)
+            AudioManager.shared.playSample(sampleId: randomSample.id, channel: "guitar", playbackId: UUID().uuidString, atTime: 0.2)
         }
     }
     
@@ -47,20 +49,20 @@ class ViewController: UIViewController {
     // This button has been commandeered to play a bunch of scheduled samples
     @IBAction func tappedScheduledSample(_ sender: Any) {
         self.playingSampleLabel.text = "Rocking out..."
-        AudioManager.shared.setBrowserTime(5.0)
-        let bpm = Float(137.0)
+        AudioManager.shared.setBrowserTime(0.1)
+        let bpm = Float(187.0)
         for beat in 0...31 {
             if beat % 4 == 0 {
-                AudioManager.shared.playSample(sampleId: "kick", channel: "test", playbackId: ("kick"+String(beat)), atTime: 5.1 + (Float(beat) / bpm))
+                AudioManager.shared.playSample(sampleId: "kick", channel: "test", playbackId: ("kick"+String(beat)), atTime: 0.2 + (Float(beat) / bpm))
             }
             if beat % 4 == 2 {
-                AudioManager.shared.playSample(sampleId: "snare", channel: "test", playbackId: ("snare"+String(beat)), atTime: 5.1 + (Float(beat) / bpm))
+                AudioManager.shared.playSample(sampleId: "snare", channel: "test", playbackId: ("snare"+String(beat)), atTime: 0.2 + (Float(beat) / bpm))
             }
             if beat % 8 != 7 {
-                AudioManager.shared.playSample(sampleId: "hat-closed", channel: "test", playbackId: ("hat"+String(beat)), atTime: 5.1 + (Float(beat) / bpm))
+                AudioManager.shared.playSample(sampleId: "hat-closed", channel: "test", playbackId: ("hat"+String(beat)), atTime: 0.2 + (Float(beat) / bpm))
             } else {
-                AudioManager.shared.playSample(sampleId: "hat-open", channel: "test", playbackId: "hat-open-pb", atTime: 5.1 + (Float(beat) / bpm))
-                AudioManager.shared.setPlaybackVolume(playbackId: "hat-open-pb", atTime: 5.1 + (Float(beat + 1) / bpm), volume: 0.0, fadeDuration: 0.05)
+                AudioManager.shared.playSample(sampleId: "hat-open", channel: "test", playbackId: "hat-open-pb", atTime: 0.2 + (Float(beat) / bpm))
+                AudioManager.shared.setPlaybackVolume(playbackId: "hat-open-pb", atTime: 0.2 + (Float(beat + 1) / bpm), volume: 0.0, fadeDuration: 0.05)
             }
         }
     }

@@ -25,6 +25,8 @@ class SamplePlayback {
     var playbackId: String
 
     var startTime: AVAudioTime
+    
+    var speedRateTimer: Timer?
 
     init?(
         sample: Sample,
@@ -91,6 +93,34 @@ class SamplePlayback {
             }
         }
     }
+    
+    private func playbackRateRamp(duration: TimeInterval? = 1.0, toRate: Float, completion: (()->Void)? = nil) {
+        speedRateTimer?.invalidate()
+        
+        let increment = 0.1 / duration!
+        speedRateTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { speedRate in
+            let newRate = self.varispeed.rate - Float(increment)
+            self.varispeed.rate = newRate
+            if newRate == toRate {
+                speedRate.invalidate()
+                self.speedRateTimer = nil
+                completion?()
+            }
+        }
+    }
 }
+
+//TODO:- In order for Varispeed to ramp like gain we would have to not only extend the class in AudioKit but actually change the implementation in AudioKit Itself.
+//extension VariSpeed {
+//    public static let rateRange: ClosedRange<AUValue> = 0.25 ... 4.0
+//    public static let rateDef = NodeParameterDef(
+//        identifier: "variSpeedRate",
+//        name: "VariSpeed Rate",
+//        address: akGetParameterAddress("VariSpeed Rate"),
+//        defaultValue: 1.0, range:
+//            rateRange,
+//        unit: .rate)
+//    @Parameter(rateDef) public var rateChange: AUValue
+//}
 
 

@@ -12,30 +12,46 @@ import AVFoundation
 
 class AudioPackageExtractor {
     
-    public static func extractAudioPackage() -> [Sample]? {
+    public static func extractAudioPackage() throws -> [Sample] {
         ////1. Get path for audio-package file
         guard let pathForFile = Bundle.main.path(forResource: "testbed_mp3", ofType: "audio-package") else {
-            fatalError("Can't open audio-package")
+            throw AudioPackageError.unableToFindPathForResrouce
         }
       
         ////2. Convert file path to URL
         let url = URL(fileURLWithPath: pathForFile)
         
         ////3. Load contents of file into Data object
-        guard let data = AudioPackageExtractor.loadDatafromURL(with: url) else {
-            print("Error: Cannot load data from url")
-            return nil
+        let dataTuple = AudioPackageExtractor.loadDatafromURL(with: url)
+        
+        guard let data = dataTuple.0 else {
+            if let error = dataTuple.1 {
+                throw error
+            }
+            else {
+                ////3a. If we were unable to unwrap both the data and the error, something spectacularly wrong happened.
+                ////Hard crash. We can remove this for production, but this should never happen.
+                fatalError()
+            }
         }
-
+        
         ////4. Extract JSON Manifest as Tuple of the JSON string and byte-offset of first file
         let manifestResult = AudioPackageExtractor.extractJSONManifest(with: data.bytes)
         let manifestJSONData = manifestResult.0
         let firstFileByteOffset = manifestResult.1
         
         ////5. Decode JSON Manifest as AudioPackageManifest struct
-        guard let packageManifest = AudioPackageExtractor.decodeJSONManifest(with: manifestJSONData) else {
-            return nil
+        let packageManifestTuple = AudioPackageExtractor.decodeJSONManifest(with: manifestJSONData)
+        
+        guard let packageManifest = packageManifestTuple.0 else {
+            if let error = packageManifestTuple.1 {
+                throw error
+            }
+            else {
+                fatalError()
+            }
         }
+
 
         ////6. Prep array of [Sample] for successfull read and return
         var results: [Sample] = []
@@ -48,8 +64,17 @@ class AudioPackageExtractor {
             let bytesForAudioPacket: [UInt8] = Array(data.bytes[byteRange])
           
             ////9. Save audio data to disk and create Sample
-            let sample = SampleStorage.storeSample(sampleId: sampleDef.name, audioData: Data(bytesForAudioPacket))
-          
+            let sampleTuple = SampleStorage.storeSample(sampleId: sampleDef.name, audioData: Data(bytesForAudioPacket))
+            
+            guard let sample = sampleTuple.0 else {
+                if let error = sampleTuple.1 {
+                    throw error
+                }
+                else {
+                    fatalError()
+                }
+            }
+                      
             ////10. Add Sample to results
             results.append(sample)
           
@@ -60,13 +85,12 @@ class AudioPackageExtractor {
         return results
     }
     
-    private static func loadDatafromURL(with url:URL) -> Data? {
+    private static func loadDatafromURL(with url:URL) -> (Data?, AudioPackageError?) {
         do {
-           let data = try Data(contentsOf: url)
-            return data
+            let data = try Data(contentsOf: url)
+            return (data, nil)
         } catch {
-            print("Error: Can't load data:\(error.localizedDescription)")
-            return nil
+            return (nil, AudioPackageError.unableToLoadDataFromURL(error: error))
         }
     }
     
@@ -84,14 +108,13 @@ class AudioPackageExtractor {
         return (Data(manifestJSONString.utf8), firstFileByteOffset)
     }
     
-    private static func decodeJSONManifest(with manifestData:Data) -> AudioPackageManifest? {
+    private static func decodeJSONManifest(with manifestData:Data) -> (AudioPackageManifest?, AudioPackageError?) {
         do {
             let packageManifest = try JSONDecoder().decode(AudioPackageManifest.self, from: manifestData)
-            print("AudioPackage Samples: \(packageManifest.samples)")
-            return packageManifest
+            //print("AudioPackage Samples: \(packageManifest.samples)")
+            return (packageManifest, nil)
         } catch {
-            print("Error: Cannot serialize JSON:\(error)")
-            return nil
+            return (nil, AudioPackageError.unableToSerializeJSON(error: error))
         }
     }
     

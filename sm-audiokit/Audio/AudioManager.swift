@@ -21,18 +21,24 @@ class AudioManager {
     var playbacks = [String: SamplePlayback]()
     var sampleBank = [String: Sample]()
 
+    var browserTimeOffset = UInt64()
+    
     init() {
         mainMixer = Mixer()
         engine.output = mainMixer
     }
 
     func loadTestPackage() {
-        guard let samples = AudioPackageExtractor.extractAudioPackage() else {
-            fatalError("Error: Cannot unwrap audioPackages")
+        do {
+            let samples = try AudioPackageExtractor.extractAudioPackage()
+            for sample in samples {
+                sampleBank[sample.id] = sample
+            }
+        } catch {
+            print(error.localizedDescription)
         }
-        for sample in samples {
-            sampleBank[sample.id] = sample
-        }
+
+
     }
 
     // Not using for now
@@ -149,8 +155,6 @@ class AudioManager {
         // TODO: Implement browserTime conversion
         return AVAudioTime(hostTime: UInt64(browserTime * 1000 * 1000 * 1000) + self.browserTimeOffset)
     }
-
-    var browserTimeOffset = UInt64()
 
     func setBrowserTime(_ browserTime: Float) {
         // TODO: calculate and store offset between browserTime and audio clock
