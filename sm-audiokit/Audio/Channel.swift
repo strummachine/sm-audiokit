@@ -13,32 +13,53 @@ import AudioKitEX
 class Channel {
     let id: String
     let mixer: Mixer
-    
+
     init(id: String, mainMixer: Mixer) {
         self.id = id
-        self.mixer = Mixer()
+        self.mixer = Mixer(volume: 1.0, name: "channel:\(id)")
         mainMixer.addInput(self.mixer)
     }
-    
+
     func attach(player: AudioPlayer, outputNode: Node) {
         self.mixer.addInput(outputNode)
-        
-        // TODO: is this necessary? seems harmless at the very least,
-        // and possibly necessary to avoid a memory leak...?
+
+        // TODO: Do we need to do any cleanup?
         player.completionHandler = {
-//            self.mixer.removeInput(outputNode)
+            // self.mixer.removeInput(outputNode)
         }
     }
-    
-    func setVolume(_ volume: Float) {
-        mixer.volume = volume
+
+    private var _volume = 1.0
+    var volume: Double {
+        get {
+            return _volume
+        }
+        set {
+            _volume = newValue
+            // TODO: Ramp volume over 50-80ms to avoid clicks
+            mixer.volume = Float(_muted ? 0.0 : _volume)
+        }
     }
-    
-    func setPan(_ pan: Float) {
-        mixer.pan = pan
+
+    private var _muted = false
+    var muted: Bool {
+        get {
+            return _muted
+        }
+        set {
+            _muted = newValue
+            // TODO: Ramp over 50-80ms to avoid clicks
+            mixer.volume = Float(_muted ? 0.0 : _volume)
+        }
     }
-    
-    func setMuted(_ muted: Bool) {
-        // TODO: Implement this; is there a way to do this without setting volume to 0, which would require storing the volume for when the channel is unmuted?
+
+    var pan: Double {
+        get {
+            return Double(mixer.pan)
+        }
+        set {
+            // TODO: Ramp over 50-80ms to avoid clicks
+            mixer.pan = Float(newValue)
+        }
     }
 }

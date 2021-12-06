@@ -24,7 +24,7 @@ class AudioManager {
     var browserTimeOffset = Double()
     
     init() {
-        mainMixer = Mixer()
+        mainMixer = Mixer(volume: 1.0, name: "master")
         engine.output = mainMixer
     }
 
@@ -92,10 +92,10 @@ class AudioManager {
                     channel: String,
                     playbackId: String,
                     atTime: Double,
-                    volume: Float = 1.0,
-                    offset: Float = 0.0,
-                    playbackRate: Float = 1.0,
-                    fadeInDuration: Float = 0.0) throws -> SamplePlayback {
+                    volume: Double = 1.0,
+                    offset: Double = 0.0,
+                    playbackRate: Double = 1.0,
+                    fadeInDuration: Double = 0.0) throws -> SamplePlayback {
         // Grab sample and channel
         
         guard let sample = self.sampleBank[sampleId] else {
@@ -131,18 +131,18 @@ class AudioManager {
 
     // MARK: Playback manipulation
 
-    func setPlaybackVolume(playbackId: String, atTime: Double, volume: Float, fadeDuration: Float) {
+    func setPlaybackVolume(playbackId: String, atTime: Double, volume: Double, fadeDuration: Double) {
         let time = browserTimeToAudioTime(atTime)
         playbacks[playbackId]?.fade(at: time, to: volume, duration: fadeDuration)
     }
 
     // This one doesn't need to be implemented for v1
-    func setPlaybackRate(playbackId: String, atTime: Double, playbackRate: Float, transitionDuration: Float) {
+    func setPlaybackRate(playbackId: String, atTime: Double, playbackRate: Double, transitionDuration: Double) {
         let time = browserTimeToAudioTime(atTime)
         playbacks[playbackId]?.changePlaybackRate(at: time, to: playbackRate, duration: transitionDuration)
     }
 
-    func stopPlayback(playbackId: String, atTime: Double, fadeDuration: Float = 0.0) {
+    func stopPlayback(playbackId: String, atTime: Double, fadeDuration: Double = 0.0) {
         let time = browserTimeToAudioTime(atTime)
         if fadeDuration > 0 {
           playbacks[playbackId]?.fade(at: time, to: 0, duration: fadeDuration)
@@ -152,21 +152,20 @@ class AudioManager {
 
     // MARK: Channels
 
-    func setChannelVolume(channel: String, volume: Float) {
-      // TODO: Is the change instantaneous or is there already a short ramp
-        channels[channel]?.setVolume(volume)
+    func setChannelVolume(channel: String, volume: Double) {
+        channels[channel]?.volume = volume
     }
 
-    func setChannelPan(channel: String, pan: Float) {
-        channels[channel]?.setPan(pan)
+    func setChannelPan(channel: String, pan: Double) {
+        channels[channel]?.pan = pan
     }
 
     func setChannelMuted(channel: String, muted: Bool) {
-        channels[channel]?.setMuted(muted)
+        channels[channel]?.muted = muted
     }
 
-    func setMasterVolume(volume: Float) {
-        mainMixer.volume = volume
+    func setMasterVolume(volume: Double) {
+        mainMixer.volume = Float(volume)
     }    
 }
 
@@ -183,7 +182,6 @@ extension AudioManager {
     }
     
     public func browserTimeToAudioTime(_ browserTime: Double) -> AVAudioTime {
-        // TODO: Implement browserTime conversion
         return AVAudioTime(hostTime: 0).offset(seconds: self.browserTimeOffset + browserTime)
     }
 

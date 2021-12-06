@@ -25,7 +25,7 @@ class SampleStorage {
         }
       
         /// Grab duration of file
-        let duration = Float(CMTimeGetSeconds(AVURLAsset(url: url).duration))
+        let duration = CMTimeGetSeconds(AVURLAsset(url: url).duration)
 
         return (Sample(id: sampleId, url: url, duration: duration), nil)
     }

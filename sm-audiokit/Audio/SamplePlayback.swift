@@ -21,7 +21,7 @@ class SamplePlayback {
         get { player.isPlaying }
     }
     var sampleId: String
-    var duration: Float
+    var duration: Double
     var playbackId: String
 
     var startTime: AVAudioTime
@@ -33,17 +33,16 @@ class SamplePlayback {
         channel: Channel,
         playbackId: String,
         atTime: AVAudioTime,
-        volume: Float = 1.0,
-        offset: Float = 0.0,
-        playbackRate: Float = 1.0,
-        fadeInDuration: Float = 0.0
+        volume: Double = 1.0,
+        offset: Double = 0.0,
+        playbackRate: Double = 1.0,
+        fadeInDuration: Double = 0.0
     ) throws {
         self.sampleId = sample.id
         self.duration = sample.duration - offset
         self.playbackId = playbackId
         self.startTime = atTime
 
-        // TODO: if AudioPlayer doesn't load, don't instantiate the class; throw an error, catch it up the stack
         guard let tmpPlayer = AudioPlayer(url: sample.url, buffered: true) else {
             throw SamplePlaybackError.cannotLoadPlayer
         }
@@ -53,37 +52,36 @@ class SamplePlayback {
         // Apply pitch shift
         self.varispeed = VariSpeed(player)
         if playbackRate != 1.0 {
-          varispeed.rate = playbackRate
+          varispeed.rate = Float(playbackRate)
         }
 
-        self.fader = Fader(varispeed, gain: volume)
+        self.fader = Fader(varispeed, gain: Float(volume))
 
-        print("Channel:\(channel.id)")
         channel.attach(player: self.player, outputNode: self.outputNode)
 
         // TODO: pass `offset` to `from` parameter
-        print(AudioManager.shared.mainMixer.connectionTreeDescription)
-        print("Player:\(self.player.connectionTreeDescription) | \(self.player)")
-        
-
-        self.player.play(from: nil, to: nil, at: AVAudioTime(hostTime: startTime.hostTime), completionCallbackType: .dataPlayedBack)
+        self.player.play(from: offset, to: nil, at: AVAudioTime(hostTime: startTime.hostTime), completionCallbackType: .dataPlayedBack)
 
         // TODO: apply fadeInDuration, but NOT FOR v1 - I don't use fade-ins in production Strum Machine at this point, actually
         // The following code may or may not be a helpful start...
         //player.fade.inTime = fadeInDuration == 0 ? 0.001 : fadeInDuration
     }
 
-    func fade(at: AVAudioTime, to: Float, duration: Float) {
-        // TODO: Needs fixing
-        let gap = AVAudioTime.now().timeIntervalSince(otherTime: at)! * -1
+    func fade(at: AVAudioTime, to: Double, duration: Double) {
+        let gap = at.timeIntervalSince(otherTime: AVAudioTime.now()) ?? 0
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + gap) {
-            self.fader.$leftGain.ramp(to: to, duration: duration)
-            self.fader.$rightGain.ramp(to: to, duration: duration)
+            self.fader.$leftGain.ramp(to: Float(to), duration: Float(duration))
+            self.fader.$rightGain.ramp(to: Float(to), duration: Float(duration))
+            if (to == 0.0) {
+                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + duration) {
+                    self.player.stop()
+                }
+            }
         }
     }
   
-    func changePlaybackRate(at: AVAudioTime, to: Float, duration: Float ) {
-        let gap = AVAudioTime.now().timeIntervalSince(otherTime: at)! * -1
+    func changePlaybackRate(at: AVAudioTime, to: Double, duration: Double ) {
+        let gap = at.timeIntervalSince(otherTime: AVAudioTime.now()) ?? 0
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + gap) {
           // TODO: (low priority) how to ramp playback rate?
           //self.varispeed.$rate.ramp(to: to, duration: duration)
@@ -91,13 +89,11 @@ class SamplePlayback {
     }
 
     func stop(at: AVAudioTime?) {
-        // TODO: does AudioPlayer.stop() do a quick ramp-down to avoid clicks?
-        if (at == nil) {
-            self.player.stop()
-        } else {
-            // TODO: convert AVAudioTime to dispatch time
-            let stopTime = DispatchTime.now()
-            DispatchQueue.main.asyncAfter(deadline: stopTime) {
+        let gap = at?.timeIntervalSince(otherTime: AVAudioTime.now()) ?? 0
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + gap) {
+            self.fader.$leftGain.ramp(to: 0.0, duration: 0.05)
+            self.fader.$rightGain.ramp(to: 0.0, duration: 0.05)
+            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.07) {
                 self.player.stop()
             }
         }

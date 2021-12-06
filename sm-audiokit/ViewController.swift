@@ -18,9 +18,9 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         do {
-            try AudioManager.shared.start()
             AudioManager.shared.setupChannels(["guitar", "drums", "test"])
             AudioManager.shared.loadTestPackage()
+            try AudioManager.shared.start()
             availableSamples = AudioManager.shared.sampleBank
             NotificationCenter.default.addObserver(self, selector: #selector(updateLabel), name: Notification.Name("PlayerCompletion"), object: nil)
         } catch let error as AudioManagerError {
@@ -80,10 +80,10 @@ class ViewController: UIViewController {
                     let timeOfBeat = 0.02 + 60 / bpm * Double(beat)
                     let timeOfNextBeat = 0.02 + 60 / bpm * Double(beat + 1)
                     if beat % 4 == 0 {
-                        try AudioManager.shared.playSample(sampleId: "kick", channel: "test", playbackId: ("kick"+String(beat)), atTime: timeOfBeat)
+                        try AudioManager.shared.playSample(sampleId: "kick", channel: "drums", playbackId: ("kick"+String(beat)), atTime: timeOfBeat)
                     }
                     if beat % 4 == 2 {
-                        try AudioManager.shared.playSample(sampleId: "snare", channel: "test", playbackId: ("snare"+String(beat)), atTime: timeOfBeat)
+                        try AudioManager.shared.playSample(sampleId: "snare", channel: "guitar", playbackId: ("snare"+String(beat)), atTime: timeOfBeat)
                     }
                     if beat % 8 != 7 {
                         try AudioManager.shared.playSample(sampleId: "hat-closed", channel: "test", playbackId: ("hat"+String(beat)), atTime: timeOfBeat)
