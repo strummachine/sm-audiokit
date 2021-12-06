@@ -53,10 +53,20 @@ class AudioManager {
 //        }
     }
 
-    func loadSample(sampleId: String, audioData: Data) -> Sample {
-        let sample = SampleStorage.storeSample(sampleId: sampleId, audioData: audioData)
-        sampleBank[sample.id] = sample
-        return sample
+    func loadSample(sampleId: String, audioData: Data) throws -> Sample {
+        let sampleTuple = SampleStorage.storeSample(sampleId: sampleId, audioData: audioData)
+        if let sample = sampleTuple.0 {
+            sampleBank[sample.id] = sample
+            return sample
+        }
+        else {
+            if let error = sampleTuple.1 {
+                throw error
+            }
+            else {
+                throw AudioPackageError.unknownError
+            }
+        }
     }
 
     func setupChannels(_ channelNames: [String]) {
@@ -65,11 +75,11 @@ class AudioManager {
         }
     }
 
-    public func start() {
+    public func start() throws {
         do {
             try engine.start()
         } catch {
-            print("Error: Cannot start audio engine: \(error.localizedDescription)")
+            throw AudioManagerError.audioEngineCannotStart(error: error)
         }
     }
     public func stop() {
@@ -85,11 +95,15 @@ class AudioManager {
                     volume: Float = 1.0,
                     offset: Float = 0.0,
                     playbackRate: Float = 1.0,
-                    fadeInDuration: Float = 0.0) -> SamplePlayback? {
+                    fadeInDuration: Float = 0.0) throws -> SamplePlayback? {
         // Grab sample and channel
-        // TODO: this should probably throw if either isn't found
-        let sample = self.sampleBank[sampleId]!
-        let channel = self.channels[channel]!
+        
+        guard let sample = self.sampleBank[sampleId] else {
+            throw AudioManagerError.cannotFindSample(sampleId: sampleId)
+        }
+        guard let channel = self.channels[channel] else {
+            throw AudioManagerError.cannotFindChannel(channel: channel)
+        }
 
         let startTime = browserTimeToAudioTime(atTime)
 
@@ -133,7 +147,7 @@ class AudioManager {
     // MARK: Channels
 
     func setChannelVolume(channel: String, volume: Float) {
-      // TODO: Is the change instantaneous or is there already a short ramp?
+      // TODO: Is the change instantaneous or is there already a short ramp
         channels[channel]?.setVolume(volume)
     }
 
@@ -158,39 +172,6 @@ class AudioManager {
 
     func setBrowserTime(_ browserTime: Float) {
         // TODO: calculate and store offset between browserTime and audio clock
-        self.browserTimeOffset = self.engine.mainMixerNode!.avAudioNode.lastRenderTime!.hostTime - UInt64(Int(browserTime * 1000 * 1000 * 1000))
+        self.browserTimeOffset = self.engine.mainMixerNode!.avAudioNode.lastRenderTime!.hostTime - browserTime.hostTime;)
     }
-
-    // Some of Luke's old code that had to do with time stuff, in case it's useful (it probably isn't)
-    /*
-        self.browserTimeOffsetNs = DispatchTime.now().uptimeNanoseconds - UInt64(Int64(browserTime * 1000 * 1000 * 1000))
-
-        let now = player.avAudioNode.lastRenderTime?.sampleTime
-
-        let scheduledTime = AVAudioTime(hostTime: <#T##UInt64#>)
-        player.schedule(at: atTime, completionCallbackType: .dataPlayedBack)
-     */
-
-    // Maximilian's code around time stuff
-    /*
-
-        //// Sample-frame accurate sync:
-        ///
-
-        //FIXME:- We will have a dedicated method for this, this is temporary.
-        guard let masterPlayer = self.getAvailablePlayer() else {
-            return
-        }
-
-        let avStartTime:
-
-        let outputFormat = masterPlayer.player.avAudioNode.outputFormat(forBus: 0)
-        guard let now = masterPlayer.player.avAudioNode.lastRenderTime?.sampleTime else {
-            return
-        }
-
-        //FIXME:- Need to convert floats to AVFrameTime in order to do math properly.
-        let startTime = AVAudioTime(sampleTime: ((now + startTime) +(delayTime * outputFormat.sampleRate)), atRate: outputFormat.sampleRate)
-
-      */
-  }
+}
