@@ -1,10 +1,3 @@
-//
-//  Float+HostTime.swift
-//  sm-audiokit
-//
-//  Created by Maximilian Maksutovic on 12/6/21.
-//
-
 import Foundation
 
 extension DispatchTime {
