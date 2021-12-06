@@ -30,8 +30,8 @@ class ViewController: UIViewController {
         }
 
         // Do any additional setup after loading the view.
-//        AudioManager.shared.channels["guitar"]?.setPan(0.9)
-//        AudioManager.shared.channels["drums"]?.setPan(0.1)
+        //        AudioManager.shared.channels["guitar"]?.setPan(0.9)
+        //        AudioManager.shared.channels["drums"]?.setPan(0.1)
     }
 
     @IBAction func tappedRandomSample(_ sender: Any) {
@@ -40,8 +40,8 @@ class ViewController: UIViewController {
         let randomSample = shuffled[0].value
         // TODO: Using any channel other than "test" crashes the app. Why?
         // FIXME:
-//            let channelName = randomSample.id.hasSuffix("--") ? "guitar" : "drums"
-//            let channelName = "guitar"
+        //            let channelName = randomSample.id.hasSuffix("--") ? "guitar" : "drums"
+        //            let channelName = "guitar"
         let channelName = "test"
         
         do {
@@ -75,19 +75,21 @@ class ViewController: UIViewController {
         do {
             try AudioManager.shared.setBrowserTime(-1.01)
             do {
-                let bpm = Double(187.0)
+                let bpm = Double(274.0)
                 for beat in 0...31 {
+                    let timeOfBeat = 0.02 + 60 / bpm * Double(beat)
+                    let timeOfNextBeat = 0.02 + 60 / bpm * Double(beat + 1)
                     if beat % 4 == 0 {
-                        try AudioManager.shared.playSample(sampleId: "kick", channel: "test", playbackId: ("kick"+String(beat)), atTime: 0.02 + (Double((beat)) / bpm))
+                        try AudioManager.shared.playSample(sampleId: "kick", channel: "test", playbackId: ("kick"+String(beat)), atTime: timeOfBeat)
                     }
                     if beat % 4 == 2 {
-                        try AudioManager.shared.playSample(sampleId: "snare", channel: "test", playbackId: ("snare"+String(beat)), atTime: 0.02 + (Double((beat)) / bpm))
+                        try AudioManager.shared.playSample(sampleId: "snare", channel: "test", playbackId: ("snare"+String(beat)), atTime: timeOfBeat)
                     }
                     if beat % 8 != 7 {
-                        try AudioManager.shared.playSample(sampleId: "hat-closed", channel: "test", playbackId: ("hat"+String(beat)), atTime: 0.02 + (Double((beat)) / bpm))
+                        try AudioManager.shared.playSample(sampleId: "hat-closed", channel: "test", playbackId: ("hat"+String(beat)), atTime: timeOfBeat)
                     } else {
-                        try AudioManager.shared.playSample(sampleId: "hat-open", channel: "test", playbackId: "hat-open-pb", atTime: 0.02 + (Double((beat)) / bpm))
-                        AudioManager.shared.setPlaybackVolume(playbackId: "hat-open-pb", atTime: 0.2 + (Double(Float(beat + 1)) / bpm), volume: 0.0, fadeDuration: 0.05)
+                        let pb = try AudioManager.shared.playSample(sampleId: "hat-open", channel: "test", playbackId: "hat-open-pb", atTime: timeOfBeat)
+                        AudioManager.shared.setPlaybackVolume(playbackId: pb.playbackId, atTime: timeOfNextBeat, volume: 0.0, fadeDuration: 0.05)
                     }
                 }
             } catch let error as AudioManagerError {
