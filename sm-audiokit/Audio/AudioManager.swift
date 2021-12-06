@@ -95,7 +95,7 @@ class AudioManager {
                     volume: Float = 1.0,
                     offset: Float = 0.0,
                     playbackRate: Float = 1.0,
-                    fadeInDuration: Float = 0.0) throws  {
+                    fadeInDuration: Float = 0.0) throws -> SamplePlayback {
         // Grab sample and channel
         
         guard let sample = self.sampleBank[sampleId] else {
@@ -120,10 +120,12 @@ class AudioManager {
             )
             // TODO: Remove playback from dictionary when completed? (for GC?)
             playbacks[playbackId] = playback
+            return playback
         } catch let error as SamplePlaybackError {
             throw error
-        } catch {
+        } catch let error as Error {
             //Generic Error Handling
+            throw error
         }
     }
 
