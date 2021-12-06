@@ -54,3 +54,14 @@ enum AudioManagerError: Error, CustomStringConvertible {
         }
     }
 }
+
+enum SamplePlaybackError: Error, CustomStringConvertible {
+    case cannotLoadPlayer
+    
+    var description: String {
+        switch self {
+        case .cannotLoadPlayer:
+            return "Cannot load player"
+        }
+    }
+}

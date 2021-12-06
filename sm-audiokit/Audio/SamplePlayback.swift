@@ -28,7 +28,7 @@ class SamplePlayback {
     
     var speedRateTimer: Timer?
 
-    init?(
+    init (
         sample: Sample,
         channel: Channel,
         playbackId: String,
@@ -37,32 +37,41 @@ class SamplePlayback {
         offset: Float = 0.0,
         playbackRate: Float = 1.0,
         fadeInDuration: Float = 0.0
-    ) {
-          self.sampleId = sample.id
-          self.duration = sample.duration - offset
-          self.playbackId = playbackId
-          self.startTime = atTime
-      
-          // TODO: if AudioPlayer doesn't load, don't instantiate the class; throw an error, catch it up the stack
-          player = AudioPlayer(url: sample.url, buffered: true)!
-        
-          // Apply pitch shift
-          varispeed = VariSpeed(player)
-          if playbackRate != 1.0 {
-              varispeed.rate = playbackRate
-          }
-          
-          fader = Fader(varispeed, gain: volume)
-      
-          channel.attach(player: player, outputNode: outputNode)
-        
-          // TODO: pass `offset` to `from` parameter
-          player.play(from: nil, to: nil, at: startTime, completionCallbackType: .dataPlayedBack)
-          
-          // TODO: apply fadeInDuration, but NOT FOR v1 - I don't use fade-ins in production Strum Machine at this point, actually
-          // The following code may or may not be a helpful start...
-          //player.fade.inTime = fadeInDuration == 0 ? 0.001 : fadeInDuration
+    ) throws {
+        self.sampleId = sample.id
+        self.duration = sample.duration - offset
+        self.playbackId = playbackId
+        self.startTime = atTime
+
+        // TODO: if AudioPlayer doesn't load, don't instantiate the class; throw an error, catch it up the stack
+        guard let tmpPlayer = AudioPlayer(url: sample.url, buffered: true) else {
+            throw SamplePlaybackError.cannotLoadPlayer
         }
+        
+        self.player = tmpPlayer
+
+        // Apply pitch shift
+        self.varispeed = VariSpeed(player)
+        if playbackRate != 1.0 {
+          varispeed.rate = playbackRate
+        }
+
+        self.fader = Fader(varispeed, gain: volume)
+
+        print("Channel:\(channel.id)")
+        channel.attach(player: self.player, outputNode: self.outputNode)
+
+        // TODO: pass `offset` to `from` parameter
+        print(AudioManager.shared.mainMixer.connectionTreeDescription)
+        print("Player:\(self.player.connectionTreeDescription) | \(self.player)")
+        
+        
+        self.player.play(from: nil, to: nil, at: startTime, completionCallbackType: .dataPlayedBack)
+
+        // TODO: apply fadeInDuration, but NOT FOR v1 - I don't use fade-ins in production Strum Machine at this point, actually
+        // The following code may or may not be a helpful start...
+        //player.fade.inTime = fadeInDuration == 0 ? 0.001 : fadeInDuration
+    }
 
     func fade(at: AVAudioTime, to: Float, duration: Float) {
         // TODO: Needs fixing
