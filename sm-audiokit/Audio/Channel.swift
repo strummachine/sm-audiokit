@@ -13,19 +13,34 @@ import AudioKitEX
 class Channel {
     let id: String
     let mixer: Mixer
+    var polyphonyLimit: Int
+    var playerPool = [SamplePlayer]()
 
-    init(id: String, mainMixer: Mixer) {
+    init(id: String, polyphonyLimit: Int, mainMixer: Mixer) {
         self.id = id
+        self.polyphonyLimit = polyphonyLimit
         self.mixer = Mixer(volume: 1.0, name: "channel:\(id)")
         mainMixer.addInput(self.mixer)
+        for _ in 0..<polyphonyLimit {
+            let player = SamplePlayer(channel: self)
+            self.mixer.addInput(player.outputNode)
+            self.playerPool.append(player)
+        }
     }
 
-    func attach(outputNode: Node) {
-        self.mixer.addInput(outputNode)
-    }
-
-    func detach(outputNode: Node) {
-        self.mixer.removeInput(outputNode)
+    func getPlayer(forSample sample: Sample) -> SamplePlayer {
+        let debugPreloadedCount = self.playerPool.filter({ $0.available && $0.sampleId == sample.id }).count
+        print("Getting player from channel:\(self.id) - \(self.playerPool.filter({ $0.available }).count) of \(self.polyphonyLimit) available, \(debugPreloadedCount > 0 ? String(debugPreloadedCount) : "ZERO") ready with \(sample.id)  <-- LOADING")
+        let playerWithSampleLoaded = self.playerPool.first(where: { $0.available && $0.sampleId == sample.id })
+        if playerWithSampleLoaded != nil {
+            return playerWithSampleLoaded!
+        }
+        let sortedPlayers = self.playerPool.sorted { a, b in
+            return ((a.startTime?.hostTime ?? 0) < (b.startTime?.hostTime ?? 0))
+        }
+        return sortedPlayers.first(where: { $0.available && $0.sampleId == nil })
+            ?? sortedPlayers.first(where: { $0.available })
+            ?? sortedPlayers.first!
     }
 
     private var _volume = 1.0

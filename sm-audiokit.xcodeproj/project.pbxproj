@@ -7,10 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A31998C6275FB869007CEC72 /* SamplePlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A31998C5275FB869007CEC72 /* SamplePlayer.swift */; };
+		A31998C8275FBEB3007CEC72 /* DispatchTime+Offsets.swift in Sources */ = {isa = PBXBuildFile; fileRef = A31998C7275FBEB3007CEC72 /* DispatchTime+Offsets.swift */; };
 		A363E86027599F98000C1AD2 /* Channel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A363E85F27599F98000C1AD2 /* Channel.swift */; };
 		A363E8642759AB91000C1AD2 /* CordovaPathConversion.swift in Sources */ = {isa = PBXBuildFile; fileRef = A363E8632759AB91000C1AD2 /* CordovaPathConversion.swift */; };
 		A39538FF275AF0A7002FE88C /* SampleStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = A39538FE275AF0A7002FE88C /* SampleStorage.swift */; };
-		A3AC6B3B275ED4D800DAD9BA /* DispatchTime+Offsets.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3AC6B3A275ED4D700DAD9BA /* DispatchTime+Offsets.swift */; };
 		FC06C3462757B04C00BA39FC /* AVAudioPCMBuffer+CustomFade.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC06C3452757B04C00BA39FC /* AVAudioPCMBuffer+CustomFade.swift */; };
 		FC470E8A2754F4D100C4E197 /* Sample.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC470E892754F4D100C4E197 /* Sample.swift */; };
 		FC470E8E2754F9C000C4E197 /* SamplePlayback.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC470E8D2754F9C000C4E197 /* SamplePlayback.swift */; };
@@ -28,10 +29,11 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		A31998C5275FB869007CEC72 /* SamplePlayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SamplePlayer.swift; sourceTree = "<group>"; };
+		A31998C7275FBEB3007CEC72 /* DispatchTime+Offsets.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "DispatchTime+Offsets.swift"; sourceTree = "<group>"; };
 		A363E85F27599F98000C1AD2 /* Channel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Channel.swift; sourceTree = "<group>"; };
 		A363E8632759AB91000C1AD2 /* CordovaPathConversion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CordovaPathConversion.swift; sourceTree = "<group>"; };
 		A39538FE275AF0A7002FE88C /* SampleStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleStorage.swift; sourceTree = "<group>"; };
-		A3AC6B3A275ED4D700DAD9BA /* DispatchTime+Offsets.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "DispatchTime+Offsets.swift"; sourceTree = "<group>"; };
 		FC06C3452757B04C00BA39FC /* AVAudioPCMBuffer+CustomFade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AVAudioPCMBuffer+CustomFade.swift"; sourceTree = "<group>"; };
 		FC470E892754F4D100C4E197 /* Sample.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sample.swift; sourceTree = "<group>"; };
 		FC470E8D2754F9C000C4E197 /* SamplePlayback.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SamplePlayback.swift; sourceTree = "<group>"; };
@@ -65,6 +67,7 @@
 			isa = PBXGroup;
 			children = (
 				FC06C3452757B04C00BA39FC /* AVAudioPCMBuffer+CustomFade.swift */,
+				A31998C7275FBEB3007CEC72 /* DispatchTime+Offsets.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -117,9 +120,9 @@
 				FCFD5BC6274F85A200F6D7A4 /* AudioManager.swift */,
 				FC470E912755361200C4E197 /* AudioPackageExtractor.swift */,
 				A363E85F27599F98000C1AD2 /* Channel.swift */,
-				A3AC6B3A275ED4D700DAD9BA /* DispatchTime+Offsets.swift */,
 				FCB46170275E28BE00DF60C5 /* ErrorTypes.swift */,
 				FC470E892754F4D100C4E197 /* Sample.swift */,
+				A31998C5275FB869007CEC72 /* SamplePlayer.swift */,
 				FC470E8D2754F9C000C4E197 /* SamplePlayback.swift */,
 				A39538FE275AF0A7002FE88C /* SampleStorage.swift */,
 			);
@@ -210,12 +213,13 @@
 				FC5C3B1E2746C93F00DDE223 /* AppDelegate.swift in Sources */,
 				A39538FF275AF0A7002FE88C /* SampleStorage.swift in Sources */,
 				FC06C3462757B04C00BA39FC /* AVAudioPCMBuffer+CustomFade.swift in Sources */,
-				A3AC6B3B275ED4D800DAD9BA /* DispatchTime+Offsets.swift in Sources */,
 				FCFD5BC7274F85A200F6D7A4 /* AudioManager.swift in Sources */,
+				A31998C8275FBEB3007CEC72 /* DispatchTime+Offsets.swift in Sources */,
 				FC470E922755361200C4E197 /* AudioPackageExtractor.swift in Sources */,
 				FC470E8E2754F9C000C4E197 /* SamplePlayback.swift in Sources */,
 				FC5C3B202746C93F00DDE223 /* SceneDelegate.swift in Sources */,
 				FCB46171275E28BE00DF60C5 /* ErrorTypes.swift in Sources */,
+				A31998C6275FB869007CEC72 /* SamplePlayer.swift in Sources */,
 				A363E8642759AB91000C1AD2 /* CordovaPathConversion.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -365,7 +369,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = UNPG3B9P9H;
+				DEVELOPMENT_TEAM = ZKLL7YY4TC;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "sm-audiokit/Info.plist";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -378,7 +382,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.asw.sm-audiokit";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.strummachine.sm-audiokit";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -393,7 +397,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = UNPG3B9P9H;
+				DEVELOPMENT_TEAM = ZKLL7YY4TC;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "sm-audiokit/Info.plist";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -406,7 +410,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.asw.sm-audiokit";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.strummachine.sm-audiokit";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;

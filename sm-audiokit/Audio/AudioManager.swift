@@ -69,10 +69,8 @@ class AudioManager {
         }
     }
 
-    func setupChannels(_ channelNames: [String]) {
-        for channelName in channelNames {
-            channels[channelName] = Channel(id: channelName, mainMixer: self.mainMixer)
-        }
+    func createChannel(id: String, polyphonyLimit: Int = 16) {
+        self.channels[id] = Channel(id: id, polyphonyLimit: polyphonyLimit, mainMixer: self.mainMixer)
     }
 
     public func start() throws {
@@ -108,9 +106,9 @@ class AudioManager {
         let startTime = browserTimeToAudioTime(atTime)
 
         do {
-            let playback = try SamplePlayback(
+            let player = channel.getPlayer(forSample: sample)
+            let playback = try player.schedulePlayback(
                 sample: sample,
-                channel: channel,
                 playbackId: playbackId,
                 atTime: startTime,
                 volume: volume,
@@ -118,12 +116,11 @@ class AudioManager {
                 playbackRate: playbackRate,
                 fadeInDuration: fadeInDuration
             )
-            // TODO: Remove playback from dictionary when completed? (for GC?)
             playbacks[playbackId] = playback
             return playback
         } catch let error as SamplePlaybackError {
             throw error
-        } catch let error as Error {
+        } catch {
             //Generic Error Handling
             throw error
         }
@@ -187,8 +184,8 @@ extension AudioManager {
 
     public func setBrowserTime(_ browserTime: Double) throws {
         do {
-            let audioEngineHostTime = try getMasterClockSeconds()
-            self.browserTimeOffset = audioEngineHostTime - browserTime
+            let engineTime = try getMasterClockSeconds()
+            self.browserTimeOffset = engineTime - browserTime
         } catch let error as AudioManagerError {
             throw error
         } catch {

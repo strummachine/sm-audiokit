@@ -18,9 +18,12 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         do {
-            AudioManager.shared.setupChannels(["guitar", "drums", "test"])
+            AudioManager.shared.createChannel(id: "guitar", polyphonyLimit: 8)
+            AudioManager.shared.createChannel(id: "drums", polyphonyLimit: 64)
+            AudioManager.shared.createChannel(id: "test", polyphonyLimit: 8)
             AudioManager.shared.loadTestPackage()
             try AudioManager.shared.start()
+            self.setLabel(with: "Ready")
             availableSamples = AudioManager.shared.sampleBank
             NotificationCenter.default.addObserver(self, selector: #selector(updateLabel), name: Notification.Name("PlayerCompletion"), object: nil)
         } catch let error as AudioManagerError {
@@ -45,8 +48,8 @@ class ViewController: UIViewController {
         let channelName = "test"
         
         do {
-            try AudioManager.shared.setBrowserTime(2.01)
-            try AudioManager.shared.playSample(sampleId: randomSample.id, channel: channelName, playbackId: UUID().uuidString, atTime: 2.52)
+            try AudioManager.shared.setBrowserTime(2.0)
+            try AudioManager.shared.playSample(sampleId: randomSample.id, channel: channelName, playbackId: UUID().uuidString, atTime: 2.3)
             self.setLabel(with: "Playing Sample: \(randomSample.id)")
         } catch let error as AudioManagerError{
             print(error.description)
@@ -58,10 +61,15 @@ class ViewController: UIViewController {
     @IBAction func tappedScheduled200ms(_ sender: Any) {
         guard let testTone = self.availableSamples["test-tone"] else { return }
         do {
-            try AudioManager.shared.setBrowserTime(2.01)
-            let pb = try AudioManager.shared.playSample(sampleId: testTone.id, channel: "test", playbackId: UUID().uuidString, atTime: 3.52)
-            AudioManager.shared.setPlaybackVolume(playbackId: pb.playbackId, atTime: 4.25, volume: 0.0, fadeDuration: 0.5)
-            self.setLabel(with: "Playing/fading sample: \(testTone.id)")
+            try AudioManager.shared.setBrowserTime(2.7)
+            let pb = try AudioManager.shared.playSample(sampleId: testTone.id, channel: "test", playbackId: UUID().uuidString, atTime: 3.0)
+            AudioManager.shared.setPlaybackVolume(playbackId: pb.playbackId, atTime: 3.49, volume: 0.0, fadeDuration: 0.52)
+            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(300), execute: {
+                self.setLabel(with: "Playing/fading sample: \(testTone.id)")
+            })
+            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(900), execute: {
+                self.setLabel(with: "Ready")
+            })
         } catch let error as AudioManagerError {
             print(error.description)
         } catch {
@@ -83,12 +91,12 @@ class ViewController: UIViewController {
                         try AudioManager.shared.playSample(sampleId: "kick", channel: "drums", playbackId: ("kick"+String(beat)), atTime: timeOfBeat)
                     }
                     if beat % 4 == 2 {
-                        try AudioManager.shared.playSample(sampleId: "snare", channel: "guitar", playbackId: ("snare"+String(beat)), atTime: timeOfBeat)
+                        try AudioManager.shared.playSample(sampleId: "snare", channel: "drums", playbackId: ("snare"+String(beat)), atTime: timeOfBeat)
                     }
                     if beat % 8 != 7 {
-                        try AudioManager.shared.playSample(sampleId: "hat-closed", channel: "test", playbackId: ("hat"+String(beat)), atTime: timeOfBeat)
+                        try AudioManager.shared.playSample(sampleId: "hat-closed", channel: "drums", playbackId: ("hat"+String(beat)), atTime: timeOfBeat)
                     } else {
-                        let pb = try AudioManager.shared.playSample(sampleId: "hat-open", channel: "test", playbackId: "hat-open-pb", atTime: timeOfBeat)
+                        let pb = try AudioManager.shared.playSample(sampleId: "hat-open", channel: "drums", playbackId: "hat-open-pb", atTime: timeOfBeat)
                         AudioManager.shared.setPlaybackVolume(playbackId: pb.playbackId, atTime: timeOfNextBeat, volume: 0.0, fadeDuration: 0.05)
                     }
                 }
