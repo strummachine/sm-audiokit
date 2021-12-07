@@ -18,6 +18,8 @@ class SamplePlayer {
     }
     var sampleId: String?
 
+    var channel: Channel?
+
     var available: Bool {
         get { self.playback == nil }
     }
@@ -35,10 +37,13 @@ class SamplePlayer {
         self.fader.stopAutomation()
         self.playback?.samplePlayer = nil
         self.playback = nil
+        self.channel?.mixer.removeInput(self.outputNode)
+        self.channel = nil
     }
 
     func schedulePlayback(
         sample: Sample,
+        channel: Channel,
         playbackId: String,
         atTime: AVAudioTime,
         volume: Double = 1.0,
@@ -64,6 +69,9 @@ class SamplePlayer {
         self.varispeed.rate = Float(playbackRate)
 
         self.fader.gain = fadeInDuration > 0 ? 0 : Float(volume)
+
+        self.channel = channel
+        channel.mixer.addInput(self.outputNode)
 
         self.player.play(from: offset, to: nil, at: AVAudioTime(hostTime: atTime.hostTime), completionCallbackType: .dataPlayedBack)
 

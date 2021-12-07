@@ -21,11 +21,14 @@ class AudioManager {
     var playbacks = [String: SamplePlayback]()
     var sampleBank = [String: Sample]()
 
+    var playerPool: SamplePlayerPool
+
     var browserTimeOffset = Double()
     
     init() {
         mainMixer = Mixer(volume: 1.0, name: "master")
         engine.output = mainMixer
+        self.playerPool = SamplePlayerPool(size: 80)
     }
 
     func loadTestPackage() {
@@ -69,8 +72,8 @@ class AudioManager {
         }
     }
 
-    func createChannel(id: String, polyphonyLimit: Int = 16) {
-        self.channels[id] = Channel(id: id, polyphonyLimit: polyphonyLimit, mainMixer: self.mainMixer)
+    func createChannel(id: String) {
+        self.channels[id] = Channel(id: id, mainMixer: self.mainMixer)
     }
 
     public func start() throws {
@@ -106,9 +109,10 @@ class AudioManager {
         let startTime = browserTimeToAudioTime(atTime)
 
         do {
-            let player = channel.getPlayer(forSample: sample)
+            let player = self.playerPool.getPlayer(forSample: sample)
             let playback = try player.schedulePlayback(
                 sample: sample,
+                channel: channel,
                 playbackId: playbackId,
                 atTime: startTime,
                 volume: volume,
