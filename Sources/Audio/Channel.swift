@@ -13,36 +13,11 @@ import AudioKitEX
 class Channel {
     let id: String
     let mixer: Mixer
-    var playerPool: SamplePlayerPool
 
-    init(id: String, polyphonyLimit: Int, mainMixer: Mixer) {
+    init(id: String, mainMixer: Mixer) {
         self.id = id
         self.mixer = Mixer(volume: 1.0, name: "channel:\(id)")
-        self.playerPool = SamplePlayerPool(size: polyphonyLimit)
-        for player in self.playerPool.players {
-            self.mixer.addInput(player.outputNode)
-        }
         mainMixer.addInput(self.mixer)
-    }
-
-    func getPlayer(forSample sample: Sample) -> SamplePlayer {
-        return self.playerPool.getPlayer(forSample: sample)
-    }
-    
-    public func stopAllPlayers() {
-        self.playerPool.stopAllPlayers()
-    }
-    
-    public func tearDownPlayers() {
-        for player in self.playerPool.players {
-            if player.available {
-                self.mixer.removeInput(player.outputNode)
-            }
-            else {
-                print("Player was unavailble during tear down, this should never happen")
-            }
-        }
-        self.playerPool.removeAllPlayers()
     }
 
     private var _volume = 1.0

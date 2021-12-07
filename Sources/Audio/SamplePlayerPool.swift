@@ -7,12 +7,12 @@ class SamplePlayerPool {
         get { self.players.count }
     }
 
-    init(size: Int) {
-        for _ in 0..<size {
+    func createPlayers(count: Int) {
+        for _ in 0..<count {
             self.players.append(SamplePlayer())
         }
     }
-
+    
     func getPlayer(forSample sample: Sample) -> SamplePlayer {
         let debugPreloadedCount = self.players.filter({ $0.available && $0.sampleId == sample.id }).count
         print("[SamplePlayerPool] Players for \(sample.id.padding(toLength: 15, withPad: " ", startingAt: 0)) - \(self.players.filter({ $0.available }).count) of \(self.size) available, \(debugPreloadedCount > 0 ? String(debugPreloadedCount) : "ZERO") preloaded")
@@ -36,6 +36,14 @@ class SamplePlayerPool {
     }
     
     public func removeAllPlayers() {
+        for player in self.players {
+            if player.available {
+                player.channel?.mixer.removeInput(player.outputNode)
+            }
+            else {
+                print("Player was unavailable during teardown; this should never happen")
+            }
+        }
         players.removeAll()
     }
 }

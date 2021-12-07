@@ -43,7 +43,7 @@ class ViewController: UIViewController {
                         switch result {
                         case .success(let sampleList):
                             print("Samples loaded from test package:")
-                            print(sampleList.sorted().map({" · \($0)"}).joined(separator: "\n"))
+                            print(sampleList.map({" · \($0.packageId) / \($0.sampleId)"}).sorted().joined(separator: "\n"))
                         case .failure(let error):
                             print(error)
                         }
@@ -53,19 +53,13 @@ class ViewController: UIViewController {
                     print(error)
                 }
             })
-            let guitarChannel: [String: String] =
-            [ChannelDictConstants.id.rawValue : "guitar",
-             ChannelDictConstants.polyphonyLimit.rawValue : "20"]
-            let drumChannel: [String: String] =
-            [ChannelDictConstants.id.rawValue : "drums",
-             ChannelDictConstants.polyphonyLimit.rawValue : "40"]
-            let testChannel: [String: String] =
-            [ChannelDictConstants.id.rawValue : "test",
-             ChannelDictConstants.polyphonyLimit.rawValue : "20"]
-            
+            let guitarChannel: [String: String] = ["id": "guitar"]
+            let drumChannel: [String: String] = ["id": "drums"]
+            let testChannel: [String: String] = ["id": "test"]
+
             let channels : [[String:String]] = [guitarChannel,drumChannel,testChannel]
 
-            try AudioManager.shared.setup(channels: channels)
+            try AudioManager.shared.setup(channels: channels, polyphonyLimit: 24)
             try AudioManager.shared.startEngine()
             NotificationCenter.default.addObserver(self, selector: #selector(updateLabel), name: Notification.Name("PlayerCompletion"), object: nil)
         } catch let error as AudioManagerError {

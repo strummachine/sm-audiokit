@@ -109,3 +109,9 @@ extension AudioManager {
         }
     }
 }
+
+enum ApplicationState: String {
+    case foreground = "Foreground"
+    case resignActive = "resignActive"
+    case background = "background"
+}

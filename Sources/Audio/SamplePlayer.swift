@@ -19,6 +19,8 @@ class SamplePlayer {
     }
     var sampleId: String?
 
+    var channel: Channel?
+
     var available: Bool {
         get { self.playback == nil }
     }
@@ -32,17 +34,22 @@ class SamplePlayer {
         self.fader = Fader(self.varispeed, gain: 1.0)
         self.fader.stop()
         self.player.completionHandler = {
+            // Check is in case this gets called asynchronously after new playback is scheduled
+            if self.player.isPlaying { return }
             self.fader.stopAutomation()
             // we don't bypass the fader node because we'll get a click
             self.varispeed.stop()
             self.playback?.samplePlayer = nil
             self.playback = nil
+            self.channel?.mixer.removeInput(self.outputNode)
+            self.channel = nil
         }
     }
 
 
     func schedulePlayback(
         sample: Sample,
+        channel: Channel,
         playbackId: String,
         atTime: AVAudioTime,
         volume: Double = 1.0,
@@ -52,10 +59,14 @@ class SamplePlayer {
     ) throws -> SamplePlayback {
         self.playback?.samplePlayer = nil
         self.playback = nil
+        self.channel?.mixer.removeInput(self.outputNode)
+        self.channel = nil
+        self.fader.stopAutomation()
         self.fadeAutomationEvents = []
 
         if sample.id != self.sampleId {
             do {
+                self.player.stop()
                 try self.player.load(url: sample.url)
             } catch {
                 print("Error: Cannot load sample:\(error.localizedDescription)")
@@ -73,26 +84,32 @@ class SamplePlayer {
         }
         self.varispeed.rate = Float(playbackRate)
 
-        self.fader.stopAutomation()
         self.fader.gain = fadeInDuration > 0 ? 0 : Float(volume)
         self.fader.start()
+
+        self.channel = channel
+        channel.mixer.addInput(self.outputNode)
 
         self.player.play(from: offset, to: nil, at: AVAudioTime(hostTime: atTime.hostTime), completionCallbackType: .dataPlayedBack)
 
         if fadeInDuration > 0 {
-            self.fadeAutomationEvents.append(
-                AutomationEvent(
-                    targetValue: Float(volume),
-                    startTime: 0, // TODO: or offset?
-                    rampDuration: Float(fadeInDuration)
-                )
-            )
-            self.fader.automateGain(events: self.fadeAutomationEvents, startTime: self.startTime)
+            self.fadeInAtStart(to: volume, duration: fadeInDuration)
         }
 
         self.playback = SamplePlayback(samplePlayer: self, sampleId: sample.id, playbackId: playbackId, duration: sample.duration - offset)
 
         return self.playback!
+    }
+
+    private func fadeInAtStart(to volume: Double, duration: Double) {
+        self.fadeAutomationEvents.append(
+            AutomationEvent(
+                targetValue: Float(volume),
+                startTime: 0, // TODO: or offset?
+                rampDuration: Float(duration)
+            )
+        )
+        self.fader.automateGain(events: self.fadeAutomationEvents, startTime: self.startTime)
     }
 
     func scheduleFade(at: AVAudioTime, to: Double, duration: Double) {

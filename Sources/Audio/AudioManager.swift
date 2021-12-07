@@ -18,6 +18,7 @@ class AudioManager {
 
     var channels: [String: Channel] = [:]
     var playbacks: [String: SamplePlayback] = [:]
+    var playerPool = SamplePlayerPool()
 
     var browserTimeOffset: Double = 0.0
     
@@ -49,30 +50,28 @@ class AudioManager {
 
 // MARK: - Setup methods
 extension AudioManager {
-    public func setup(channels: [[String: String]]) throws {
+    public func setup(channels: [[String: String]], polyphonyLimit: Int) throws {
         do {
             try setAVAudioSession(asActive: true)
             for channel in channels {
-                guard let id = channel[ChannelDictConstants.id.rawValue] else {
-                    throw AudioManagerError.cannotFindChannelId(channelId: ChannelDictConstants.id.rawValue)
+                guard let id = channel["id"] else {
+                    throw AudioManagerError.cannotFindChannelId(channelId: "id")
                 }
-                ////The strategy here is to unwrap the polyphony limit, however if one is not
-                /// provided, we have the default amount of 16. We don't want to throw
-                /// an error if a limit is not provided.
-                let polyLimitString = channel[ChannelDictConstants.polyphonyLimit.rawValue] ?? "16"
-                let polyphonyLimit = Int(polyLimitString)
-                createChannel(id: id, polyphonyLimit: polyphonyLimit ?? 16)
+                self.channels[id] = Channel(id: id, mainMixer: self.mainMixer)
             }
+            self.playerPool.createPlayers(count: polyphonyLimit)
             registerForNotifications()
             engine.output = mainMixer
         } catch {
             throw error
         }
     }
+    
     public func teardown() {
         DispatchQueue.main.async {
-            self.turnOffAllPlayers()
-            self.removeChannels()
+            self.playerPool.stopAllPlayers()
+            self.playerPool.removeAllPlayers()
+            self.channels.removeAll()
             self.stop()
         }
     }
@@ -132,15 +131,15 @@ extension AudioManager {
     
     // TODO: - Make actually smooth fade out
     private func turnOffAllPlayers() {
-        channels.forEach({ channel in
-            let value = channel.value
-            let fader = Fader(value.mixer, gain: value.mixer.volume)
-            self.mainMixer.addInput(fader)
-            fader.start()
-            fader.$leftGain.ramp(to: 0.0, duration: 0.25)
-            fader.$rightGain.ramp(to: 0.0, duration: 0.25)
-            value.stopAllPlayers()
-        })
+//        channels.forEach({ channel in
+//            let value = channel.value
+//            let fader = Fader(value.mixer, gain: value.mixer.volume)
+//            self.mainMixer.addInput(fader)
+//            fader.start()
+//            fader.$leftGain.ramp(to: 0.0, duration: 0.25)
+//            fader.$rightGain.ramp(to: 0.0, duration: 0.25)
+//        })
+        self.playerPool.stopAllPlayers()
     }
     
 }
@@ -167,9 +166,10 @@ extension AudioManager {
         let startTime = browserTimeToAudioTime(atTime)
 
         do {
-            let player = channel.getPlayer(forSample: sample)
+            let player = self.playerPool.getPlayer(forSample: sample)
             let playback = try player.schedulePlayback(
                 sample: sample,
+                channel: channel,
                 playbackId: playbackId,
                 atTime: startTime,
                 volume: volume,
@@ -209,16 +209,6 @@ extension AudioManager {
 
 // MARK: - Channels
 extension AudioManager {
-    private func createChannel(id: String, polyphonyLimit: Int) {
-        self.channels[id] = Channel(id: id, polyphonyLimit: polyphonyLimit, mainMixer: self.mainMixer)
-    }
-    private func removeChannels() {
-        self.channels.forEach { dict in
-            let channel = dict.value
-            channel.tearDownPlayers()
-        }
-        self.channels.removeAll()
-    }
     public func setChannelVolume(channel: String, volume: Double) {
         channels[channel]?.volume = volume
     }
@@ -246,16 +236,4 @@ extension AudioManager {
         let systemTime = AVAudioTime.seconds(forHostTime: mach_absolute_time())
         self.browserTimeOffset = systemTime - browserTime
     }
-}
-
-enum ApplicationState: String {
-    case foreground = "Foreground"
-    case resignActive = "resignActive"
-    case background = "background"
-}
-
-//Essentially a swifty way of doing string consts
-enum ChannelDictConstants: String {
-    case id = "id"
-    case polyphonyLimit = "polyphonyLimit"
 }
