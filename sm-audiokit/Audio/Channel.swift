@@ -20,13 +20,12 @@ class Channel {
         mainMixer.addInput(self.mixer)
     }
 
-    func attach(player: AudioPlayer, outputNode: Node) {
+    func attach(outputNode: Node) {
         self.mixer.addInput(outputNode)
+    }
 
-        // TODO: Do we need to do any cleanup?
-        player.completionHandler = {
-            // self.mixer.removeInput(outputNode)
-        }
+    func detach(outputNode: Node) {
+        self.mixer.removeInput(outputNode)
     }
 
     private var _volume = 1.0

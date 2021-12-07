@@ -57,7 +57,11 @@ class SamplePlayback {
 
         self.fader = Fader(varispeed, gain: Float(volume))
 
-        channel.attach(player: self.player, outputNode: self.outputNode)
+        channel.attach(outputNode: self.outputNode)
+
+        self.player.completionHandler = {
+            channel.detach(outputNode: self.outputNode)
+        }
 
         // TODO: pass `offset` to `from` parameter
         self.player.play(from: offset, to: nil, at: AVAudioTime(hostTime: startTime.hostTime), completionCallbackType: .dataPlayedBack)
