@@ -84,7 +84,7 @@ class ViewController: UIViewController {
         do {
             try AudioManager.shared.setBrowserTime(-1.01)
             var iteration = 0
-            let bpm = Double(1000.0)
+            let bpm = Double(300.0)
             let beatDuration = 60.0 / bpm
             let iterationDuration = 8 * beatDuration
             let drumLoop = {
