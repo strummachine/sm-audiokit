@@ -85,7 +85,7 @@ class SamplePlayer {
     func fade(at: AVAudioTime, to: Double, duration: Double) {
         let delay = at.timeIntervalSince(otherTime: self.startTime!) ?? 0
 
-        // TODO: Fit curve of exponental function from Web Audio
+        // TODO: Fit curve of exponental function from Web Audio (Luke)
 
         self.fader.automateGain(events: [
             AutomationEvent(

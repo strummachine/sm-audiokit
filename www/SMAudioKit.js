@@ -56,14 +56,12 @@ exports.gonnaStop = execNativeWithArgs('gonnaStop', (args) => []);
 
 // === Master Channel
 
-// TODO: Should we just re-use the "setChannel_____" calls with "master" as the channel name?
-
 /**
  * Changes volume of master channel over specified time period
  */
 exports.setMasterVolume = execNativeWithArgs('setMasterVolume', (args) => [
   args.volume, // number (scale TBD)
-  // TODO: should we just hard-code this into Swift?
+  // should we just hard-code this into Swift?
   args.fadeDuration || 0.05, // number, defaults to 50ms fade to prevent popping
 ]);
 
@@ -77,7 +75,7 @@ exports.setMasterVolume = execNativeWithArgs('setMasterVolume', (args) => [
 exports.setChannelVolume = execNativeWithArgs('setChannelVolume', (args) => [
   args.channel, // string
   args.volume, // number (scale TBD)
-  // TODO: should we just hard-code this into Swift?
+  // should we just hard-code this into Swift?
   args.fadeDuration || 0.05, // number, defaults to 50ms fade to prevent popping
 ]);
 

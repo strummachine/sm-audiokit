@@ -41,12 +41,8 @@ class ViewController: UIViewController {
         
         let shuffled = self.availableSamples.shuffled()
         let randomSample = shuffled[0].value
-        // TODO: Using any channel other than "test" crashes the app. Why?
-        // FIXME:
-        //            let channelName = randomSample.id.hasSuffix("--") ? "guitar" : "drums"
-        //            let channelName = "guitar"
-        let channelName = "test"
-        
+        let channelName = randomSample.id.hasSuffix("--") ? "guitar" : "drums"
+
         do {
             try AudioManager.shared.setBrowserTime(2.0)
             try AudioManager.shared.playSample(sampleId: randomSample.id, channel: channelName, playbackId: UUID().uuidString, atTime: 2.3)
