@@ -68,7 +68,7 @@ class SamplePlayer {
 
         self.fader.gain = fadeInDuration > 0 ? 0 : Float(volume)
 
-        self.player.play(from: offset, to: nil, at: AVAudioTime(hostTime: atTime.hostTime), completionCallbackType: .dataRendered)
+        self.player.play(from: offset, to: nil, at: AVAudioTime(hostTime: atTime.hostTime), completionCallbackType: .dataPlayedBack)
 
         if fadeInDuration > 0 {
             self.fader.automateGain(events: [
