@@ -22,11 +22,11 @@ import AVFoundation
     @objc(initialize:) func initialize(command: CDVInvokedUrlCommand) {
         var pluginResult = CDVPluginResult(status: CDVCommandStatus_ERROR)
 
-        DispatchQueue.global(qos: .utility).async(execute: {
+        DispatchQueue.main.async(execute: {
             defer {
-                // DispatchQueue.main.async(execute: {
+                DispatchQueue.main.async(execute: {
                     self.commandDelegate!.send(pluginResult, callbackId: command.callbackId)
-                // })
+                })
             }
 
             do {
@@ -87,7 +87,7 @@ import AVFoundation
 
         let channelNames = command.arguments[0] as! Array<String>
 
-        DispatchQueue.global(qos: .utility).async(execute: {
+        DispatchQueue.main.async(execute: {
             defer {
                 DispatchQueue.main.async(execute: {
                     self.commandDelegate!.send(pluginResult, callbackId: command.callbackId)
@@ -216,7 +216,7 @@ import AVFoundation
         let volume = (command.arguments[2] as? Double ?? 0)
         let fadeDuration = (command.arguments[3] as? Double ?? 0)
 
-        DispatchQueue.global(qos: .utility).async(execute: {
+        DispatchQueue.main.async(execute: {
             defer {
                 DispatchQueue.main.async(execute: {
                     self.commandDelegate!.send(pluginResult, callbackId: command.callbackId)
@@ -253,7 +253,7 @@ import AVFoundation
         let atTime = (command.arguments[1] as? Double ?? 0)
         let fadeDuration = (command.arguments[2] as? Double ?? 0)
 
-        DispatchQueue.global(qos: .utility).async(execute: {
+        DispatchQueue.main.async(execute: {
             defer {
                 DispatchQueue.main.async(execute: {
                     self.commandDelegate!.send(pluginResult, callbackId: command.callbackId)
