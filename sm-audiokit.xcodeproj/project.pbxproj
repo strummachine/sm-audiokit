@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		A31998C6275FB869007CEC72 /* SamplePlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A31998C5275FB869007CEC72 /* SamplePlayer.swift */; };
 		A31998C8275FBEB3007CEC72 /* DispatchTime+Offsets.swift in Sources */ = {isa = PBXBuildFile; fileRef = A31998C7275FBEB3007CEC72 /* DispatchTime+Offsets.swift */; };
+		A342CFA72761540C000BF181 /* SamplePlayerPool.swift in Sources */ = {isa = PBXBuildFile; fileRef = A342CFA62761540C000BF181 /* SamplePlayerPool.swift */; };
 		A363E86027599F98000C1AD2 /* Channel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A363E85F27599F98000C1AD2 /* Channel.swift */; };
 		A363E8642759AB91000C1AD2 /* CordovaPathConversion.swift in Sources */ = {isa = PBXBuildFile; fileRef = A363E8632759AB91000C1AD2 /* CordovaPathConversion.swift */; };
 		A39538FF275AF0A7002FE88C /* SampleStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = A39538FE275AF0A7002FE88C /* SampleStorage.swift */; };
@@ -31,6 +32,7 @@
 /* Begin PBXFileReference section */
 		A31998C5275FB869007CEC72 /* SamplePlayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SamplePlayer.swift; sourceTree = "<group>"; };
 		A31998C7275FBEB3007CEC72 /* DispatchTime+Offsets.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "DispatchTime+Offsets.swift"; sourceTree = "<group>"; };
+		A342CFA62761540C000BF181 /* SamplePlayerPool.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SamplePlayerPool.swift; path = "sm-audiokit/Audio/SamplePlayerPool.swift"; sourceTree = "<group>"; };
 		A363E85F27599F98000C1AD2 /* Channel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Channel.swift; sourceTree = "<group>"; };
 		A363E8632759AB91000C1AD2 /* CordovaPathConversion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CordovaPathConversion.swift; sourceTree = "<group>"; };
 		A39538FE275AF0A7002FE88C /* SampleStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleStorage.swift; sourceTree = "<group>"; };
@@ -75,6 +77,7 @@
 		FC5C3B112746C93F00DDE223 = {
 			isa = PBXGroup;
 			children = (
+				A342CFA62761540C000BF181 /* SamplePlayerPool.swift */,
 				FC5C3B1C2746C93F00DDE223 /* sm-audiokit */,
 				FC5C3B1B2746C93F00DDE223 /* Products */,
 			);
@@ -212,6 +215,7 @@
 				FC5C3B222746C93F00DDE223 /* ViewController.swift in Sources */,
 				FC5C3B1E2746C93F00DDE223 /* AppDelegate.swift in Sources */,
 				A39538FF275AF0A7002FE88C /* SampleStorage.swift in Sources */,
+				A342CFA72761540C000BF181 /* SamplePlayerPool.swift in Sources */,
 				FC06C3462757B04C00BA39FC /* AVAudioPCMBuffer+CustomFade.swift in Sources */,
 				FCFD5BC7274F85A200F6D7A4 /* AudioManager.swift in Sources */,
 				A31998C8275FBEB3007CEC72 /* DispatchTime+Offsets.swift in Sources */,

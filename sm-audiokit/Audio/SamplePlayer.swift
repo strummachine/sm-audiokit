@@ -12,8 +12,6 @@ class SamplePlayer {
         get { fader }
     }
 
-    var channel: Channel
-
     var playback: SamplePlayback?
     var playbackId: String? {
         get { self.playback?.playbackId }
@@ -26,11 +24,10 @@ class SamplePlayer {
 
     var startTime: AVAudioTime?
 
-    init(channel: Channel) {
+    init() {
         self.player = AudioPlayer()
         self.varispeed = VariSpeed(player)
         self.fader = Fader(self.varispeed, gain: 1.0)
-        self.channel = channel
         self.player.completionHandler = self.resetPlayer
     }
 
