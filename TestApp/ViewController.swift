@@ -18,9 +18,9 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         do {
-            AudioManager.shared.createChannel(id: "guitar", polyphonyLimit: 8)
-            AudioManager.shared.createChannel(id: "drums", polyphonyLimit: 64)
-            AudioManager.shared.createChannel(id: "test", polyphonyLimit: 8)
+            AudioManager.shared.createChannel(id: "guitar", polyphonyLimit: 20)
+            AudioManager.shared.createChannel(id: "drums", polyphonyLimit: 40)
+            AudioManager.shared.createChannel(id: "test", polyphonyLimit: 20)
             AudioManager.shared.loadTestPackage()
             try AudioManager.shared.start()
             self.setLabel(with: "Ready")
@@ -84,7 +84,7 @@ class ViewController: UIViewController {
         do {
             try AudioManager.shared.setBrowserTime(-1.01)
             var iteration = 0
-            let bpm = Double(280.0)
+            let bpm = Double(1000.0)
             let beatDuration = 60.0 / bpm
             let iterationDuration = 8 * beatDuration
             let drumLoop = {
@@ -94,10 +94,10 @@ class ViewController: UIViewController {
                         let timeOfBeat = 0.02 + Double(iteration) * iterationDuration + beatDuration * Double(beat)
                         let timeOfNextBeat = timeOfBeat + beatDuration
                         if beat % 4 == 0 {
-                            try AudioManager.shared.playSample(sampleId: "kick", channel: "drums", playbackId: ("kick"+String(beat)), atTime: timeOfBeat)
+                            try AudioManager.shared.playSample(sampleId: "kick", channel: "guitar", playbackId: ("kick"+String(beat)), atTime: timeOfBeat)
                         }
                         if beat % 4 == 2 {
-                            try AudioManager.shared.playSample(sampleId: "snare", channel: "drums", playbackId: ("snare"+String(beat)), atTime: timeOfBeat)
+                            try AudioManager.shared.playSample(sampleId: "snare", channel: "test", playbackId: ("snare"+String(beat)), atTime: timeOfBeat)
                         }
                         if beat % 8 != 7 {
                             try AudioManager.shared.playSample(sampleId: "hat-closed", channel: "drums", playbackId: ("hat"+String(beat)), atTime: timeOfBeat)

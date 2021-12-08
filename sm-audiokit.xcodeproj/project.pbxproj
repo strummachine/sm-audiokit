@@ -7,52 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		A302A94827616AE200ECF263 /* testbed_stereo_mp3.audio-package in Resources */ = {isa = PBXBuildFile; fileRef = A302A94627616AE200ECF263 /* testbed_stereo_mp3.audio-package */; };
-		A302A94927616AE200ECF263 /* testbed_mono_mp3.audio-package in Resources */ = {isa = PBXBuildFile; fileRef = A302A94727616AE200ECF263 /* testbed_mono_mp3.audio-package */; };
-		A31998C6275FB869007CEC72 /* SamplePlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A31998C5275FB869007CEC72 /* SamplePlayer.swift */; };
-		A31998C8275FBEB3007CEC72 /* DispatchTime+Offsets.swift in Sources */ = {isa = PBXBuildFile; fileRef = A31998C7275FBEB3007CEC72 /* DispatchTime+Offsets.swift */; };
-		A342CFA72761540C000BF181 /* SamplePlayerPool.swift in Sources */ = {isa = PBXBuildFile; fileRef = A342CFA62761540C000BF181 /* SamplePlayerPool.swift */; };
-		A363E86027599F98000C1AD2 /* Channel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A363E85F27599F98000C1AD2 /* Channel.swift */; };
-		A363E8642759AB91000C1AD2 /* CordovaPathConversion.swift in Sources */ = {isa = PBXBuildFile; fileRef = A363E8632759AB91000C1AD2 /* CordovaPathConversion.swift */; };
-		A39538FF275AF0A7002FE88C /* SampleStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = A39538FE275AF0A7002FE88C /* SampleStorage.swift */; };
-		FC06C3462757B04C00BA39FC /* AVAudioPCMBuffer+CustomFade.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC06C3452757B04C00BA39FC /* AVAudioPCMBuffer+CustomFade.swift */; };
-		FC470E8A2754F4D100C4E197 /* Sample.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC470E892754F4D100C4E197 /* Sample.swift */; };
-		FC470E8E2754F9C000C4E197 /* SamplePlayback.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC470E8D2754F9C000C4E197 /* SamplePlayback.swift */; };
-		FC470E922755361200C4E197 /* AudioPackageExtractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC470E912755361200C4E197 /* AudioPackageExtractor.swift */; };
-		FC5C3B1E2746C93F00DDE223 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC5C3B1D2746C93F00DDE223 /* AppDelegate.swift */; };
-		FC5C3B202746C93F00DDE223 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC5C3B1F2746C93F00DDE223 /* SceneDelegate.swift */; };
-		FC5C3B222746C93F00DDE223 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC5C3B212746C93F00DDE223 /* ViewController.swift */; };
-		FC5C3B252746C93F00DDE223 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FC5C3B232746C93F00DDE223 /* Main.storyboard */; };
-		FC5C3B272746C94100DDE223 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FC5C3B262746C94100DDE223 /* Assets.xcassets */; };
-		FC5C3B2A2746C94100DDE223 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FC5C3B282746C94100DDE223 /* LaunchScreen.storyboard */; };
-		FCB46171275E28BE00DF60C5 /* ErrorTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCB46170275E28BE00DF60C5 /* ErrorTypes.swift */; };
+		A302A94C27616CF200ECF263 /* Sources in Resources */ = {isa = PBXBuildFile; fileRef = A302A94A27616CF200ECF263 /* Sources */; };
+		A302A94D27616CF200ECF263 /* TestApp in Resources */ = {isa = PBXBuildFile; fileRef = A302A94B27616CF200ECF263 /* TestApp */; };
 		FCE6CD702746CA2A00B7B3BE /* AudioKit in Frameworks */ = {isa = PBXBuildFile; productRef = FCE6CD6F2746CA2A00B7B3BE /* AudioKit */; };
-		FCFD5BC7274F85A200F6D7A4 /* AudioManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCFD5BC6274F85A200F6D7A4 /* AudioManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		A302A94627616AE200ECF263 /* testbed_stereo_mp3.audio-package */ = {isa = PBXFileReference; lastKnownFileType = file; path = "testbed_stereo_mp3.audio-package"; sourceTree = "<group>"; };
-		A302A94727616AE200ECF263 /* testbed_mono_mp3.audio-package */ = {isa = PBXFileReference; lastKnownFileType = file; path = "testbed_mono_mp3.audio-package"; sourceTree = "<group>"; };
-		A31998C5275FB869007CEC72 /* SamplePlayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SamplePlayer.swift; sourceTree = "<group>"; };
-		A31998C7275FBEB3007CEC72 /* DispatchTime+Offsets.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "DispatchTime+Offsets.swift"; sourceTree = "<group>"; };
-		A342CFA62761540C000BF181 /* SamplePlayerPool.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SamplePlayerPool.swift; path = "sm-audiokit/Audio/SamplePlayerPool.swift"; sourceTree = "<group>"; };
-		A363E85F27599F98000C1AD2 /* Channel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Channel.swift; sourceTree = "<group>"; };
-		A363E8632759AB91000C1AD2 /* CordovaPathConversion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CordovaPathConversion.swift; sourceTree = "<group>"; };
-		A39538FE275AF0A7002FE88C /* SampleStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SampleStorage.swift; sourceTree = "<group>"; };
-		FC06C3452757B04C00BA39FC /* AVAudioPCMBuffer+CustomFade.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AVAudioPCMBuffer+CustomFade.swift"; sourceTree = "<group>"; };
-		FC470E892754F4D100C4E197 /* Sample.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sample.swift; sourceTree = "<group>"; };
-		FC470E8D2754F9C000C4E197 /* SamplePlayback.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SamplePlayback.swift; sourceTree = "<group>"; };
-		FC470E912755361200C4E197 /* AudioPackageExtractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPackageExtractor.swift; sourceTree = "<group>"; };
+		A302A94A27616CF200ECF263 /* Sources */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Sources; sourceTree = "<group>"; };
+		A302A94B27616CF200ECF263 /* TestApp */ = {isa = PBXFileReference; lastKnownFileType = folder; path = TestApp; sourceTree = "<group>"; };
 		FC5C3B1A2746C93F00DDE223 /* sm-audiokit.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "sm-audiokit.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		FC5C3B1D2746C93F00DDE223 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		FC5C3B1F2746C93F00DDE223 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
-		FC5C3B212746C93F00DDE223 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
-		FC5C3B242746C93F00DDE223 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		FC5C3B262746C94100DDE223 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		FC5C3B292746C94100DDE223 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		FC5C3B2B2746C94100DDE223 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		FCB46170275E28BE00DF60C5 /* ErrorTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorTypes.swift; sourceTree = "<group>"; };
-		FCFD5BC6274F85A200F6D7A4 /* AudioManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -67,20 +30,11 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		FC06C3442757B02D00BA39FC /* Extensions */ = {
-			isa = PBXGroup;
-			children = (
-				FC06C3452757B04C00BA39FC /* AVAudioPCMBuffer+CustomFade.swift */,
-				A31998C7275FBEB3007CEC72 /* DispatchTime+Offsets.swift */,
-			);
-			path = Extensions;
-			sourceTree = "<group>";
-		};
 		FC5C3B112746C93F00DDE223 = {
 			isa = PBXGroup;
 			children = (
-				A342CFA62761540C000BF181 /* SamplePlayerPool.swift */,
-				FC5C3B1C2746C93F00DDE223 /* sm-audiokit */,
+				A302A94A27616CF200ECF263 /* Sources */,
+				A302A94B27616CF200ECF263 /* TestApp */,
 				FC5C3B1B2746C93F00DDE223 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -91,48 +45,6 @@
 				FC5C3B1A2746C93F00DDE223 /* sm-audiokit.app */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		FC5C3B1C2746C93F00DDE223 /* sm-audiokit */ = {
-			isa = PBXGroup;
-			children = (
-				FC06C3442757B02D00BA39FC /* Extensions */,
-				FCCC49D227578D7600CE1D9E /* samples */,
-				FCFD5BC8275005BA00F6D7A4 /* Audio */,
-				FC5C3B1D2746C93F00DDE223 /* AppDelegate.swift */,
-				A363E8632759AB91000C1AD2 /* CordovaPathConversion.swift */,
-				FC5C3B1F2746C93F00DDE223 /* SceneDelegate.swift */,
-				FC5C3B212746C93F00DDE223 /* ViewController.swift */,
-				FC5C3B232746C93F00DDE223 /* Main.storyboard */,
-				FC5C3B262746C94100DDE223 /* Assets.xcassets */,
-				FC5C3B282746C94100DDE223 /* LaunchScreen.storyboard */,
-				FC5C3B2B2746C94100DDE223 /* Info.plist */,
-			);
-			path = "sm-audiokit";
-			sourceTree = "<group>";
-		};
-		FCCC49D227578D7600CE1D9E /* samples */ = {
-			isa = PBXGroup;
-			children = (
-				A302A94727616AE200ECF263 /* testbed_mono_mp3.audio-package */,
-				A302A94627616AE200ECF263 /* testbed_stereo_mp3.audio-package */,
-			);
-			path = samples;
-			sourceTree = "<group>";
-		};
-		FCFD5BC8275005BA00F6D7A4 /* Audio */ = {
-			isa = PBXGroup;
-			children = (
-				FCFD5BC6274F85A200F6D7A4 /* AudioManager.swift */,
-				FC470E912755361200C4E197 /* AudioPackageExtractor.swift */,
-				A363E85F27599F98000C1AD2 /* Channel.swift */,
-				FCB46170275E28BE00DF60C5 /* ErrorTypes.swift */,
-				FC470E892754F4D100C4E197 /* Sample.swift */,
-				A31998C5275FB869007CEC72 /* SamplePlayer.swift */,
-				FC470E8D2754F9C000C4E197 /* SamplePlayback.swift */,
-				A39538FE275AF0A7002FE88C /* SampleStorage.swift */,
-			);
-			path = Audio;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -199,11 +111,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A302A94827616AE200ECF263 /* testbed_stereo_mp3.audio-package in Resources */,
-				FC5C3B2A2746C94100DDE223 /* LaunchScreen.storyboard in Resources */,
-				FC5C3B272746C94100DDE223 /* Assets.xcassets in Resources */,
-				A302A94927616AE200ECF263 /* testbed_mono_mp3.audio-package in Resources */,
-				FC5C3B252746C93F00DDE223 /* Main.storyboard in Resources */,
+				A302A94D27616CF200ECF263 /* TestApp in Resources */,
+				A302A94C27616CF200ECF263 /* Sources in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -214,44 +123,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FC470E8A2754F4D100C4E197 /* Sample.swift in Sources */,
-				A363E86027599F98000C1AD2 /* Channel.swift in Sources */,
-				FC5C3B222746C93F00DDE223 /* ViewController.swift in Sources */,
-				FC5C3B1E2746C93F00DDE223 /* AppDelegate.swift in Sources */,
-				A39538FF275AF0A7002FE88C /* SampleStorage.swift in Sources */,
-				A342CFA72761540C000BF181 /* SamplePlayerPool.swift in Sources */,
-				FC06C3462757B04C00BA39FC /* AVAudioPCMBuffer+CustomFade.swift in Sources */,
-				FCFD5BC7274F85A200F6D7A4 /* AudioManager.swift in Sources */,
-				A31998C8275FBEB3007CEC72 /* DispatchTime+Offsets.swift in Sources */,
-				FC470E922755361200C4E197 /* AudioPackageExtractor.swift in Sources */,
-				FC470E8E2754F9C000C4E197 /* SamplePlayback.swift in Sources */,
-				FC5C3B202746C93F00DDE223 /* SceneDelegate.swift in Sources */,
-				FCB46171275E28BE00DF60C5 /* ErrorTypes.swift in Sources */,
-				A31998C6275FB869007CEC72 /* SamplePlayer.swift in Sources */,
-				A363E8642759AB91000C1AD2 /* CordovaPathConversion.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXVariantGroup section */
-		FC5C3B232746C93F00DDE223 /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				FC5C3B242746C93F00DDE223 /* Base */,
-			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
-		FC5C3B282746C94100DDE223 /* LaunchScreen.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				FC5C3B292746C94100DDE223 /* Base */,
-			);
-			name = LaunchScreen.storyboard;
-			sourceTree = "<group>";
-		};
-/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		FC5C3B2C2746C94100DDE223 /* Debug */ = {
