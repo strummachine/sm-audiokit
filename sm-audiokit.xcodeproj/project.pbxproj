@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		A302A94C27616CF200ECF263 /* Sources in Resources */ = {isa = PBXBuildFile; fileRef = A302A94A27616CF200ECF263 /* Sources */; };
 		A302A94D27616CF200ECF263 /* TestApp in Resources */ = {isa = PBXBuildFile; fileRef = A302A94B27616CF200ECF263 /* TestApp */; };
+		A302A95027616DC000ECF263 /* CordovaLib in Frameworks */ = {isa = PBXBuildFile; productRef = A302A94F27616DC000ECF263 /* CordovaLib */; };
 		FCE6CD702746CA2A00B7B3BE /* AudioKit in Frameworks */ = {isa = PBXBuildFile; productRef = FCE6CD6F2746CA2A00B7B3BE /* AudioKit */; };
 /* End PBXBuildFile section */
 
@@ -24,6 +25,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				FCE6CD702746CA2A00B7B3BE /* AudioKit in Frameworks */,
+				A302A95027616DC000ECF263 /* CordovaLib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -65,6 +67,7 @@
 			name = "sm-audiokit";
 			packageProductDependencies = (
 				FCE6CD6F2746CA2A00B7B3BE /* AudioKit */,
+				A302A94F27616DC000ECF263 /* CordovaLib */,
 			);
 			productName = "sm-audiokit";
 			productReference = FC5C3B1A2746C93F00DDE223 /* sm-audiokit.app */;
@@ -96,6 +99,7 @@
 			mainGroup = FC5C3B112746C93F00DDE223;
 			packageReferences = (
 				FCE6CD6E2746CA2A00B7B3BE /* XCRemoteSwiftPackageReference "AudioKit" */,
+				A302A94E27616DC000ECF263 /* XCRemoteSwiftPackageReference "cordova-ios" */,
 			);
 			productRefGroup = FC5C3B1B2746C93F00DDE223 /* Products */;
 			projectDirPath = "";
@@ -325,6 +329,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		A302A94E27616DC000ECF263 /* XCRemoteSwiftPackageReference "cordova-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apache/cordova-ios.git";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
 		FCE6CD6E2746CA2A00B7B3BE /* XCRemoteSwiftPackageReference "AudioKit" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/AudioKit/AudioKit.git";
@@ -336,6 +348,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		A302A94F27616DC000ECF263 /* CordovaLib */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A302A94E27616DC000ECF263 /* XCRemoteSwiftPackageReference "cordova-ios" */;
+			productName = CordovaLib;
+		};
 		FCE6CD6F2746CA2A00B7B3BE /* AudioKit */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = FCE6CD6E2746CA2A00B7B3BE /* XCRemoteSwiftPackageReference "AudioKit" */;

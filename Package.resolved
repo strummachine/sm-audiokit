@@ -11,6 +11,15 @@
         }
       },
       {
+        "package": "Cordova",
+        "repositoryURL": "https://github.com/apache/cordova-ios.git",
+        "state": {
+          "branch": "master",
+          "revision": "67b0bb2cfceb3f04fcd25a09222e86404805c594",
+          "version": null
+        }
+      },
+      {
         "package": "swift-argument-parser",
         "repositoryURL": "https://github.com/apple/swift-argument-parser.git",
         "state": {

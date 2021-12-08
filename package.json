@@ -1,0 +1,12 @@
+{
+  "name": "cordova-plugin-sm-audiokit",
+  "version": "0.2.0",
+  "description": "Native iOS Audio plugin for Strum Machine",
+  "cordova": {
+    "id": "cordova-plugin-sm-audiokit",
+    "platforms": [
+      "ios"
+    ]
+  },
+  "author": "Luke Abbott"
+}
