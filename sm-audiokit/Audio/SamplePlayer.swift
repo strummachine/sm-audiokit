@@ -28,19 +28,13 @@ class SamplePlayer {
 
     init(channel: Channel) {
         self.player = AudioPlayer()
-        self.player.bypass()
         self.varispeed = VariSpeed(player)
-        self.varispeed.bypass()
         self.fader = Fader(self.varispeed, gain: 1.0)
-        self.fader.bypass()
         self.channel = channel
         self.player.completionHandler = self.resetPlayer
     }
 
     private func resetPlayer() {
-        self.player.bypass()
-        self.varispeed.bypass()
-        // fader doesn't get bypassed because we want to keep things muted
         self.fader.stopAutomation()
         self.playback?.samplePlayer = nil
         self.playback = nil
@@ -71,10 +65,8 @@ class SamplePlayer {
         self.startTime = atTime
 
         self.varispeed.rate = Float(playbackRate)
-        self.varispeed.play()
 
         self.fader.gain = fadeInDuration > 0 ? 0 : Float(volume)
-        self.fader.play()
 
         self.player.play(from: offset, to: nil, at: AVAudioTime(hostTime: atTime.hostTime), completionCallbackType: .dataRendered)
 
