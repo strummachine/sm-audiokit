@@ -51,7 +51,7 @@ class SamplePlayer {
 
         if sample.id != self.sampleId {
             do {
-                try self.player.load(url: sample.url, buffered: true)
+                try self.player.load(url: sample.url)
             } catch {
                 print("Error: Cannot load sample:\(error.localizedDescription)")
                 throw SamplePlaybackError.cannotLoadPlayer
