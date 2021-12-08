@@ -243,11 +243,6 @@ import AVFoundation
                 // }
             }
         })
-
-        self.commandDelegate!.send(
-            pluginResult,
-            callbackId: command.callbackId
-        )
     }
 
 
@@ -284,11 +279,6 @@ import AVFoundation
                 // }
             }
         })
-
-        self.commandDelegate!.send(
-            pluginResult,
-            callbackId: command.callbackId
-        )
     }
 
     // MARK: Channels
