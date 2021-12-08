@@ -106,10 +106,16 @@ class SamplePlayer {
             )
         ], startTime: self.startTime)
 
+        let origPlaybackId = self.playbackId
         if (to == 0.0) {
-            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + delay + duration + 0.3) {
-                self.player.stop()
-                self.player.completionHandler?()
+            if let lastRenderTime = self.player.avAudioNode.lastRenderTime {
+                let delayFromNow = at.timeIntervalSince(otherTime: lastRenderTime) ?? 0
+                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + (delayFromNow + duration + 0.3)) {
+                    if origPlaybackId == self.playbackId {
+                        self.player.stop()
+                        self.player.completionHandler?()
+                    }
+                }
             }
         }
     }

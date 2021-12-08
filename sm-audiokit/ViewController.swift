@@ -61,13 +61,14 @@ class ViewController: UIViewController {
     @IBAction func tappedScheduled200ms(_ sender: Any) {
         guard let testTone = self.availableSamples["test-tone"] else { return }
         do {
-            try AudioManager.shared.setBrowserTime(2.7)
-            let pb = try AudioManager.shared.playSample(sampleId: testTone.id, channel: "test", playbackId: UUID().uuidString, atTime: 3.0)
-            AudioManager.shared.setPlaybackVolume(playbackId: pb.playbackId, atTime: 3.49, volume: 0.0, fadeDuration: 0.52)
-            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(300), execute: {
+            let delay = 0.5
+            try AudioManager.shared.setBrowserTime(5.0)
+            let pb = try AudioManager.shared.playSample(sampleId: testTone.id, channel: "test", playbackId: UUID().uuidString, atTime: 5.0 + delay)
+            AudioManager.shared.setPlaybackVolume(playbackId: pb.playbackId, atTime: 5.0 + delay + 0.5, volume: 0.0, fadeDuration: 0.5)
+            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(Int(delay * 1000)), execute: {
                 self.setLabel(with: "Playing/fading sample: \(testTone.id)")
             })
-            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(900), execute: {
+            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(Int(delay * 1000 + 500)), execute: {
                 self.setLabel(with: "Ready")
             })
         } catch let error as AudioManagerError {
