@@ -14,7 +14,7 @@ class AudioPackageExtractor {
     
     public static func extractAudioPackage() throws -> [Sample] {
         ////1. Get path for audio-package file
-        guard let pathForFile = Bundle.main.path(forResource: "testbed_mp3", ofType: "audio-package") else {
+        guard let pathForFile = Bundle.main.path(forResource: "testbed_mono_mp3", ofType: "audio-package") else {
             throw AudioPackageError.unableToFindPathForResrouce
         }
       
