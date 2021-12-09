@@ -27,15 +27,18 @@ class SamplePlayer {
     init() {
         self.player = AudioPlayer()
         self.varispeed = VariSpeed(player)
+        self.varispeed.stop()
         self.fader = Fader(self.varispeed, gain: 1.0)
-        self.player.completionHandler = self.resetPlayer
+        self.fader.stop()
+        self.player.completionHandler = {
+            self.fader.stopAutomation()
+            // we don't bypass the fader node because we'll get a click
+            self.varispeed.stop()
+            self.playback?.samplePlayer = nil
+            self.playback = nil
+        }
     }
 
-    private func resetPlayer() {
-        self.fader.stopAutomation()
-        self.playback?.samplePlayer = nil
-        self.playback = nil
-    }
 
     func schedulePlayback(
         sample: Sample,
@@ -46,8 +49,8 @@ class SamplePlayer {
         playbackRate: Double = 1.0,
         fadeInDuration: Double = 0.0
     ) throws -> SamplePlayback {
-        self.player.stop()
-        self.resetPlayer()
+        self.playback?.samplePlayer = nil
+        self.playback = nil
 
         if sample.id != self.sampleId {
             do {
@@ -62,8 +65,15 @@ class SamplePlayer {
         self.startTime = atTime
 
         self.varispeed.rate = Float(playbackRate)
+        if playbackRate != 1.0 {
+            self.varispeed.start()
+        } else {
+            self.varispeed.stop()
+        }
 
+        self.fader.stopAutomation()
         self.fader.gain = fadeInDuration > 0 ? 0 : Float(volume)
+        self.fader.start()
 
         self.player.play(from: offset, to: nil, at: AVAudioTime(hostTime: atTime.hostTime), completionCallbackType: .dataPlayedBack)
 
