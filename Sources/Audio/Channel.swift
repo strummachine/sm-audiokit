@@ -28,6 +28,10 @@ class Channel {
     func getPlayer(forSample sample: Sample) -> SamplePlayer {
         return self.playerPool.getPlayer(forSample: sample)
     }
+    
+    public func stopAllPlayers() {
+        self.playerPool.stopAllPlayers()
+    }
 
     private var _volume = 1.0
     var volume: Double {

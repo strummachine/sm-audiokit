@@ -6,15 +6,25 @@
 //
 
 import UIKit
+import AudioKit
+import AVFoundation
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
-
-
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
-
+        #if os(iOS)
+        do {
+            Settings.bufferLength = .short
+            try AVAudioSession.sharedInstance().setPreferredIOBufferDuration(Settings.bufferLength.duration)
+            try AVAudioSession.sharedInstance().setCategory(.playback,
+                                                            options: [.defaultToSpeaker, .duckOthers, .allowBluetoothA2DP, .allowAirPlay, .allowBluetooth])
+            try AVAudioSession.sharedInstance().setActive(true)
+        } catch let err {
+            print(err)
+        }
+        #endif
         return true
     }
 

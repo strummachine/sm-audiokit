@@ -27,4 +27,10 @@ class SamplePlayerPool {
             ?? sortedPlayers.first(where: { $0.available })
             ?? sortedPlayers.first!
     }
+    
+    public func stopAllPlayers() {
+        for player in players {
+            player.stop()
+        }
+    }
 }

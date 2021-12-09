@@ -23,19 +23,26 @@ class AudioManager {
 
     var browserTimeOffset = Double()
     
+    internal var notifier = NotificationCenter.default
+    
     init() {
         mainMixer = Mixer(volume: 1.0, name: "master")
         engine.output = mainMixer
+        do {
+            try setupAudioManager()
+        } catch {
+            print(error)
+        }
     }
 
-    func loadTestPackage() {
+    private func loadTestPackage() throws {
         do {
             let samples = try AudioPackageExtractor.extractAudioPackage()
             for sample in samples {
                 sampleBank[sample.id] = sample
             }
         } catch {
-            print(error.localizedDescription)
+            throw error
         }
 
 
@@ -163,7 +170,55 @@ class AudioManager {
 
     func setMasterVolume(volume: Double) {
         mainMixer.volume = Float(volume)
-    }    
+    }
+    
+    public func setupAudioManager() throws {
+        do {
+            self.createChannel(id: "guitar", polyphonyLimit: 20)
+            self.createChannel(id: "drums", polyphonyLimit: 40)
+            self.createChannel(id: "test", polyphonyLimit: 20)
+            try self.loadTestPackage()
+            try self.start()
+        } catch {
+            throw error
+        }
+    }
+}
+
+
+// MARK: - Master engine stop/start methods for app states
+extension AudioManager {
+    
+    public func stopEngine() {
+        DispatchQueue.main.async {
+            self.turnOffAllPlayers()
+            self.stop()
+            do {
+                try AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
+            } catch {
+                print("Error seting audio session false:\(error)")
+            }
+        }
+    }
+    
+    public func restartEngine() {
+        DispatchQueue.main.async {
+            do {
+                try AVAudioSession.sharedInstance().setActive(true)
+                try self.setupAudioManager()
+            } catch {
+                print(error)
+            }
+        }
+    }
+    
+    private func turnOffAllPlayers() {
+        channels.forEach({ channel in
+            let value = channel.value
+            value.stopAllPlayers()
+        })
+    }
+    
 }
 
 // MARK: - Audio Clock Timing Methods

@@ -28,6 +28,8 @@
 		A3BD588F27617AA10079D160 /* SampleStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3BD588327617AA10079D160 /* SampleStorage.swift */; };
 		A3BD589327617AB00079D160 /* AudioKit in Frameworks */ = {isa = PBXBuildFile; productRef = A3BD589227617AB00079D160 /* AudioKit */; };
 		A3BD589627617ABC0079D160 /* CordovaLib in Frameworks */ = {isa = PBXBuildFile; productRef = A3BD589527617ABC0079D160 /* CordovaLib */; };
+		FC6BBFBD2762224200282ABD /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FC6BBFBC2762224200282ABD /* AVFoundation.framework */; };
+		FC6BBFBF2762263100282ABD /* AudioManager+Notifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC6BBFBE2762263100282ABD /* AudioManager+Notifications.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -54,6 +56,8 @@
 		A3BD588127617AA10079D160 /* AudioPackageExtractor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AudioPackageExtractor.swift; sourceTree = "<group>"; };
 		A3BD588227617AA10079D160 /* SamplePlayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SamplePlayer.swift; sourceTree = "<group>"; };
 		A3BD588327617AA10079D160 /* SampleStorage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SampleStorage.swift; sourceTree = "<group>"; };
+		FC6BBFBC2762224200282ABD /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		FC6BBFBE2762263100282ABD /* AudioManager+Notifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AudioManager+Notifications.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -63,6 +67,7 @@
 			files = (
 				A3BD589327617AB00079D160 /* AudioKit in Frameworks */,
 				A3BD589627617ABC0079D160 /* CordovaLib in Frameworks */,
+				FC6BBFBD2762224200282ABD /* AVFoundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -86,6 +91,7 @@
 				A3BD587627617AA10079D160 /* Sources */,
 				A3BD586127617A700079D160 /* TestSMAKApp */,
 				A3BD586027617A700079D160 /* Products */,
+				FC6BBFBB2762224200282ABD /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -142,8 +148,17 @@
 				A3BD588127617AA10079D160 /* AudioPackageExtractor.swift */,
 				A3BD588227617AA10079D160 /* SamplePlayer.swift */,
 				A3BD588327617AA10079D160 /* SampleStorage.swift */,
+				FC6BBFBE2762263100282ABD /* AudioManager+Notifications.swift */,
 			);
 			path = Audio;
+			sourceTree = "<group>";
+		};
+		FC6BBFBB2762224200282ABD /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				FC6BBFBC2762224200282ABD /* AVFoundation.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -240,6 +255,7 @@
 				A3BD586527617A700079D160 /* SceneDelegate.swift in Sources */,
 				A3BD588F27617AA10079D160 /* SampleStorage.swift in Sources */,
 				A3BD588B27617AA10079D160 /* AudioManager.swift in Sources */,
+				FC6BBFBF2762263100282ABD /* AudioManager+Notifications.swift in Sources */,
 				A3BD588A27617AA10079D160 /* SamplePlayerPool.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -389,7 +405,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = S9D8JPJ767;
+				DEVELOPMENT_TEAM = UNPG3B9P9H;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = TestSMAKApp/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -418,7 +434,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = S9D8JPJ767;
+				DEVELOPMENT_TEAM = UNPG3B9P9H;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = TestSMAKApp/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;

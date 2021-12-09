@@ -18,10 +18,6 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         do {
-            AudioManager.shared.createChannel(id: "guitar", polyphonyLimit: 20)
-            AudioManager.shared.createChannel(id: "drums", polyphonyLimit: 40)
-            AudioManager.shared.createChannel(id: "test", polyphonyLimit: 20)
-            AudioManager.shared.loadTestPackage()
             try AudioManager.shared.start()
             self.setLabel(with: "Ready")
             availableSamples = AudioManager.shared.sampleBank
