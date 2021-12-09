@@ -27,22 +27,18 @@ class AudioManager {
     
     init() {
         mainMixer = Mixer(volume: 1.0, name: "master")
+        registerForNotifications()
         engine.output = mainMixer
-        do {
-            try setupAudioManager()
-        } catch {
-            print(error)
-        }
     }
 
-    private func loadTestPackage() throws {
+    func loadTestPackage() {
         do {
             let samples = try AudioPackageExtractor.extractAudioPackage()
             for sample in samples {
                 sampleBank[sample.id] = sample
             }
         } catch {
-            throw error
+            print(error.localizedDescription)
         }
 
 
@@ -83,6 +79,7 @@ class AudioManager {
     public func start() throws {
         do {
             try engine.start()
+            print("Started Audio Engine")
         } catch {
             throw AudioManagerError.audioEngineCannotStart(error: error)
         }
@@ -170,19 +167,7 @@ class AudioManager {
 
     func setMasterVolume(volume: Double) {
         mainMixer.volume = Float(volume)
-    }
-    
-    public func setupAudioManager() throws {
-        do {
-            self.createChannel(id: "guitar", polyphonyLimit: 20)
-            self.createChannel(id: "drums", polyphonyLimit: 40)
-            self.createChannel(id: "test", polyphonyLimit: 20)
-            try self.loadTestPackage()
-            try self.start()
-        } catch {
-            throw error
-        }
-    }
+    }    
 }
 
 
@@ -193,19 +178,13 @@ extension AudioManager {
         DispatchQueue.main.async {
             self.turnOffAllPlayers()
             self.stop()
-            do {
-                try AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
-            } catch {
-                print("Error seting audio session false:\(error)")
-            }
         }
     }
     
     public func restartEngine() {
         DispatchQueue.main.async {
             do {
-                try AVAudioSession.sharedInstance().setActive(true)
-                try self.setupAudioManager()
+                try self.start()
             } catch {
                 print(error)
             }

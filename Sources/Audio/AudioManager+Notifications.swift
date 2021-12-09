@@ -45,10 +45,10 @@ extension AudioManager {
         }
         if type == .began {
             print("In handleInterruption: type == .began")
-            stopEngine()
+            restartEngine()
         } else if type == .ended {
              print("In handleInterruption: type == .ended")
-            restartEngine()
+            stopEngine()
         }
     }
 
@@ -58,7 +58,6 @@ extension AudioManager {
             let reason = AVAudioSession.RouteChangeReason(rawValue: reasonValue) else {
             if notification.name == .AVAudioEngineConfigurationChange {
                 print(AVAudioSession.sharedInstance().currentRoute)
-                // setup()
             }
             return
         }
@@ -77,10 +76,12 @@ extension AudioManager {
     }
 
     @objc func enterBackground() {
+        print("Entering background")
         stopEngine()
     }
 
     @objc func enterForeground() {
+        print("Entering Foreground")
         restartEngine()
     }
     
