@@ -15,7 +15,7 @@ import AVFoundation
 
 @objc(CordovaAudioKitPlugin) class CordovaAudioKitPlugin : CDVPlugin {
 
-    let manager = AudioManager()
+    var manager: AudioManager?
 
     // MARK: Setup functions
 
@@ -31,7 +31,8 @@ import AVFoundation
 
             do {
                 // TODO: Initialize AudioKit and stuff
-                // try self.manager.start()
+                // try self.manager?.start()
+                self.manager = AudioManager()
             } catch {
                 // TODO: Set pluginResult error details if anything goes wrong
                 // if (error) {
@@ -61,7 +62,7 @@ import AVFoundation
             }
 
             do {
-                let sample = try self.manager.loadSample(sampleId: sampleId, audioData: audioData)
+                guard let sample = try self.manager?.loadSample(sampleId: sampleId, audioData: audioData) else { return }
                 pluginResult = CDVPluginResult(
                     status: CDVCommandStatus_OK,
                     messageAs: [
@@ -96,7 +97,7 @@ import AVFoundation
 
             do {
                 for channel in channelNames {
-                    self.manager.createChannel(id: channel)
+                    self.manager?.createChannel(id: channel)
                 }
 
                 pluginResult = CDVPluginResult(status: CDVCommandStatus_OK)
@@ -120,8 +121,8 @@ import AVFoundation
         let browserTime = (command.arguments[0] as! Double)
 
         do {
-            try self.manager.start()
-            try self.manager.setBrowserTime(browserTime)
+            try self.manager?.start()
+            try self.manager?.setBrowserTime(browserTime)
             try AVAudioSession.sharedInstance().setCategory(.playback)
             try AVAudioSession.sharedInstance().setActive(true)
 
@@ -178,7 +179,7 @@ import AVFoundation
             }
 
             do {
-                let samplePlayback = try self.manager.playSample(
+                guard let samplePlayback = try self.manager?.playSample(
                     sampleId: sampleId,
                     channel: channel,
                     playbackId: playbackId,
@@ -187,7 +188,7 @@ import AVFoundation
                     offset: offset,
                     playbackRate: playbackRate,
                     fadeInDuration: fadeInDuration
-                )
+                ) else { return }
                 pluginResult = CDVPluginResult(
                     status: CDVCommandStatus_OK,
                     messageAs: [
@@ -224,7 +225,7 @@ import AVFoundation
             }
 
             do {
-                self.manager.setPlaybackVolume(
+                self.manager?.setPlaybackVolume(
                     playbackId: playbackId,
                     atTime: atTime,
                     volume: volume,
@@ -261,7 +262,7 @@ import AVFoundation
             }
 
             do {
-                self.manager.stopPlayback(
+                self.manager?.stopPlayback(
                     playbackId: playbackId,
                     atTime: atTime,
                     fadeDuration: fadeDuration
@@ -290,7 +291,7 @@ import AVFoundation
         let channel = command.arguments[0] as? String ?? ""
         let volume = (command.arguments[1] as? Double ?? 0)
 
-        self.manager.setChannelVolume(channel: channel, volume: volume)
+        self.manager?.setChannelVolume(channel: channel, volume: volume)
 
         pluginResult = CDVPluginResult(status: CDVCommandStatus_OK)
     }
@@ -302,7 +303,7 @@ import AVFoundation
         let channel = command.arguments[0] as? String ?? ""
         let pan = (command.arguments[1] as? Double ?? 0)
 
-        self.manager.setChannelPan(channel: channel, pan: pan)
+        self.manager?.setChannelPan(channel: channel, pan: pan)
 
         pluginResult = CDVPluginResult(status: CDVCommandStatus_OK)
     }
@@ -314,7 +315,7 @@ import AVFoundation
         let channel = command.arguments[0] as? String ?? ""
         let muted = command.arguments[1] as? Bool ?? false
 
-        self.manager.setChannelMuted(channel: channel, muted: muted)
+        self.manager?.setChannelMuted(channel: channel, muted: muted)
 
         pluginResult = CDVPluginResult(status: CDVCommandStatus_OK)
     }
@@ -325,7 +326,7 @@ import AVFoundation
 
         let volume = (command.arguments[0] as? Double ?? 0)
 
-        self.manager.setMasterVolume(volume: volume)
+        self.manager?.setMasterVolume(volume: volume)
 
         pluginResult = CDVPluginResult(status: CDVCommandStatus_OK)
     }

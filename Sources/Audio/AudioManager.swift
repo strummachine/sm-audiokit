@@ -11,7 +11,6 @@ import AVFAudio
 import AudioKitEX
 
 class AudioManager {
-    static let shared = { AudioManager() }()
     let engine = AudioEngine()
 
     let mainMixer: Mixer
@@ -26,6 +25,10 @@ class AudioManager {
     init() {
         mainMixer = Mixer(volume: 1.0, name: "master")
         engine.output = mainMixer
+    }
+
+    func destroy() {
+        // TODO: dispose of all resources
     }
 
     func loadTestPackage() {
