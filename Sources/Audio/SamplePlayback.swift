@@ -22,14 +22,14 @@ class SamplePlayback {
     }
     
     func fade(at: AVAudioTime, to: Double, duration: Double) {
-        self.samplePlayer?.fade(at: at, to: to, duration: duration)
+        self.samplePlayer?.scheduleFade(at: at, to: to, duration: duration)
     }
   
     func changePlaybackRate(at: AVAudioTime, to: Double, duration: Double ) {
         self.samplePlayer?.changePlaybackRate(at: at, to: to, duration: duration)
     }
 
-    func stop(at: AVAudioTime?) {
-        self.samplePlayer?.stop(at: at)
+    func stop(at: AVAudioTime?, fadeDuration: Double?) {
+        self.samplePlayer?.scheduleStop(at: at, fadeDuration: fadeDuration)
     }
 }

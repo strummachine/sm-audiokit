@@ -30,7 +30,7 @@ class SamplePlayerPool {
     
     public func stopAllPlayers() {
         for player in players {
-            player.stop()
+            player.stopImmediately()
         }
     }
 }
