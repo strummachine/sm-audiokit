@@ -37,6 +37,7 @@ enum AudioManagerError: Error, CustomStringConvertible {
     case audioEngineCannotStart(error: Error)
     case cannotFindSample(sampleId: String)
     case cannotFindChannel(channel: String)
+    case cannotFindChannelId(channelId: String)
     case cannotUnwrapMainMixerNode
     case cannotUnwrapLastRenderTime
     var description: String {
@@ -47,6 +48,8 @@ enum AudioManagerError: Error, CustomStringConvertible {
                 return String("Cannot find sample with sampleId:\(sampleId)")
             case .cannotFindChannel(let channel):
                 return String("Cannot find channel with channelId:\(channel)")
+            case .cannotFindChannelId(let id):
+                return String("Cannot unwrap channel id with id:\(id)")
             case .cannotUnwrapMainMixerNode:
                 return "Cannot unwrap main mixer node. Most likely nil or engine is not running"
             case .cannotUnwrapLastRenderTime:

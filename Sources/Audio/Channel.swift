@@ -32,6 +32,18 @@ class Channel {
     public func stopAllPlayers() {
         self.playerPool.stopAllPlayers()
     }
+    
+    public func tearDownPlayers() {
+        for player in self.playerPool.players {
+            if player.available {
+                self.mixer.removeInput(player.outputNode)
+            }
+            else {
+                print("Player was unavailble during tear down, this should never happen")
+            }
+        }
+        self.playerPool.removeAllPlayers()
+    }
 
     private var _volume = 1.0
     var volume: Double {

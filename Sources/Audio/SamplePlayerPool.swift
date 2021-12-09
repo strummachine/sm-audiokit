@@ -30,7 +30,12 @@ class SamplePlayerPool {
     
     public func stopAllPlayers() {
         for player in players {
+            print("Stopping player:\(player.sampleId)")
             player.stop()
         }
+    }
+    
+    public func removeAllPlayers() {
+        players.removeAll()
     }
 }

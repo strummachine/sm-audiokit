@@ -130,8 +130,6 @@ class SamplePlayer {
     }
     
     func stop() {
-        self.fader.$leftGain.ramp(to: 0.0, duration: 0.05)
-        self.fader.$rightGain.ramp(to: 0.0, duration: 0.05)
         self.player.stop()
     }
 }

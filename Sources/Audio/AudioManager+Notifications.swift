@@ -77,11 +77,13 @@ extension AudioManager {
 
     @objc func enterBackground() {
         print("Entering background")
+        self.applicationState = .background
         stopEngine()
     }
 
     @objc func enterForeground() {
         print("Entering Foreground")
+        self.applicationState = .foreground
         restartEngine()
     }
     

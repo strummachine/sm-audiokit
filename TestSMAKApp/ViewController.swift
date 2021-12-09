@@ -18,11 +18,21 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         do {
-            AudioManager.shared.createChannel(id: "guitar", polyphonyLimit: 20)
-            AudioManager.shared.createChannel(id: "drums", polyphonyLimit: 40)
-            AudioManager.shared.createChannel(id: "test", polyphonyLimit: 20)
+            let guitarChannel: [String: String] =
+            [ChannelDictConstants.id.rawValue : "guitar",
+             ChannelDictConstants.polyphonyLimit.rawValue : "20"]
+            let drumChannel: [String: String] =
+            [ChannelDictConstants.id.rawValue : "drums",
+             ChannelDictConstants.polyphonyLimit.rawValue : "40"]
+            let testChannel: [String: String] =
+            [ChannelDictConstants.id.rawValue : "test",
+             ChannelDictConstants.polyphonyLimit.rawValue : "20"]
+            
+            let channels : [[String:String]] = [guitarChannel,drumChannel,testChannel]
+            
+            try AudioManager.shared.setup(with: channels)
+            try AudioManager.shared.startEngine()
             AudioManager.shared.loadTestPackage()
-            try AudioManager.shared.start()
             self.setLabel(with: "Ready")
             availableSamples = AudioManager.shared.sampleBank
             NotificationCenter.default.addObserver(self, selector: #selector(updateLabel), name: Notification.Name("PlayerCompletion"), object: nil)
