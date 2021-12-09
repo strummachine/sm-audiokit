@@ -31,7 +31,7 @@ class SamplePlayerPool {
     public func stopAllPlayers() {
         for player in players {
             print("Stopping player:\(player.sampleId)")
-            player.stop()
+            player.stopImmediately()
         }
     }
     

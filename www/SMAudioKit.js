@@ -62,7 +62,7 @@ exports.gonnaStop = execNativeWithArgs('gonnaStop', (args) => []);
 exports.setMasterVolume = execNativeWithArgs('setMasterVolume', (args) => [
   args.volume, // number (scale TBD)
   // should we just hard-code this into Swift?
-  args.fadeDuration || 0.05, // number, defaults to 50ms fade to prevent popping
+  typeof args.fadeDuration == 'number' ? args.fadeDuration : 0.05, // number, defaults to 50ms fade to prevent popping
 ]);
 
 // TODO:
@@ -76,7 +76,7 @@ exports.setChannelVolume = execNativeWithArgs('setChannelVolume', (args) => [
   args.channel, // string
   args.volume, // number (scale TBD)
   // should we just hard-code this into Swift?
-  args.fadeDuration || 0.05, // number, defaults to 50ms fade to prevent popping
+  typeof args.fadeDuration == 'number' ? args.fadeDuration : 0.05, // number, defaults to 50ms fade to prevent popping
 ]);
 
 exports.setChannelPan = execNativeWithArgs('setChannelPan', (args) => [
@@ -106,11 +106,11 @@ exports.playSample = execNativeWithArgs('playSample', (args) => [
   args.channel, // string
   args.playbackId || generateRandomPlaybackId(), // string
   args.atTime, // number
-  args.volume || DEFAULT_VOLUME, // number (scale TBD)
-  args.offset || 0, // number, start offset within file
-  args.playbackRate || 1, // number
-  args.fadeInDuration || 0,
-  args.playDuration || -1,
+  typeof args.volume == 'number' ? args.volume : DEFAULT_VOLUME, // number (scale TBD)
+  typeof args.offset == 'number' ? args.offset : 0, // number, start offset within file
+  typeof args.fadeInDuration == 'number' ? args.fadeInDuration : 0,
+  typeof args.playbackRate == 'number' ? args.playbackRate : 1, // number
+  args.playDuration, // can be null
 ]);
 
 /**
@@ -119,8 +119,8 @@ exports.playSample = execNativeWithArgs('playSample', (args) => [
 exports.setPlaybackVolume = execNativeWithArgs('setPlaybackVolume', (args) => [
   args.playbackId, // string
   args.atTime, // number
-  args.volume || 1, // number (scale TBD)
-  args.fadeDuration || 0.001,
+  typeof args.volume == 'number' ? args.volume : 1, // number (scale TBD)
+  typeof args.fadeDuration == 'number' ? args.fadeDuration : 0.01,
 ]);
 
 /**
@@ -130,8 +130,8 @@ exports.setPlaybackVolume = execNativeWithArgs('setPlaybackVolume', (args) => [
 exports.setPlaybackRate = execNativeWithArgs('changePlaybackRate', (args) => [
   args.playbackId, // string
   args.atTime, // number
-  args.playbackRate || 1, // number
-  args.tweenDuration || 0.001,
+  typeof args.playbackRate == 'number' ? args.playbackRate : 1, // number
+  typeof args.tweenDuration == 'number' ? args.tweenDuration : 0.01,
 ]);
 
 /**
@@ -140,7 +140,7 @@ exports.setPlaybackRate = execNativeWithArgs('changePlaybackRate', (args) => [
 exports.stopPlayback = execNativeWithArgs('stopPlayback', (args) => [
   args.playbackId, // string
   args.atTime, // number, stop immediately if nullish
-  args.fadeDuration || 0.001,
+  typeof args.fadeDuration == 'number' ? args.fadeDuration : 0.01,
 ]);
 
 // LATER: Recording to MP3, with or without the mic

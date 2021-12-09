@@ -185,10 +185,7 @@ extension AudioManager {
 
     func stopPlayback(playbackId: String, atTime: Double, fadeDuration: Double = 0.0) {
         let time = browserTimeToAudioTime(atTime)
-        if fadeDuration > 0 {
-          playbacks[playbackId]?.fade(at: time, to: 0, duration: fadeDuration)
-        }
-        playbacks[playbackId]?.stop(at: time.offset(seconds: Double(fadeDuration)))
+        playbacks[playbackId]?.stop(at: time, fadeDuration: fadeDuration)
     }
 }
 

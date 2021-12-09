@@ -144,10 +144,10 @@ import AVFoundation
             let channel = command.arguments[1] as? String ?? ""
             let playbackId = command.arguments[2] as? String ?? ""
             let atTime = (command.arguments[3] as? Double ?? 0)
-            let volume = (command.arguments[4] as? Double ?? 0)
-            let offset = (command.arguments[5] as? Double ?? 0)
-            let playbackRate = (command.arguments[6] as? Double ?? 1)
-            let fadeInDuration = (command.arguments[7] as? Double ?? 0)
+            let volume = (command.arguments[4] as? Double ?? 1.0)
+            let offset = (command.arguments[5] as? Double ?? 0.0)
+            let fadeInDuration = (command.arguments[6] as? Double ?? 0.0)
+            let playbackRate = (command.arguments[7] as? Double ?? 1.0)
             // let playDuration = command.arguments[8] as? Double ?? 0  // not used
 
             do {
@@ -188,8 +188,8 @@ import AVFoundation
 
             let playbackId = command.arguments[0] as? String ?? ""
             let atTime = (command.arguments[1] as? Double ?? 0)
-            let volume = (command.arguments[2] as? Double ?? 0)
-            let fadeDuration = (command.arguments[3] as? Double ?? 0)
+            let volume = (command.arguments[2] as? Double ?? 0.5)
+            let fadeDuration = (command.arguments[3] as? Double ?? 0.05)
 
             do {
                 self.manager.setPlaybackVolume(
@@ -220,7 +220,7 @@ import AVFoundation
 
             let playbackId = command.arguments[0] as? String ?? ""
             let atTime = (command.arguments[1] as? Double ?? 0)
-            let fadeDuration = (command.arguments[2] as? Double ?? 0)
+            let fadeDuration = (command.arguments[2] as? Double ?? 0.05)
 
             do {
                 self.manager.stopPlayback(
@@ -251,7 +251,7 @@ import AVFoundation
             defer { self.commandDelegate!.send(pluginResult, callbackId: command.callbackId) }
 
             let channel = command.arguments[0] as? String ?? ""
-            let volume = (command.arguments[1] as? Double ?? 0)
+            let volume = (command.arguments[1] as? Double ?? 0.5)
 
             self.manager.setChannelVolume(channel: channel, volume: volume)
 
@@ -265,7 +265,7 @@ import AVFoundation
             defer { self.commandDelegate!.send(pluginResult, callbackId: command.callbackId) }
 
             let channel = command.arguments[0] as? String ?? ""
-            let pan = (command.arguments[1] as? Double ?? 0)
+            let pan = (command.arguments[1] as? Double ?? 0.0)
 
             self.manager.setChannelPan(channel: channel, pan: pan)
 
@@ -292,7 +292,7 @@ import AVFoundation
             var pluginResult = CDVPluginResult(status: CDVCommandStatus_ERROR)
             defer { self.commandDelegate!.send(pluginResult, callbackId: command.callbackId) }
 
-            let volume = (command.arguments[0] as? Double ?? 0)
+            let volume = (command.arguments[0] as? Double ?? 0.5)
 
             self.manager.setMasterVolume(volume: volume)
 

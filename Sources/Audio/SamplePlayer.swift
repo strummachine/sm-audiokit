@@ -8,6 +8,7 @@ class SamplePlayer {
     var player: AudioPlayer
     var varispeed: VariSpeed
     var fader: Fader
+    var fadeAutomationEvents: [AutomationEvent] = []
     var outputNode: Node {
         get { fader }
     }
@@ -51,6 +52,7 @@ class SamplePlayer {
     ) throws -> SamplePlayback {
         self.playback?.samplePlayer = nil
         self.playback = nil
+        self.fadeAutomationEvents = []
 
         if sample.id != self.sampleId {
             do {
@@ -64,12 +66,12 @@ class SamplePlayer {
 
         self.startTime = atTime
 
-        self.varispeed.rate = Float(playbackRate)
         if playbackRate != 1.0 {
             self.varispeed.start()
         } else {
             self.varispeed.stop()
         }
+        self.varispeed.rate = Float(playbackRate)
 
         self.fader.stopAutomation()
         self.fader.gain = fadeInDuration > 0 ? 0 : Float(volume)
@@ -78,13 +80,14 @@ class SamplePlayer {
         self.player.play(from: offset, to: nil, at: AVAudioTime(hostTime: atTime.hostTime), completionCallbackType: .dataPlayedBack)
 
         if fadeInDuration > 0 {
-            self.fader.automateGain(events: [
+            self.fadeAutomationEvents.append(
                 AutomationEvent(
                     targetValue: Float(volume),
                     startTime: 0, // TODO: or offset?
                     rampDuration: Float(fadeInDuration)
                 )
-            ], startTime: self.startTime)
+            )
+            self.fader.automateGain(events: self.fadeAutomationEvents, startTime: self.startTime)
         }
 
         self.playback = SamplePlayback(samplePlayer: self, sampleId: sample.id, playbackId: playbackId, duration: sample.duration - offset)
@@ -92,31 +95,19 @@ class SamplePlayer {
         return self.playback!
     }
 
-    func fade(at: AVAudioTime, to: Double, duration: Double) {
+    func scheduleFade(at: AVAudioTime, to: Double, duration: Double) {
         let delay = at.timeIntervalSince(otherTime: self.startTime!) ?? 0
 
         // TODO: Fit curve of exponental function from Web Audio (Luke)
 
-        self.fader.automateGain(events: [
+        self.fadeAutomationEvents.append(
             AutomationEvent(
                 targetValue: Float(to),
                 startTime: Float(delay),
                 rampDuration: Float(duration)
             )
-        ], startTime: self.startTime)
-
-        let origPlaybackId = self.playbackId
-        if (to == 0.0) {
-            if let lastRenderTime = self.player.avAudioNode.lastRenderTime {
-                let delayFromNow = at.timeIntervalSince(otherTime: lastRenderTime) ?? 0
-                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + (delayFromNow + duration + 0.3)) {
-                    if origPlaybackId == self.playbackId {
-                        self.player.stop()
-                        self.player.completionHandler?()
-                    }
-                }
-            }
-        }
+        )
+        self.fader.automateGain(events: self.fadeAutomationEvents, startTime: self.startTime)
     }
 
     func changePlaybackRate(at: AVAudioTime, to: Double, duration: Double ) {
@@ -127,19 +118,21 @@ class SamplePlayer {
         }
     }
 
-    func stop(at: AVAudioTime?) {
-        let gap = at?.timeIntervalSince(otherTime: AVAudioTime.now()) ?? 0
-        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + gap) {
-            self.fader.$leftGain.ramp(to: 0.0, duration: 0.05)
-            self.fader.$rightGain.ramp(to: 0.0, duration: 0.05)
-            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.05 + 0.02) {
-                self.player.stop()
-                self.player.completionHandler?()
-            }
+    func scheduleStop(at: AVAudioTime?, fadeDuration maybeFadeDuration: Double?) {
+        let fadeDuration = maybeFadeDuration ?? 0.05
+        self.scheduleFade(at: at ?? AVAudioTime.now(), to: 0.0, duration: fadeDuration)
+
+        let origPlaybackId = self.playbackId
+        guard let lastRenderTime = self.player.avAudioNode.lastRenderTime else { return }
+        let delayFromNow = at?.timeIntervalSince(otherTime: lastRenderTime) ?? 0
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + (delayFromNow + fadeDuration + 0.01)) {
+            guard origPlaybackId == self.playbackId else { return }  // make sure this player hasn't been reassigned
+            self.player.stop()
+            self.player.completionHandler?()
         }
     }
     
-    func stop() {
+    func stopImmediately() {
         self.player.stop()
     }
 }
