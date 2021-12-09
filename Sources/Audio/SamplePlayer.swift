@@ -32,7 +32,7 @@ class SamplePlayer {
         self.fader.stop()
         self.player.completionHandler = {
             self.fader.stopAutomation()
-            self.fader.stop()
+            // we don't bypass the fader node because we'll get a click
             self.varispeed.stop()
             self.playback?.samplePlayer = nil
             self.playback = nil
