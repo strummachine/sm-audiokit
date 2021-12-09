@@ -300,7 +300,7 @@ import AVFoundation
         })
     }
 
-    @objc func onReset() {
+    @objc override func onReset() {
         // TODO: handle Cordova page reload as described here:
         // https://cordova.apache.org/docs/en/latest/guide/platforms/ios/plugin.html#plugin-initialization-and-lifetime
     }
