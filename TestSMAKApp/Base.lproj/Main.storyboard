@@ -12,7 +12,7 @@
         <!--View Controller-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController id="BYZ-38-t0r" customClass="ViewController" customModule="sm_audiokit" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="BYZ-38-t0r" customClass="ViewController" customModule="TestSMAKApp" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -51,16 +51,14 @@
                                             <action selector="tappedScheduledSample:" destination="BYZ-38-t0r" eventType="touchUpInside" id="5Me-Ks-Vqj"/>
                                         </connections>
                                     </button>
-                                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="mpY-eL-tI3">
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ADS-zA-CKV">
                                         <rect key="frame" x="32" y="705" width="350" height="125"/>
-                                        <subviews>
-                                            <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="Schedule Sample in ms." textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Ftb-2J-NXZ">
-                                                <rect key="frame" x="0.0" y="0.0" width="350" height="125"/>
-                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                                <textInputTraits key="textInputTraits"/>
-                                            </textField>
-                                        </subviews>
-                                    </stackView>
+                                        <state key="normal" title="Button"/>
+                                        <buttonConfiguration key="configuration" style="filled" title="Stop Samples"/>
+                                        <connections>
+                                            <action selector="tappedStopSamples:" destination="BYZ-38-t0r" eventType="touchUpInside" id="eQ3-JL-UJg"/>
+                                        </connections>
+                                    </button>
                                 </subviews>
                                 <edgeInsets key="layoutMargins" top="32" left="32" bottom="32" right="32"/>
                             </stackView>
@@ -76,7 +74,6 @@
                     </view>
                     <connections>
                         <outlet property="playingSampleLabel" destination="htT-Vj-ToQ" id="mXC-y4-bOR"/>
-                        <outlet property="scheduleSampleTextField" destination="Ftb-2J-NXZ" id="C7j-5t-OGI"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>

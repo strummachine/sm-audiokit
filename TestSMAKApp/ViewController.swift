@@ -78,45 +78,51 @@ class ViewController: UIViewController {
     @IBAction func tappedScheduledSample(_ sender: Any) {
         self.setLabel(with: "Rocking out...")
         do {
-            try AudioManager.shared.setBrowserTime(-1.01)
-            var iteration = 0
-            let bpm = Double(300.0)
-            let beatDuration = 60.0 / bpm
-            let iterationDuration = 8 * beatDuration
-            let drumLoop = {
-                print("Starting iteration \(iteration)")
-                do {
-                    for beat in 0...7 {
-                        let timeOfBeat = 0.02 + Double(iteration) * iterationDuration + beatDuration * Double(beat)
-                        let timeOfNextBeat = timeOfBeat + beatDuration
-                        if beat % 4 == 0 {
-                            try AudioManager.shared.playSample(sampleId: "kick", channel: "guitar", playbackId: ("kick"+String(beat)), atTime: timeOfBeat)
+            //try autoreleasepool {
+                try AudioManager.shared.setBrowserTime(-1.01)
+                var iteration = 0
+                let bpm = Double(300.0)
+                let beatDuration = 60.0 / bpm
+                let iterationDuration = 8 * beatDuration
+                let drumLoop = {
+                    print("Starting iteration \(iteration)")
+                    do {
+                        for beat in 0...7 {
+                            let timeOfBeat = 0.02 + Double(iteration) * iterationDuration + beatDuration * Double(beat)
+                            let timeOfNextBeat = timeOfBeat + beatDuration
+                            if beat % 4 == 0 {
+                                try AudioManager.shared.playSample(sampleId: "kick", channel: "guitar", playbackId: ("kick"+String(beat)), atTime: timeOfBeat)
+                            }
+                            if beat % 4 == 2 {
+                                try AudioManager.shared.playSample(sampleId: "snare", channel: "test", playbackId: ("snare"+String(beat)), atTime: timeOfBeat)
+                            }
+                            if beat % 8 != 7 {
+                                try AudioManager.shared.playSample(sampleId: "hat-closed", channel: "drums", playbackId: ("hat"+String(beat)), atTime: timeOfBeat)
+                            } else {
+                                let pb = try AudioManager.shared.playSample(sampleId: "hat-open", channel: "drums", playbackId: "hat-open-pb", atTime: timeOfBeat)
+                                AudioManager.shared.setPlaybackVolume(playbackId: pb.playbackId, atTime: timeOfNextBeat, volume: 0.0, fadeDuration: 0.05)
+                            }
                         }
-                        if beat % 4 == 2 {
-                            try AudioManager.shared.playSample(sampleId: "snare", channel: "test", playbackId: ("snare"+String(beat)), atTime: timeOfBeat)
-                        }
-                        if beat % 8 != 7 {
-                            try AudioManager.shared.playSample(sampleId: "hat-closed", channel: "drums", playbackId: ("hat"+String(beat)), atTime: timeOfBeat)
-                        } else {
-                            let pb = try AudioManager.shared.playSample(sampleId: "hat-open", channel: "drums", playbackId: "hat-open-pb", atTime: timeOfBeat)
-                            AudioManager.shared.setPlaybackVolume(playbackId: pb.playbackId, atTime: timeOfNextBeat, volume: 0.0, fadeDuration: 0.05)
-                        }
+                    } catch let error as AudioManagerError {
+                        print(error.description)
+                    } catch {
+                        //Generic Error Handeling
                     }
-                } catch let error as AudioManagerError {
-                    print(error.description)
-                } catch {
-                    //Generic Error Handeling
+                    iteration += 1
                 }
-                iteration += 1
-            }
-            for iterationBeingPlanned in 0...200 {
-                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(Int(1000 * Double(iterationBeingPlanned) * iterationDuration)), execute: drumLoop)
-            }
+                for iterationBeingPlanned in 0...200 {
+                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(Int(1000 * Double(iterationBeingPlanned) * iterationDuration)), execute: drumLoop)
+                }
+           // }
+            
         } catch let error as AudioManagerError {
             print(error.description)
         } catch {
             //Generic Error Handeling
         }
+    }
+    @IBAction func tappedStopSamples(_ sender: UIButton) {
+        AudioManager.shared.turnOffAllPlayers()
     }
     
     @objc func updateLabel() {

@@ -191,7 +191,7 @@ extension AudioManager {
         }
     }
     
-    private func turnOffAllPlayers() {
+    public func turnOffAllPlayers() {
         channels.forEach({ channel in
             let value = channel.value
             value.stopAllPlayers()

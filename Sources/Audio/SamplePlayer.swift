@@ -28,6 +28,7 @@ class SamplePlayer {
         self.player = AudioPlayer()
         self.varispeed = VariSpeed(player)
         self.fader = Fader(self.varispeed, gain: 1.0)
+        //self.fader = Fader(self.player, gain: 1.0)
         self.player.completionHandler = self.resetPlayer
     }
 
@@ -35,6 +36,7 @@ class SamplePlayer {
         self.fader.stopAutomation()
         self.playback?.samplePlayer = nil
         self.playback = nil
+        print("CompletionHandlerCalled:\(sampleId)")
     }
 
     func schedulePlayback(
@@ -53,7 +55,7 @@ class SamplePlayer {
             do {
                 try self.player.load(url: sample.url)
             } catch {
-                print("Error: Cannot load sample:\(error.localizedDescription)")
+                print("Error: Cannot load sample:\(error)")
                 throw SamplePlaybackError.cannotLoadPlayer
             }
             self.sampleId = sample.id
@@ -61,10 +63,10 @@ class SamplePlayer {
 
         self.startTime = atTime
 
-        self.varispeed.rate = Float(playbackRate)
+        self.varispeed.rate =  Float(playbackRate)
 
         self.fader.gain = fadeInDuration > 0 ? 0 : Float(volume)
-
+        
         self.player.play(from: offset, to: nil, at: AVAudioTime(hostTime: atTime.hostTime), completionCallbackType: .dataPlayedBack)
 
         if fadeInDuration > 0 {
