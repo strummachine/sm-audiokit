@@ -18,9 +18,11 @@ import AVFoundation
             var pluginResult = CDVPluginResult(status: CDVCommandStatus_ERROR)
             defer { self.commandDelegate!.send(pluginResult, callbackId: command.callbackId) }
 
+            let channelDefinitions = command.arguments[0] as! [[String: String]]
+
             do {
                 // TODO: Initialize AudioKit and stuff
-                // try self.manager.start()
+                try self.manager.setup(with: channelDefinitions)
             } catch {
                 // TODO: Set pluginResult error details if anything goes wrong
                 // if (error) {
@@ -64,31 +66,6 @@ import AVFoundation
         })
     }
 
-    @objc(setupChannels:) func setupChannels(command: CDVInvokedUrlCommand) {
-        DispatchQueue.main.async(execute: {
-            var pluginResult = CDVPluginResult(status: CDVCommandStatus_ERROR)
-            defer { self.commandDelegate!.send(pluginResult, callbackId: command.callbackId) }
-
-            let channelNames = command.arguments[0] as! [String]
-
-            do {
-                for channel in channelNames {
-                    self.manager.createChannel(id: channel)
-                }
-
-                pluginResult = CDVPluginResult(status: CDVCommandStatus_OK)
-            } catch {
-                // TODO: Set pluginResult error details if anything goes wrong
-                // if (error) {
-                //   pluginResult = CDVPluginResult(
-                //     status: CDVCommandStatus_ERROR,
-                //     messageAs: "err-code"
-                //   )
-                // }
-            }
-        })
-    }
-
     // MARK: starting/stopping playback session
 
     @objc(gonnaPlay:) func gonnaPlay(command: CDVInvokedUrlCommand) {
@@ -99,7 +76,7 @@ import AVFoundation
             let browserTime = (command.arguments[0] as! Double)
 
             do {
-                try self.manager.start()
+                try self.manager.startEngine()
                 try self.manager.setBrowserTime(browserTime)
                 try AVAudioSession.sharedInstance().setCategory(.playback)
                 try AVAudioSession.sharedInstance().setActive(true)

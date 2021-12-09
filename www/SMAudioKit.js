@@ -11,25 +11,14 @@ function execNativeWithArgs(methodName, transformArgs) {
 /**
  * Initialize AudioKit engine
  */
-exports.initialize = execNativeWithArgs('initialize', (args) => []);
-
-/**
- * Load audio-package from bundle.
- * @returns { loadedSamples: { sampleId: string; duration: number }[]
- * @throws if there's a problem loading the bundle
- */
-exports.setupChannels = execNativeWithArgs('setupChannels', (args) => [
-  args.channelNames, // string[]
+exports.initialize = execNativeWithArgs('initialize', (args) => [
+  args.channels.map(({ id, polyphonyLimit }) => {
+    return { 
+      id: id,
+      polyphonyLimit: "" + polyphonyLimit // convert to string
+    }
+  }),
 ]);
-
-// /**
-//  * Load audio-package from bundle.
-//  * @returns { loadedSamples: { sampleId: string; duration: number }[]
-//  * @throws if there's a problem loading the bundle
-//  */
-// exports.loadPackage = execNativeWithArgs('loadPackage', (args) => [
-//   args.path, // string, path relative to Meteor's /public directory
-// ]);
 
 /**
  * Load sample from MP3 data
