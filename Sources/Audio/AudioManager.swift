@@ -255,29 +255,13 @@ extension AudioManager {
 
 // MARK: - Audio Clock Timing Methods
 extension AudioManager {
-    private func getMasterClockSeconds() throws -> Double {
-        guard let mainMixerNode = self.engine.mainMixerNode else {
-            throw AudioManagerError.cannotUnwrapMainMixerNode
-        }
-        guard let lastRenderTime = mainMixerNode.avAudioNode.lastRenderTime else {
-            throw AudioManagerError.cannotUnwrapLastRenderTime
-        }
-        return AVAudioTime.seconds(forHostTime: lastRenderTime.hostTime)
-    }
-    
     public func browserTimeToAudioTime(_ browserTime: Double) -> AVAudioTime {
         return AVAudioTime(hostTime: 0).offset(seconds: self.browserTimeOffset + browserTime)
     }
 
     public func setBrowserTime(_ browserTime: Double) throws {
-        do {
-            let engineTime = try getMasterClockSeconds()
-            self.browserTimeOffset = engineTime - browserTime
-        } catch let error as AudioManagerError {
-            throw error
-        } catch {
-            //Generic Error handling
-        }
+        let systemTime = AVAudioTime.seconds(forHostTime: mach_absolute_time())
+        self.browserTimeOffset = systemTime - browserTime
     }
 }
 
