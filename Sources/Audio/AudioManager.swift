@@ -303,15 +303,17 @@ extension AudioManager {
 
 // MARK: - Audio Package Methods
 extension AudioManager {
-    func loadTestPackage() {
+    func loadTestPackage(completion: @escaping (Result<Void,AudioPackageError>) -> Void) {
         AudioPackageExtractor.extractAudioPackage(completion: { result in
             switch result {
             case .success(let samples):
                 for sample in samples {
                     self.sampleBank[sample.id] = sample
                 }
+                //The () is intentionally and how we return "Void" in Swift
+                completion(.success(()))
             case .failure(let error):
-                print(error)
+                completion(.failure(error))
             }
         })
         

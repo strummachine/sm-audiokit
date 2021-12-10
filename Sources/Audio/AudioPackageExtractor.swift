@@ -62,10 +62,11 @@ class AudioPackageExtractor {
         var nextFileByteOffset = firstFileByteOffset
         
         let group = DispatchGroup()
+        group.enter()
         for sampleDef in packageManifest.samples {
-            group.enter()
             ////8. Calculate byte range for this file and slice byte array accordingly
             let byteRange = nextFileByteOffset..<(nextFileByteOffset+sampleDef.length)
+            print(byteRange)
             let bytesForAudioPacket: [UInt8] = Array(data.bytes[byteRange])
           
             ////9. Save audio data to disk and create Sample
@@ -75,17 +76,18 @@ class AudioPackageExtractor {
                 case .success(let sample):
                     ////10. Add Sample to results
                     results.append(sample)
-                  
-                    ////11. Calculate byte offset for start of next file
-                    nextFileByteOffset += sampleDef.length
                 case .failure(let error):
                     group.leave()
                     completion(.failure(error))
                 }
             })
-            group.leave()
+            
+              ////11. Calculate byte offset for start of next file
+              nextFileByteOffset += sampleDef.length
         }
+        group.leave()
         group.notify(queue: .main) {
+            print(results)
             completion(.success(results))
         }
     }
