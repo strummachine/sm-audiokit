@@ -147,8 +147,8 @@ extension AudioManager {
 
 // MARK: - Sample Methods
 extension AudioManager {
+    // FIXME: This shoudl be named to "store sample"
     public func loadSample(sampleId: String, packageId: String, audioData: Data, completion: @escaping (Result<Sample,AudioPackageError>) -> Void) {
-        
         SampleStorage.storeSample(sampleId: sampleId, packageId: packageId, audioData: audioData, completion: { result in
             switch result {
                 case .success(let sample):
@@ -200,28 +200,37 @@ extension AudioManager {
         }
     }
     
-    public func getSampleList() throws -> [String] {
-        do {
-            return try SampleStorage.getSampleList()
-        } catch {
-            throw error
-        }
+    public func getSampleList(completion: @escaping (Result<[String],SampleStorageError>)->Void)  {
+        SampleStorage.getSampleList(completion: { result in
+            switch result {
+            case .success(let sampleList):
+                completion(.success(sampleList))
+            case .failure(let error):
+                completion(.failure(error))
+            }
+        })
     }
     
-    public func deleteSamples(with samplesToDelete:[String]) throws -> String {
-        do {
-            return try SampleStorage.deleteSamples(with: samplesToDelete)
-        } catch {
-            throw error
-        }
+    public func deleteSamples(with samplesToDelete:[String], completion: @escaping (Result<String,SampleStorageError>)->Void) {
+        SampleStorage.deleteSamples(with: samplesToDelete, completion: { result in
+            switch result {
+            case .success(let message):
+                completion(.success(message))
+            case .failure(let error):
+                completion(.failure(error))
+            }
+        })
     }
     
-    public func deleteAllFiles() throws -> String {
-        do {
-            return try SampleStorage.deleteAllFiles()
-        } catch {
-            throw error
-        }
+    public func deleteAllFiles(completion: @escaping (Result<String,SampleStorageError>)->Void) {
+        SampleStorage.deleteAllFiles(completion: { result in
+            switch result {
+            case .success(let message):
+                completion(.success(message))
+            case .failure(let error):
+                completion(.failure(error))
+            }
+        })
     }
 }
 
@@ -316,17 +325,6 @@ extension AudioManager {
                 completion(.failure(error))
             }
         })
-        
-//        do {
-//            let samples = try AudioPackageExtractor.extractAudioPackage()
-//            for sample in samples {
-//                sampleBank[sample.id] = sample
-//            }
-//        } catch {
-//            print(error)
-//        }
-
-
     }
 
     // Not using for now

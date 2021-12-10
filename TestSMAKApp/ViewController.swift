@@ -7,6 +7,7 @@
 
 import UIKit
 import AVFoundation
+import CryptoKit
 class ViewController: UIViewController {
 
     @IBOutlet weak var scheduleSampleTextField: UITextField!
@@ -17,7 +18,15 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        self.setLabel(with: "Loading")
+        AudioManager.shared.deleteAllFiles(completion: { result in
+            switch result {
+                case .success(let message):
+                    print(message)
+                case .failure(let error):
+                    print(error)
+            }
+        })
         // Do any additional setup after loading the view.
         //        AudioManager.shared.channels["guitar"]?.setPan(0.9)
         //        AudioManager.shared.channels["drums"]?.setPan(0.1)
@@ -26,12 +35,21 @@ class ViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         do {
-            //try AudioManager.shared.deleteAllFiles()
             AudioManager.shared.loadTestPackage(completion: { result in
                 switch result {
                 case .success():
                     self.availableSamples = AudioManager.shared.sampleBank
                     self.setLabel(with: "Ready")
+                    
+                    AudioManager.shared.getSampleList(completion: { result in
+                        switch result {
+                        case .success(let sampleList):
+                            print(sampleList)
+                        case .failure(let error):
+                            print(error)
+                        }
+                    })
+                    
                 case .failure(let error):
                     print(error)
                 }
@@ -47,8 +65,7 @@ class ViewController: UIViewController {
              ChannelDictConstants.polyphonyLimit.rawValue : "20"]
             
             let channels : [[String:String]] = [guitarChannel,drumChannel,testChannel]
-            let samples = try AudioManager.shared.getSampleList()
-            print(samples)
+
             try AudioManager.shared.setup(with: channels)
             try AudioManager.shared.startEngine()
             NotificationCenter.default.addObserver(self, selector: #selector(updateLabel), name: Notification.Name("PlayerCompletion"), object: nil)

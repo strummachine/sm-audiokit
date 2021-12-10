@@ -33,6 +33,22 @@ enum AudioPackageError: Error, CustomStringConvertible {
     }
 }
 
+enum SampleStorageError: Error, CustomStringConvertible {
+    case cannotGetSampleList(error: Error)
+    case cannotUnwrapDocumentsDirectoryURL
+    case cannotDeleteSamples(error: Error)
+    var description: String {
+        switch self {
+        case .cannotGetSampleList(let error):
+            return String("Error: Unable to retrieve sample list:\(error)")
+        case .cannotUnwrapDocumentsDirectoryURL:
+            return "Error: Unable to unwrap Documents Directory URL"
+        case .cannotDeleteSamples(let error):
+            return String("Error: Unable to delete samples:\(error)")
+        }
+    }
+}
+
 enum AudioManagerError: Error, CustomStringConvertible {
     case audioEngineCannotStart(error: Error)
     case cannotFindSample(sampleId: String)
