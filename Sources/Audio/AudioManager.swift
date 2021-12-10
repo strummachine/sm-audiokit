@@ -84,7 +84,7 @@ extension AudioManager {
             do {
                 Settings.bufferLength = .short
                 try AVAudioSession.sharedInstance().setPreferredIOBufferDuration(Settings.bufferLength.duration)
-                try AVAudioSession.sharedInstance().setCategory(.playAndRecord, options: [.defaultToSpeaker, .allowBluetooth, .allowBluetoothA2DP])
+                try AVAudioSession.sharedInstance().setCategory(.playback, options: [.mixWithOthers])
                 try AVAudioSession.sharedInstance().setActive(true)
             } catch {
                 print("ERROR: Can't set avaudiosession:\(error)")
@@ -93,6 +93,7 @@ extension AudioManager {
         }
         else {
             do {
+                try AVAudioSession.sharedInstance().setCategory(.ambient)
                 try AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
             } catch {
                 throw error
