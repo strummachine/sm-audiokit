@@ -40,6 +40,7 @@ enum AudioManagerError: Error, CustomStringConvertible {
     case cannotFindChannelId(channelId: String)
     case cannotUnwrapMainMixerNode
     case cannotUnwrapLastRenderTime
+    case cannotUnwrapDocumentsDirectoryURL
     var description: String {
         switch self {
             case .audioEngineCannotStart(let error):
@@ -50,6 +51,8 @@ enum AudioManagerError: Error, CustomStringConvertible {
                 return String("Cannot find channel with channelId:\(channel)")
             case .cannotFindChannelId(let id):
                 return String("Cannot unwrap channel id with id:\(id)")
+            case .cannotUnwrapDocumentsDirectoryURL:
+                return "Cannot unwrap Documents Directory URL"
             case .cannotUnwrapMainMixerNode:
                 return "Cannot unwrap main mixer node. Most likely nil or engine is not running"
             case .cannotUnwrapLastRenderTime:

@@ -290,7 +290,7 @@ extension AudioManager {
                 sampleBank[sample.id] = sample
             }
         } catch {
-            print(error.localizedDescription)
+            print(error)
         }
 
 

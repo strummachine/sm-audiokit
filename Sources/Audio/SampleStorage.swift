@@ -10,11 +10,13 @@ import AVFoundation
 import UIKit
 
 class SampleStorage {
-    static func storeSample(sampleId: String, audioData: Data) -> (Sample?, AudioPackageError?) {
+    static func storeSample(sampleId: String, packageId: String, audioData: Data) -> (Sample?, AudioPackageError?) {
         /// Write the MP3 file to disk; this is easier than putting into CoreAudioBuffer
         /// TODO:- may do if let here if we want to allow some failures to write, however
         /// letting the whole function return nil is probably what we want if we can't successfully write a file.
-        let urlTuple = self.writeFileToDisk(with: audioData, and: sampleId)
+        
+        let combinedFileName = String(sampleId+SpecialStringTypes.Pi.rawValue+packageId)
+        let urlTuple = self.writeFileToDisk(with: audioData, and: combinedFileName)
         guard let url = urlTuple.0 else {
             if let error = urlTuple.1 {
                 return (nil, error)
@@ -28,6 +30,31 @@ class SampleStorage {
         let duration = CMTimeGetSeconds(AVURLAsset(url: url).duration)
 
         return (Sample(id: sampleId, url: url, duration: duration), nil)
+    }
+    
+    static public func getSampleList() throws -> [String] {
+        ////1. Get the document directory url
+        guard let documentsUrl =  FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
+            throw AudioManagerError.cannotUnwrapDocumentsDirectoryURL
+        }
+
+        do {
+            ////2. Get the directory contents urls (including subfolder urls)
+            let directoryContents = try FileManager.default.contentsOfDirectory(at: documentsUrl, includingPropertiesForKeys: nil)
+            print(directoryContents)
+
+            ////3. Filter for the mp3 files
+            let mp3Files = directoryContents.filter{ $0.pathExtension == "mp3" }
+            print("mp3 urls:",mp3Files)
+            let mp3FileNames = mp3Files.map{ $0.deletingPathExtension().lastPathComponent }
+            print("mp3 list:", mp3FileNames)
+            
+            ////4. Replace Pi with Slash in filename
+            let sampleList = mp3FileNames.map {$0.replacingOccurrences(of: SpecialStringTypes.Pi.rawValue, with: SpecialStringTypes.Slash.rawValue)}
+            return sampleList
+        } catch {
+            throw error
+        }
     }
   
     private static func writeFileToDisk(with mp3Data: Data,and name: String) -> (URL?, AudioPackageError?) {
@@ -43,4 +70,9 @@ class SampleStorage {
             return (nil, AudioPackageError.unableToRetrieveDocumentsDirectory(error: error))
         }
     }
+}
+
+enum SpecialStringTypes: String {
+    case Pi = "π"
+    case Slash = "/"
 }
