@@ -26,6 +26,7 @@ class ViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         do {
+            try AudioManager.shared.deleteAllFiles()
             let guitarChannel: [String: String] =
             [ChannelDictConstants.id.rawValue : "guitar",
              ChannelDictConstants.polyphonyLimit.rawValue : "20"]
@@ -43,6 +44,8 @@ class ViewController: UIViewController {
             AudioManager.shared.loadTestPackage()
             self.setLabel(with: "Ready")
             availableSamples = AudioManager.shared.sampleBank
+            let samples = try AudioManager.shared.getSampleList()
+            print(samples)
             NotificationCenter.default.addObserver(self, selector: #selector(updateLabel), name: Notification.Name("PlayerCompletion"), object: nil)
         } catch let error as AudioManagerError {
             print(error.localizedDescription)

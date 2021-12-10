@@ -45,11 +45,11 @@ class SampleStorage {
 
             ////3. Filter for the mp3 files
             let mp3Files = directoryContents.filter{ $0.pathExtension == "mp3" }
-            print("mp3 urls:",mp3Files)
-            let mp3FileNames = mp3Files.map{ $0.deletingPathExtension().lastPathComponent }
-            print("mp3 list:", mp3FileNames)
             
-            ////4. Replace Pi with Slash in filename
+            ////4. Delete mp3 extension
+            let mp3FileNames = mp3Files.map{ $0.deletingPathExtension().lastPathComponent }
+            
+            ////5. Replace Pi with Slash in filename
             let sampleList = mp3FileNames.map {$0.replacingOccurrences(of: SpecialStringTypes.Pi.rawValue, with: SpecialStringTypes.Slash.rawValue)}
             return sampleList
         } catch {
@@ -71,7 +71,7 @@ class SampleStorage {
         }
     }
     
-    public static func deleteSamples(with samplesToDelete:[String]) throws -> String? {
+    public static func deleteSamples(with samplesToDelete:[String]) throws -> String {
         ////1. Get the document directory url
         guard let documentsUrl =  FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
             throw AudioManagerError.cannotUnwrapDocumentsDirectoryURL
@@ -87,11 +87,12 @@ class SampleStorage {
             //FIXME: We probably need additional checks, or cut off the path etc..
             let filesToDelete = fileURLs.filter{!samplesToDelete.contains($0.absoluteString)}
             for fileURL in filesToDelete {
+                ////4. We probably don't need this check but it is good practice.
                 if fileURL.pathExtension == "mp3"{
                     try FileManager.default.removeItem(at: fileURL)
                 }
             }
-            return "Successfully deleted requested mp3 samples"
+            return SampleLoadingMessageTypes.successDeleteList.rawValue
         } catch  {
             throw error
         }
@@ -112,11 +113,16 @@ class SampleStorage {
                     try FileManager.default.removeItem(at: fileURL)
                 }
             }
-            return "Successfully deleted all mp3 samples"
+            return SampleLoadingMessageTypes.successDeleteAll.rawValue
         } catch  {
             throw error
         }
     }
+}
+
+enum SampleLoadingMessageTypes: String {
+    case successDeleteAll = "Successfully deleted all mp3 samples from documents directory"
+    case successDeleteList = "Successfully deleted requested mp3 samples"
 }
 
 enum SpecialStringTypes: String {

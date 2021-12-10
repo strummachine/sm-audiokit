@@ -147,8 +147,8 @@ extension AudioManager {
 
 // MARK: - Sample Methods
 extension AudioManager {
-    public func loadSample(sampleId: String, audioData: Data) throws -> Sample {
-        let sampleTuple = SampleStorage.storeSample(sampleId: sampleId, audioData: audioData)
+    public func loadSample(sampleId: String,packageId: String, audioData: Data) throws -> Sample {
+        let sampleTuple = SampleStorage.storeSample(sampleId: sampleId, packageId: packageId, audioData: audioData)
         if let sample = sampleTuple.0 {
             sampleBank[sample.id] = sample
             return sample
@@ -163,7 +163,6 @@ extension AudioManager {
         }
     }
 
-    
     public func playSample(sampleId: String,
                     channel: String,
                     playbackId: String,
@@ -200,6 +199,30 @@ extension AudioManager {
             throw error
         } catch {
             //Generic Error Handling
+            throw error
+        }
+    }
+    
+    public func getSampleList() throws -> [String] {
+        do {
+            return try SampleStorage.getSampleList()
+        } catch {
+            throw error
+        }
+    }
+    
+    public func deleteSamples(with samplesToDelete:[String]) throws -> String {
+        do {
+            return try SampleStorage.deleteSamples(with: samplesToDelete)
+        } catch {
+            throw error
+        }
+    }
+    
+    public func deleteAllFiles() throws -> String {
+        do {
+            return try SampleStorage.deleteAllFiles()
+        } catch {
             throw error
         }
     }

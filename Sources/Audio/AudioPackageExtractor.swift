@@ -52,7 +52,6 @@ class AudioPackageExtractor {
             }
         }
 
-
         ////6. Prep array of [Sample] for successfull read and return
         var results: [Sample] = []
         
@@ -64,7 +63,7 @@ class AudioPackageExtractor {
             let bytesForAudioPacket: [UInt8] = Array(data.bytes[byteRange])
           
             ////9. Save audio data to disk and create Sample
-            let sampleTuple = SampleStorage.storeSample(sampleId: sampleDef.name, audioData: Data(bytesForAudioPacket))
+            let sampleTuple = SampleStorage.storeSample(sampleId: sampleDef.name, packageId: Date().dateAndTimetoString(), audioData: Data(bytesForAudioPacket))
             
             guard let sample = sampleTuple.0 else {
                 if let error = sampleTuple.1 {
@@ -164,5 +163,28 @@ extension Sequence where Element == UInt8  {
 extension Collection where Element == UInt8, Index == Int {
     func object<T>(at offset: Int = 0) -> T {
         data.object(at: offset)
+    }
+}
+
+extension Date {
+    func toString(format: String = "yyyy-MM-dd") -> String {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .short
+        formatter.dateFormat = format
+        return formatter.string(from: self)
+    }
+    
+    func dateAndTimetoString(format: String = "yyyy-MM-dd-HH:mm") -> String {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .short
+        formatter.dateFormat = format
+        return formatter.string(from: self)
+    }
+   
+    func timeIn24HourFormat() -> String {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .none
+        formatter.dateFormat = "HH:mm"
+        return formatter.string(from: self)
     }
 }
