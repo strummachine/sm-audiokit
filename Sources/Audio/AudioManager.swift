@@ -40,31 +40,65 @@ class AudioManager {
     }
     private func stop() {
         engine.stop()
+        do {
+            try self.setAVAudioSession(asActive: false)
+        } catch {
+            print("Error: Cannot set avaudiosession as false:\(error)")
+        }
     }
 }
 
 // MARK: - Setup methods
 extension AudioManager {
     public func setup(with channels:[[String: String]]) throws {
-        for channel in channels {
-            guard let id = channel[ChannelDictConstants.id.rawValue] else {
-                throw AudioManagerError.cannotFindChannelId(channelId: ChannelDictConstants.id.rawValue)
+        do {
+            try setAVAudioSession(asActive: true)
+            for channel in channels {
+                guard let id = channel[ChannelDictConstants.id.rawValue] else {
+                    throw AudioManagerError.cannotFindChannelId(channelId: ChannelDictConstants.id.rawValue)
+                }
+                ////The strategy here is to unwrap the polyphony limit, however if one is not
+                /// provided, we have the default amount of 16. We don't want to throw
+                /// an error if a limit is not provided.
+                let polyLimitString = channel[ChannelDictConstants.polyphonyLimit.rawValue] ?? "16"
+                let polyphonyLimit = Int(polyLimitString)
+                createChannel(id: id, polyphonyLimit: polyphonyLimit ?? 16)
             }
-            ////The strategy here is to unwrap the polyphony limit, however if one is not
-            /// provided, we have the default amount of 16. We don't want to throw
-            /// an error if a limit is not provided.
-            let polyLimitString = channel[ChannelDictConstants.polyphonyLimit.rawValue] ?? "16"
-            let polyphonyLimit = Int(polyLimitString)
-            createChannel(id: id, polyphonyLimit: polyphonyLimit ?? 16)
+            registerForNotifications()
+            engine.output = mainMixer
+        } catch {
+            throw error
         }
-        registerForNotifications()
-        engine.output = mainMixer
     }
     public func teardown() {
         DispatchQueue.main.async {
             self.turnOffAllPlayers()
             self.removeChannels()
+            self.stop()
         }
+    }
+    
+    public func setAVAudioSession(asActive: Bool) throws {
+        #if os(iOS)
+        if asActive {
+            do {
+                Settings.bufferLength = .short
+                try AVAudioSession.sharedInstance().setPreferredIOBufferDuration(Settings.bufferLength.duration)
+                try AVAudioSession.sharedInstance().setCategory(.playAndRecord, options: [.defaultToSpeaker, .allowBluetooth, .allowBluetoothA2DP])
+                try AVAudioSession.sharedInstance().setActive(true)
+            } catch {
+                print("ERROR: Can't set avaudiosession:\(error)")
+                throw error
+            }
+        }
+        else {
+            do {
+                try AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
+            } catch {
+                throw error
+            }
+        }
+        #endif
     }
 }
 
@@ -88,6 +122,7 @@ extension AudioManager {
     public func restartEngine() {
         DispatchQueue.main.async {
             do {
+                try self.setAVAudioSession(asActive: true)
                 try self.start()
             } catch {
                 print(error)

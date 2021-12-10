@@ -17,6 +17,14 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        // Do any additional setup after loading the view.
+        //        AudioManager.shared.channels["guitar"]?.setPan(0.9)
+        //        AudioManager.shared.channels["drums"]?.setPan(0.1)
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
         do {
             let guitarChannel: [String: String] =
             [ChannelDictConstants.id.rawValue : "guitar",
@@ -39,12 +47,9 @@ class ViewController: UIViewController {
         } catch let error as AudioManagerError {
             print(error.localizedDescription)
         } catch {
-            // Generic Error handling
+            print(error)
         }
 
-        // Do any additional setup after loading the view.
-        //        AudioManager.shared.channels["guitar"]?.setPan(0.9)
-        //        AudioManager.shared.channels["drums"]?.setPan(0.1)
     }
 
     @IBAction func tappedRandomSample(_ sender: Any) {
