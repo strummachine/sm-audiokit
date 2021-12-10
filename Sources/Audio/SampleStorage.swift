@@ -70,6 +70,53 @@ class SampleStorage {
             return (nil, AudioPackageError.unableToRetrieveDocumentsDirectory(error: error))
         }
     }
+    
+    public static func deleteSamples(with samplesToDelete:[String]) throws -> String? {
+        ////1. Get the document directory url
+        guard let documentsUrl =  FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
+            throw AudioManagerError.cannotUnwrapDocumentsDirectoryURL
+        }
+
+        do {
+            ////2. Get the directory contents urls (including subfolder urls)
+            let fileURLs = try FileManager.default.contentsOfDirectory(at:documentsUrl,
+                                                                       includingPropertiesForKeys: nil,
+                                                                       options: .skipsHiddenFiles)
+            ////3. Filter the files we need to delete.
+            ///
+            //FIXME: We probably need additional checks, or cut off the path etc..
+            let filesToDelete = fileURLs.filter{!samplesToDelete.contains($0.absoluteString)}
+            for fileURL in filesToDelete {
+                if fileURL.pathExtension == "mp3"{
+                    try FileManager.default.removeItem(at: fileURL)
+                }
+            }
+            return "Successfully deleted requested mp3 samples"
+        } catch  {
+            throw error
+        }
+    }
+    
+    //For debugging purposes
+    public static func deleteAllFiles() throws -> String {
+        guard let documentsUrl =  FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
+            throw AudioManagerError.cannotUnwrapDocumentsDirectoryURL
+        }
+
+        do {
+            let fileURLs = try FileManager.default.contentsOfDirectory(at:documentsUrl,
+                                                                       includingPropertiesForKeys: nil,
+                                                                       options: .skipsHiddenFiles)
+            for fileURL in fileURLs {
+                if fileURL.pathExtension == "mp3" {
+                    try FileManager.default.removeItem(at: fileURL)
+                }
+            }
+            return "Successfully deleted all mp3 samples"
+        } catch  {
+            throw error
+        }
+    }
 }
 
 enum SpecialStringTypes: String {
