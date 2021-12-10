@@ -147,20 +147,17 @@ extension AudioManager {
 
 // MARK: - Sample Methods
 extension AudioManager {
-    public func loadSample(sampleId: String,packageId: String, audioData: Data) throws -> Sample {
-        let sampleTuple = SampleStorage.storeSample(sampleId: sampleId, packageId: packageId, audioData: audioData)
-        if let sample = sampleTuple.0 {
-            sampleBank[sample.id] = sample
-            return sample
-        }
-        else {
-            if let error = sampleTuple.1 {
-                throw error
+    public func loadSample(sampleId: String, packageId: String, audioData: Data, completion: @escaping (Result<Sample,AudioPackageError>) -> Void) {
+        
+        SampleStorage.storeSample(sampleId: sampleId, packageId: packageId, audioData: audioData, completion: { result in
+            switch result {
+                case .success(let sample):
+                    self.sampleBank[sample.id] = sample
+                    completion(.success(sample))
+                case .failure(let error):
+                    completion(.failure(error))
             }
-            else {
-                throw AudioPackageError.unknownError
-            }
-        }
+        })
     }
 
     public func playSample(sampleId: String,
@@ -307,14 +304,25 @@ extension AudioManager {
 // MARK: - Audio Package Methods
 extension AudioManager {
     func loadTestPackage() {
-        do {
-            let samples = try AudioPackageExtractor.extractAudioPackage()
-            for sample in samples {
-                sampleBank[sample.id] = sample
+        AudioPackageExtractor.extractAudioPackage(completion: { result in
+            switch result {
+            case .success(let samples):
+                for sample in samples {
+                    self.sampleBank[sample.id] = sample
+                }
+            case .failure(let error):
+                print(error)
             }
-        } catch {
-            print(error)
-        }
+        })
+        
+//        do {
+//            let samples = try AudioPackageExtractor.extractAudioPackage()
+//            for sample in samples {
+//                sampleBank[sample.id] = sample
+//            }
+//        } catch {
+//            print(error)
+//        }
 
 
     }

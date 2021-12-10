@@ -12,10 +12,11 @@ import AVFoundation
 
 class AudioPackageExtractor {
     
-    public static func extractAudioPackage() throws -> [Sample] {
+    public static func extractAudioPackage(completion: @escaping (Result<[Sample],AudioPackageError>)-> Void) {
         ////1. Get path for audio-package file
         guard let pathForFile = Bundle.main.path(forResource: "testbed_mono_mp3", ofType: "audio-package") else {
-            throw AudioPackageError.unableToFindPathForResrouce
+            completion(.failure(AudioPackageError.unableToFindPathForResrouce))
+            return
         }
       
         ////2. Convert file path to URL
@@ -26,7 +27,8 @@ class AudioPackageExtractor {
         
         guard let data = dataTuple.0 else {
             if let error = dataTuple.1 {
-                throw error
+                completion(.failure(error))
+                return
             }
             else {
                 ////3a. If we were unable to unwrap both the data and the error, something spectacularly wrong happened.
@@ -45,7 +47,8 @@ class AudioPackageExtractor {
         
         guard let packageManifest = packageManifestTuple.0 else {
             if let error = packageManifestTuple.1 {
-                throw error
+                completion(.failure(error))
+                return
             }
             else {
                 fatalError()
@@ -57,31 +60,63 @@ class AudioPackageExtractor {
         
         ////7. Loop through each sample to extract MP3 data from audio-package
         var nextFileByteOffset = firstFileByteOffset
+        
+        let group = DispatchGroup()
         for sampleDef in packageManifest.samples {
+            group.enter()
             ////8. Calculate byte range for this file and slice byte array accordingly
             let byteRange = nextFileByteOffset..<(nextFileByteOffset+sampleDef.length)
             let bytesForAudioPacket: [UInt8] = Array(data.bytes[byteRange])
           
             ////9. Save audio data to disk and create Sample
-            let sampleTuple = SampleStorage.storeSample(sampleId: sampleDef.name, packageId: Date().dateAndTimetoString(), audioData: Data(bytesForAudioPacket))
             
-            guard let sample = sampleTuple.0 else {
-                if let error = sampleTuple.1 {
-                    throw error
+            SampleStorage.storeSample(sampleId: sampleDef.name, packageId: Date().dateAndTimetoString(), audioData: Data(bytesForAudioPacket), completion: { result in
+                switch result {
+                case .success(let sample):
+                    ////10. Add Sample to results
+                    results.append(sample)
+                  
+                    ////11. Calculate byte offset for start of next file
+                    nextFileByteOffset += sampleDef.length
+                case .failure(let error):
+                    group.leave()
+                    completion(.failure(error))
                 }
-                else {
-                    fatalError()
-                }
-            }
-                      
-            ////10. Add Sample to results
-            results.append(sample)
-          
-            ////11. Calculate byte offset for start of next file
-            nextFileByteOffset += sampleDef.length
+            })
+            group.leave()
         }
+        group.notify(queue: .main) {
+            completion(.success(results))
+        }
+    }
+    
+    private static func iterateThroughManifest(with manifest:AudioPackageManifest,data: Data,and firstFileByteOffset: Int, completion: @escaping (Result<[Sample], AudioPackageError>)-> Void) {
+        ////6. Prep array of [Sample] for successfull read and return
+        var results: [Sample] = []
         
-        return results
+        ////7. Loop through each sample to extract MP3 data from audio-package
+        var nextFileByteOffset = firstFileByteOffset
+        
+        for sampleDef in manifest.samples {
+            ////8. Calculate byte range for this file and slice byte array accordingly
+            let byteRange = nextFileByteOffset..<(nextFileByteOffset+sampleDef.length)
+            let bytesForAudioPacket: [UInt8] = Array(data.bytes[byteRange])
+          
+            ////9. Save audio data to disk and create Sample
+            
+            SampleStorage.storeSample(sampleId: sampleDef.name, packageId: Date().dateAndTimetoString(), audioData: Data(bytesForAudioPacket), completion: { result in
+                switch result {
+                case .success(let sample):
+                    ////10. Add Sample to results
+                    results.append(sample)
+                  
+                    ////11. Calculate byte offset for start of next file
+                    nextFileByteOffset += sampleDef.length
+                case .failure(let error):
+                    completion(.failure(error))
+                }
+            })
+        }
     }
     
     private static func loadDatafromURL(with url:URL) -> (Data?, AudioPackageError?) {

@@ -10,26 +10,26 @@ import AVFoundation
 import UIKit
 
 class SampleStorage {
-    static func storeSample(sampleId: String, packageId: String, audioData: Data) -> (Sample?, AudioPackageError?) {
-        /// Write the MP3 file to disk; this is easier than putting into CoreAudioBuffer
+    static func storeSample(sampleId: String, packageId: String, audioData: Data, completion: @escaping (Result<Sample, AudioPackageError>) -> Void) {
+        ////Write the MP3 file to disk; this is easier than putting into CoreAudioBuffer
         /// TODO:- may do if let here if we want to allow some failures to write, however
         /// letting the whole function return nil is probably what we want if we can't successfully write a file.
         
-        let combinedFileName = String(sampleId+SpecialStringTypes.Pi.rawValue+packageId)
-        let urlTuple = self.writeFileToDisk(with: audioData, and: combinedFileName)
-        guard let url = urlTuple.0 else {
-            if let error = urlTuple.1 {
-                return (nil, error)
-            }
-            else {
-                fatalError()
-            }
+        ////Combine sampleId and packageId into the filename, they are sperated with unicode character
+        DispatchQueue.global(qos: .utility).async {
+            let combinedFileName = String(sampleId+SpecialStringTypes.Pi.rawValue+packageId)
+            
+            writeFileToDisk(with: audioData, fileName: combinedFileName, completion: { result in
+                switch result {
+                    case .success(let url):
+                        let duration = CMTimeGetSeconds(AVURLAsset(url: url).duration)
+                        let sample = Sample(id: sampleId, url: url, duration: duration)
+                    completion(.success(sample))
+                    case .failure(let error):
+                        completion(.failure(error))
+                }
+            })
         }
-      
-        /// Grab duration of file
-        let duration = CMTimeGetSeconds(AVURLAsset(url: url).duration)
-
-        return (Sample(id: sampleId, url: url, duration: duration), nil)
     }
     
     static public func getSampleList() throws -> [String] {
@@ -57,17 +57,17 @@ class SampleStorage {
         }
     }
   
-    private static func writeFileToDisk(with mp3Data: Data,and name: String) -> (URL?, AudioPackageError?) {
+    private static func writeFileToDisk(with mp3Data: Data,fileName name: String, completion: @escaping (Result<URL, AudioPackageError>) -> Void) {
         do {
             let fileURL = try FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false).appendingPathComponent("\(name).mp3")
             do {
-                try mp3Data.write(to: fileURL, options: .atomic)
-                return (fileURL, nil)
+                try mp3Data.write(to: fileURL)
+                completion(.success(fileURL))
             } catch {
-                return (nil, AudioPackageError.unableToStoreSampleToDisk(error: error))
+                completion(.failure(AudioPackageError.unableToStoreSampleToDisk(error: error)))
             }
         } catch {
-            return (nil, AudioPackageError.unableToRetrieveDocumentsDirectory(error: error))
+            completion(.failure(AudioPackageError.unableToRetrieveDocumentsDirectory(error: error)))
         }
     }
     
