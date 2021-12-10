@@ -78,11 +78,12 @@ import AVFoundation
             do {
                 try self.manager.startEngine()
                 try self.manager.setBrowserTime(browserTime)
-                try AVAudioSession.sharedInstance().setCategory(.playback)
-                try AVAudioSession.sharedInstance().setActive(true)
+                try self.manager.setAVAudioSession(asActive: true)
 
                 pluginResult = CDVPluginResult(status: CDVCommandStatus_OK)
             } catch {
+                print("ERROR in gonnaPlay")
+                print(error)
                 // TODO: Set pluginResult error details if anything goes wrong
                 // if (error) {
                 //   pluginResult = CDVPluginResult(
@@ -100,8 +101,8 @@ import AVFoundation
             defer { self.commandDelegate!.send(pluginResult, callbackId: command.callbackId) }
 
             do {
-                try AVAudioSession.sharedInstance().setCategory(.soloAmbient)
-                try AVAudioSession.sharedInstance().setActive(false)
+                self.manager.stopEngine()
+                try self.manager.setAVAudioSession(asActive: false)
             } catch {
 
             }
