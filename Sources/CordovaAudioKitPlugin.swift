@@ -1,5 +1,4 @@
 import AVFoundation
-import Cordova
 
 // For overview of how Cordova plugins are written in Swift:
 // https://simonprickett.dev/writing-a-cordova-plugin-in-swift-3-for-ios/
@@ -42,18 +41,22 @@ import Cordova
         DispatchQueue.main.async(execute: {
             SampleStorage.getStoredSampleList(completion: { result in
                 switch result {
-                    case .success(let sampleList):
-                        print(sampleList)
+                    case .success(let storedSamples):
                         let pluginResult = CDVPluginResult(
                             status: CDVCommandStatus_OK,
-                            messageAs: sampleList
+                            messageAs: storedSamples.map({ ss in
+                                return [
+                                    "sampleId": ss.sampleId,
+                                    "packageId": ss.packageId
+                                ]
+                            })
                         )
                         self.commandDelegate!.send(pluginResult, callbackId: command.callbackId)
                     case .failure(let error):
                         print(error)
                         let pluginResult = CDVPluginResult(
                             status: CDVCommandStatus_ERROR,
-                            messageAs: error  // TODO: what format is this and how should it be passed?
+                            messageAs: error.description  // TODO: what format is this and how should it be passed?
                         )
                         self.commandDelegate!.send(pluginResult, callbackId: command.callbackId)
                 }
@@ -63,26 +66,26 @@ import Cordova
 
     @objc(storeSample:) func storeSample(command: CDVInvokedUrlCommand) {
         DispatchQueue.main.async(execute: {
-            var pluginResult = CDVPluginResult(status: CDVCommandStatus_ERROR)
-
             let packageId = command.arguments[0] as! String
             let sampleId = command.arguments[1] as! String
             let audioData = command.arguments[2] as! Data  // TODO: how to do we deal with optional vs required?
 
-            SampleStorage.storeSample(completion: { result in
+            SampleStorage.storeSample(sampleId: sampleId, packageId: packageId, audioData: audioData, completion: { result in
                 switch result {
                     case .success(let sample):
-                        print(sampleList)
                         let pluginResult = CDVPluginResult(
                             status: CDVCommandStatus_OK,
-                            messageAs: sample
+                            messageAs: [
+                                "sampleId": sample.id,
+                                "duration": sample.duration
+                            ]
                         )
                         self.commandDelegate!.send(pluginResult, callbackId: command.callbackId)
                     case .failure(let error):
                         print(error)
                         let pluginResult = CDVPluginResult(
                             status: CDVCommandStatus_ERROR,
-                            messageAs: error  // TODO: what format is this and how should it be passed?
+                            messageAs: error.description // TODO: what format is this and how should it be passed?
                         )
                         self.commandDelegate!.send(pluginResult, callbackId: command.callbackId)
                 }
@@ -90,13 +93,46 @@ import Cordova
         })
     }
 
-    @objc(purgeSamples:) func purgeSamples(command: CDVInvokedUrlCommand) {
+    @objc(loadSamplesFromDisk:) func loadSamplesFromDisk(command: CDVInvokedUrlCommand) {
+        DispatchQueue.main.async(execute: {
+            let packageAndSampleDict = command.arguments[0] as? [[String: String]] ?? []
+
+            let packageIdsAndSampleIds = packageAndSampleDict.map({ ps in
+                PackageIdAndSampleId(packageId: ps["packageId"]!, sampleId: ps["sampleId"]!)
+            })
+
+            SampleStorage.loadSamplesFromDisk(packageIdsAndSampleIds, completion: { result in
+                switch result {
+                    case .success(let samples):
+                        let pluginResult = CDVPluginResult(
+                            status: CDVCommandStatus_OK,
+                            messageAs: samples.map({ sample in
+                                return [
+                                    "sampleId": sample.id,
+                                    "duration": sample.duration
+                                ]
+                            })
+                        )
+                        self.commandDelegate!.send(pluginResult, callbackId: command.callbackId)
+                    case .failure(let error):
+                        print(error)
+                        let pluginResult = CDVPluginResult(
+                            status: CDVCommandStatus_ERROR,
+                            messageAs: error.description  // TODO: what format is this and how should it be passed?
+                        )
+                        self.commandDelegate!.send(pluginResult, callbackId: command.callbackId)
+                }
+            })
+        })
+    }
+
+    @objc(deleteSamples:) func deleteSamples(command: CDVInvokedUrlCommand) {
         DispatchQueue.main.async(execute: {
             var pluginResult = CDVPluginResult(status: CDVCommandStatus_ERROR)
 
             let packageAndSampleIds = command.arguments[0] as! [String]
 
-            SampleStorage.deleteSamples(completion: { result in
+            SampleStorage.deleteSamples(packageAndSampleIds, completion: { result in
                 switch result {
                     case .success(let message):
                         print(message)
@@ -109,7 +145,7 @@ import Cordova
                         print(error)
                         let pluginResult = CDVPluginResult(
                             status: CDVCommandStatus_ERROR,
-                            messageAs: error  // TODO: what format is this and how should it be passed?
+                            messageAs: error.description // TODO: what format is this and how should it be passed?
                         )
                         self.commandDelegate!.send(pluginResult, callbackId: command.callbackId)
                 }

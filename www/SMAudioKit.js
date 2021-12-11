@@ -20,12 +20,18 @@ exports.initialize = execNativeWithArgs('initialize', (args) => [
   }),
 ]);
 
-/**
- * Load sample from MP3 data
- * @returns { sampleId: string; duration: number }
- * @throws if there's a problem loading the file
- */
-exports.loadSample = execNativeWithArgs('loadSample', (args) => [
+exports.getStoredSampleList = execNativeWithArgs('getStoredSampleList', (args) => []);
+
+exports.loadSamplesFromDisk = execNativeWithArgs('loadSamplesFromDisk', (args) => [
+  args, // { packageId, sampleId }[]
+]);
+
+exports.deleteSamples = execNativeWithArgs('deleteSamples', (args) => [
+  args, // { packageId, sampleId }[]
+]);
+
+exports.storeSample = execNativeWithArgs('storeSample', (args) => [
+  args.packageId, // string
   args.sampleId, // string
   args.audioData, // ArrayBuffer
 ]);
