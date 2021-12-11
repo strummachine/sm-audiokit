@@ -492,10 +492,10 @@
 /* Begin XCRemoteSwiftPackageReference section */
 		A3BD589127617AB00079D160 /* XCRemoteSwiftPackageReference "AudioKit" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/AudioKit/AudioKit.git";
+			repositoryURL = "https://github.com/strummachine/AudioKit.git";
 			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 5.2.3;
+				branch = completion-on-main-thread;
+				kind = branch;
 			};
 		};
 		A3BD589427617ABB0079D160 /* XCRemoteSwiftPackageReference "cordova-ios" */ = {

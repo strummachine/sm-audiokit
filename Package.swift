@@ -5,26 +5,24 @@ import PackageDescription
 
 let package = Package(
     name: "sm-audiokit",
+    platforms: [.macOS(.v10_13), .iOS(.v11), .tvOS(.v11)],
     products: [
         // Products define the executables and libraries a package produces, and make them visible to other packages.
         .library(
             name: "sm-audiokit",
-            targets: ["sm-audiokit"]),
+            targets: ["Audio"]),
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
-        .package(url: "https://github.com/AudioKit/AudioKit.git", from: "5.2.3"),
+        .package(url: "https://github.com/strummachine/AudioKit.git", .branch("completion-on-main-thread")),
         .package(url: "https://github.com/apple/swift-format.git", .branch("swift-5.5-branch")),
-        .package(url: "https://github.com/apache/cordova-ios.git", .branch("master")), // just for "Intellisense"
+        // .package(url: "https://github.com/apache/cordova-ios.git", .branch("master")), // just for "Intellisense"
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
         // Targets can depend on other targets in this package, and on products in packages this package depends on.
         .target(
-            name: "sm-audiokit",
-            dependencies: []),
-        .testTarget(
-            name: "sm-audiokitTests",
-            dependencies: ["sm-audiokit"]),
+            name: "Audio",
+            dependencies: ["AudioKit"]),
     ]
 )
