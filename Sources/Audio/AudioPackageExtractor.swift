@@ -12,18 +12,17 @@ import AVFoundation
 
 class AudioPackageExtractor {
     
-    public static func extractAudioPackage(completion: @escaping (Result<[Sample],AudioPackageError>)-> Void) {
-        ////1. Get path for audio-package file
-        guard let pathForFile = Bundle.main.path(forResource: "testbed_mono_mp3", ofType: "audio-package") else {
-            completion(.failure(AudioPackageError.unableToFindPathForResrouce))
-            return
-        }
-      
-        ////2. Convert file path to URL
+    public static func getTestPackageUrl() throws -> URL {
+        let pathForFile = Bundle.main.path(forResource: "testbed_mono_mp3", ofType: "audio-package")!
+
         let url = URL(fileURLWithPath: pathForFile)
         
-        ////3. Load contents of file into Data object
-        let dataTuple = AudioPackageExtractor.loadDatafromURL(with: url)
+        return url
+    }
+    
+    public static func load(url: URL, completion: @escaping (Result<[Sample],AudioPackageError>)-> Void) {
+        /// Load contents of file into Data object
+        let dataTuple = AudioPackageExtractor.loadDatafromURL(url)
         
         guard let data = dataTuple.0 else {
             if let error = dataTuple.1 {
@@ -31,19 +30,19 @@ class AudioPackageExtractor {
                 return
             }
             else {
-                ////3a. If we were unable to unwrap both the data and the error, something spectacularly wrong happened.
-                ////Hard crash. We can remove this for production, but this should never happen.
+                /// If we were unable to unwrap both the data and the error, something spectacularly wrong happened.
+                /// Hard crash. We can remove this for production, but this should never happen.
                 fatalError()
             }
         }
         
-        ////4. Extract JSON Manifest as Tuple of the JSON string and byte-offset of first file
-        let manifestResult = AudioPackageExtractor.extractJSONManifest(with: data.bytes)
+        /// Extract JSON Manifest as Tuple of the JSON string and byte-offset of first file
+        let manifestResult = AudioPackageExtractor.extractJSONManifest(bytes: data.bytes)
         let manifestJSONData = manifestResult.0
         let firstFileByteOffset = manifestResult.1
         
-        ////5. Decode JSON Manifest as AudioPackageManifest struct
-        let packageManifestTuple = AudioPackageExtractor.decodeJSONManifest(with: manifestJSONData)
+        /// Decode JSON Manifest as AudioPackageManifest struct
+        let packageManifestTuple = AudioPackageExtractor.decodeJSONManifest(manifestJSONData)
         
         guard let packageManifest = packageManifestTuple.0 else {
             if let error = packageManifestTuple.1 {
@@ -55,39 +54,38 @@ class AudioPackageExtractor {
             }
         }
 
-        ////6. Prep array of [Sample] for successfull read and return
+        /// Prep array of [Sample] for successfull read and return
         var results: [Sample] = []
         
-        ////7. Loop through each sample to extract MP3 data from audio-package
+        /// Loop through each sample to extract MP3 data from audio-package
         var nextFileByteOffset = firstFileByteOffset
         
         let group = DispatchGroup()
         group.enter()
         for sampleDef in packageManifest.samples {
-            ////8. Calculate byte range for this file and slice byte array accordingly
+            /// Calculate byte range for this file and slice byte array accordingly
             let byteRange = nextFileByteOffset..<(nextFileByteOffset+sampleDef.length)
-            print(byteRange)
             let bytesForAudioPacket: [UInt8] = Array(data.bytes[byteRange])
           
-            ////9. Save audio data to disk and create Sample
+            /// Save audio data to disk and create Sample
             
             SampleStorage.storeSample(sampleId: sampleDef.name, packageId: Date().dateAndTimetoString(), audioData: Data(bytesForAudioPacket), completion: { result in
                 switch result {
                 case .success(let sample):
-                    ////10. Add Sample to results
+                    /// Add Sample to results
                     results.append(sample)
                 case .failure(let error):
                     group.leave()
-                    completion(.failure(error))
+                    completion(.failure(.errorStoringSample(error: error)))
                 }
             })
             
-              ////11. Calculate byte offset for start of next file
-              nextFileByteOffset += sampleDef.length
+            /// Calculate byte offset for start of next file
+            nextFileByteOffset += sampleDef.length
         }
         group.leave()
         group.notify(queue: .main) {
-            print(results)
+            // NOTE: This currently returns prematurely...
             completion(.success(results))
         }
     }
@@ -115,13 +113,13 @@ class AudioPackageExtractor {
                     ////11. Calculate byte offset for start of next file
                     nextFileByteOffset += sampleDef.length
                 case .failure(let error):
-                    completion(.failure(error))
+                    completion(.failure(.errorStoringSample(error: error)))
                 }
             })
         }
     }
     
-    private static func loadDatafromURL(with url:URL) -> (Data?, AudioPackageError?) {
+    private static func loadDatafromURL(_ url: URL) -> (Data?, AudioPackageError?) {
         do {
             let data = try Data(contentsOf: url)
             return (data, nil)
@@ -130,7 +128,7 @@ class AudioPackageExtractor {
         }
     }
     
-    private static func extractJSONManifest(with bytes:[UInt8]) -> (Data,Int) {
+    private static func extractJSONManifest(bytes:[UInt8]) -> (Data,Int) {
         let manifestLengthArray: [UInt8] = Array(bytes[..<4])
         
         let manifestLength = manifestLengthArray.reduce(0) { soFar, byte in
@@ -144,7 +142,7 @@ class AudioPackageExtractor {
         return (Data(manifestJSONString.utf8), firstFileByteOffset)
     }
     
-    private static func decodeJSONManifest(with manifestData:Data) -> (AudioPackageManifest?, AudioPackageError?) {
+    private static func decodeJSONManifest(_ manifestData:Data) -> (AudioPackageManifest?, AudioPackageError?) {
         do {
             let packageManifest = try JSONDecoder().decode(AudioPackageManifest.self, from: manifestData)
             //print("AudioPackage Samples: \(packageManifest.samples)")

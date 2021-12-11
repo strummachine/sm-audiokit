@@ -10,66 +10,81 @@ import AVFoundation
 import UIKit
 
 class SampleStorage {
-    static func storeSample(sampleId: String, packageId: String, audioData: Data, completion: @escaping (Result<Sample, AudioPackageError>) -> Void) {
-        ////Write the MP3 file to disk; this is easier than putting into CoreAudioBuffer
+    static var sampleBank: [String: Sample] = [:]
+
+    static func storeSample(sampleId: String, packageId: String, audioData: Data, completion: @escaping (Result<Sample, SampleStorageError>) -> Void) {
+        /// Write the MP3 file to disk; this is easier than putting into CoreAudioBuffer
         /// TODO:- may do if let here if we want to allow some failures to write, however
         /// letting the whole function return nil is probably what we want if we can't successfully write a file.
         
-        ////Combine sampleId and packageId into the filename, they are sperated with unicode character
+        /// Combine sampleId and packageId into the filename, they are sperated with unicode character
         DispatchQueue.global(qos: .utility).async {
             let combinedFileName = String(packageId+SpecialStringTypes.Pi.rawValue+sampleId)
             
-            writeFileToDisk(with: audioData, fileName: combinedFileName, completion: { result in
+            writeFileToDisk(data: audioData, fileName: combinedFileName, completion: { result in
                 switch result {
                     case .success(let url):
                         let duration = CMTimeGetSeconds(AVURLAsset(url: url).duration)
                         let sample = Sample(id: sampleId, url: url, duration: duration)
-                    completion(.success(sample))
+                        DispatchQueue.main.async {
+                            self.sampleBank[sample.id] = sample
+                            completion(.success(sample))
+                        }
                     case .failure(let error):
-                        completion(.failure(error))
+                        DispatchQueue.main.async {
+                            completion(.failure(error))
+                        }
                 }
             })
         }
     }
     
-    static public func getSampleList(completion: @escaping (Result<[String], SampleStorageError>)-> Void) {
+    static public func getStoredSampleList(completion: @escaping (Result<[String], SampleStorageError>)-> Void) {
         DispatchQueue.global(qos: .utility).async {
-            ////1. Get the document directory url
+            /// Get the document directory url
             guard let documentsUrl =  FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
-                completion(.failure(SampleStorageError.cannotUnwrapDocumentsDirectoryURL))
+                DispatchQueue.main.async {
+                    completion(.failure(SampleStorageError.cannotUnwrapDocumentsDirectoryURL))
+                }
                 return
             }
 
             do {
-                ////2. Get the directory contents urls (including subfolder urls)
+                /// Get the directory contents urls (including subfolder urls)
                 let directoryContents = try FileManager.default.contentsOfDirectory(at: documentsUrl, includingPropertiesForKeys: nil)
 
-                ////3. Filter for the mp3 files
+                /// Filter for the mp3 files
                 let mp3Files = directoryContents.filter{ $0.pathExtension == "mp3" }
                 
-                ////4. Delete mp3 extension
+                /// Delete mp3 extension
                 let mp3FileNames = mp3Files.map{ $0.deletingPathExtension().lastPathComponent }
                 
-                ////5. Replace Pi with Slash in filename
+                /// Replace Pi with Slash in filename
                 let sampleList = mp3FileNames.map {$0.replacingOccurrences(of: SpecialStringTypes.Pi.rawValue, with: SpecialStringTypes.Slash.rawValue)}
-                completion(.success(sampleList))
+
+                DispatchQueue.main.async {
+                    completion(.success(sampleList))
+                }
             } catch {
-                completion(.failure(SampleStorageError.cannotGetSampleList(error: error)))
+                DispatchQueue.main.async {
+                    completion(.failure(SampleStorageError.cannotGetSampleList(error: error)))
+                }
             }
         }
     }
     
-    public static func loadSamplesFromDisk(with samplesToLoad:[String], completion: @escaping (Result<[Sample],SampleStorageError>)-> Void) {
+    public static func loadSamplesFromDisk(_ samplesToLoad:[String], completion: @escaping (Result<[Sample],SampleStorageError>)-> Void) {
         DispatchQueue.global(qos: .utility).async {
             ////1. Get the document directory url
             guard let documentsUrl =  FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
-                completion(.failure(SampleStorageError.cannotUnwrapDocumentsDirectoryURL))
+                DispatchQueue.main.async {
+                    completion(.failure(SampleStorageError.cannotUnwrapDocumentsDirectoryURL))
+                }
                 return
             }
             do {
                 ////2. Get the directory contents urls (including subfolder urls)
                 let directoryContents = try FileManager.default.contentsOfDirectory(at: documentsUrl, includingPropertiesForKeys: nil)
-                print(directoryContents)
 
                 ////3. Filter for the samples we need to load
                 let sampleURLs = directoryContents.filter{ !samplesToLoad.contains($0.absoluteString) }
@@ -86,29 +101,38 @@ class SampleStorage {
                     let sample = Sample(id: id, url: url, duration: duration)
                     samples.append(sample)
                 }
-                
-                completion(.success(samples))
+
+                DispatchQueue.main.async {
+                    completion(.success(samples))
+                }
             } catch {
-                completion(.failure(SampleStorageError.cannotGetSampleList(error: error)))
+                DispatchQueue.main.async {
+                    completion(.failure(SampleStorageError.cannotGetSampleList(error: error)))
+                }
             }
             
         }
     }
     
     ////On success will return a string -- we can have this string give a list of the deleted files if necessary
-    public static func deleteSamples(with samplesToDelete:[String], completion: @escaping (Result<String,SampleStorageError>)-> Void) {
+    public static func deleteSamples(_ samplesToDelete:[String], completion: @escaping (Result<String,SampleStorageError>)-> Void) {
         DispatchQueue.global(qos: .utility).async {
             ////1. Get the document directory url
-            guard let documentsUrl =  FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
-                completion(.failure(SampleStorageError.cannotUnwrapDocumentsDirectoryURL))
+            guard let documentsUrl = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
+                DispatchQueue.main.async {
+                    completion(.failure(SampleStorageError.cannotUnwrapDocumentsDirectoryURL))
+                }
                 return
             }
 
             do {
                 ////2. Get the directory contents urls (including subfolder urls)
-                let fileURLs = try FileManager.default.contentsOfDirectory(at:documentsUrl,
-                                                                           includingPropertiesForKeys: nil,
-                                                                           options: .skipsHiddenFiles)
+                let fileURLs = try FileManager.default.contentsOfDirectory(
+                    at:documentsUrl, 
+                    includingPropertiesForKeys: nil, 
+                    options: .skipsHiddenFiles
+                )
+
                 ////3. Filter the files we need to delete.
                 ///
                 //FIXME: We probably need additional checks, or cut off the path etc..
@@ -119,18 +143,24 @@ class SampleStorage {
                         try FileManager.default.removeItem(at: fileURL)
                     }
                 }
-                completion(.success(SampleLoadingMessageTypes.successDeleteList.rawValue))
+                DispatchQueue.main.async {
+                    completion(.success(SampleLoadingMessageTypes.successDeleteList.rawValue))
+                }
             } catch  {
-                completion(.failure(SampleStorageError.cannotDeleteSamples(error: error)))
+                DispatchQueue.main.async {
+                    completion(.failure(SampleStorageError.cannotDeleteSamples(error: error)))
+                }
             }
         }
     }
     
     //For debugging purposes
-    public static func deleteAllFiles(completion: @escaping (Result<String,SampleStorageError>) -> Void) {
+    public static func deleteAllStoredSamples(completion: @escaping (Result<String,SampleStorageError>) -> Void) {
         DispatchQueue.global(qos: .utility).async {
             guard let documentsUrl =  FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
-                completion(.failure(SampleStorageError.cannotUnwrapDocumentsDirectoryURL))
+                DispatchQueue.main.async {
+                    completion(.failure(SampleStorageError.cannotUnwrapDocumentsDirectoryURL))
+                }
                 return
             }
 
@@ -143,24 +173,28 @@ class SampleStorage {
                         try FileManager.default.removeItem(at: fileURL)
                     }
                 }
-                completion(.success(SampleLoadingMessageTypes.successDeleteAll.rawValue))
+                DispatchQueue.main.async {
+                    completion(.success(SampleLoadingMessageTypes.successDeleteAll.rawValue))
+                }
             } catch  {
-                completion(.failure(SampleStorageError.cannotDeleteSamples(error: error)))
+                DispatchQueue.main.async {
+                    completion(.failure(SampleStorageError.cannotDeleteSamples(error: error)))
+                }
             }
         }
     }
     
-    private static func writeFileToDisk(with mp3Data: Data,fileName name: String, completion: @escaping (Result<URL, AudioPackageError>) -> Void) {
+    private static func writeFileToDisk(data: Data, fileName: String, completion: @escaping (Result<URL, SampleStorageError>) -> Void) {
         do {
-            let fileURL = try FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false).appendingPathComponent("\(name).mp3")
+            let fileURL = try FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false).appendingPathComponent("\(fileName).mp3")
             do {
-                try mp3Data.write(to: fileURL)
+                try data.write(to: fileURL)
                 completion(.success(fileURL))
             } catch {
-                completion(.failure(AudioPackageError.unableToStoreSampleToDisk(error: error)))
+                completion(.failure(SampleStorageError.unableToStoreSampleToDisk(error: error)))
             }
         } catch {
-            completion(.failure(AudioPackageError.unableToRetrieveDocumentsDirectory(error: error)))
+            completion(.failure(SampleStorageError.unableToRetrieveDocumentsDirectory(error: error)))
         }
     }
 }

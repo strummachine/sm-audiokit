@@ -18,7 +18,6 @@ class AudioManager {
 
     var channels: [String: Channel] = [:]
     var playbacks: [String: SamplePlayback] = [:]
-    var sampleBank: [String: Sample] = [:]
 
     var browserTimeOffset: Double = 0.0
     
@@ -50,7 +49,7 @@ class AudioManager {
 
 // MARK: - Setup methods
 extension AudioManager {
-    public func setup(with channels:[[String: String]]) throws {
+    public func setup(channels: [[String: String]]) throws {
         do {
             try setAVAudioSession(asActive: true)
             for channel in channels {
@@ -145,21 +144,8 @@ extension AudioManager {
     
 }
 
-// MARK: - Sample Methods
+// MARK: - Sample Playback
 extension AudioManager {
-    // FIXME: This shoudl be named to "store sample"
-    public func loadSample(sampleId: String, packageId: String, audioData: Data, completion: @escaping (Result<Sample,AudioPackageError>) -> Void) {
-        SampleStorage.storeSample(sampleId: sampleId, packageId: packageId, audioData: audioData, completion: { result in
-            switch result {
-                case .success(let sample):
-                    self.sampleBank[sample.id] = sample
-                    completion(.success(sample))
-                case .failure(let error):
-                    completion(.failure(error))
-            }
-        })
-    }
-
     public func playSample(sampleId: String,
                     channel: String,
                     playbackId: String,
@@ -170,7 +156,7 @@ extension AudioManager {
                     fadeInDuration: Double = 0.0) throws -> SamplePlayback {
         // Grab sample and channel
         
-        guard let sample = self.sampleBank[sampleId] else {
+        guard let sample = SampleStorage.sampleBank[sampleId] else {
             throw AudioManagerError.cannotFindSample(sampleId: sampleId)
         }
         guard let channel = self.channels[channel] else {
@@ -198,39 +184,6 @@ extension AudioManager {
             //Generic Error Handling
             throw error
         }
-    }
-    
-    public func getSampleList(completion: @escaping (Result<[String],SampleStorageError>)->Void)  {
-        SampleStorage.getSampleList(completion: { result in
-            switch result {
-            case .success(let sampleList):
-                completion(.success(sampleList))
-            case .failure(let error):
-                completion(.failure(error))
-            }
-        })
-    }
-    
-    public func deleteSamples(with samplesToDelete:[String], completion: @escaping (Result<String,SampleStorageError>)->Void) {
-        SampleStorage.deleteSamples(with: samplesToDelete, completion: { result in
-            switch result {
-            case .success(let message):
-                completion(.success(message))
-            case .failure(let error):
-                completion(.failure(error))
-            }
-        })
-    }
-    
-    public func deleteAllFiles(completion: @escaping (Result<String,SampleStorageError>)->Void) {
-        SampleStorage.deleteAllFiles(completion: { result in
-            switch result {
-            case .success(let message):
-                completion(.success(message))
-            case .failure(let error):
-                completion(.failure(error))
-            }
-        })
     }
 }
 
@@ -307,36 +260,6 @@ extension AudioManager {
         } catch {
             //Generic Error handling
         }
-    }
-}
-
-// MARK: - Audio Package Methods
-extension AudioManager {
-    func loadTestPackage(completion: @escaping (Result<Void,AudioPackageError>) -> Void) {
-        AudioPackageExtractor.extractAudioPackage(completion: { result in
-            switch result {
-            case .success(let samples):
-                for sample in samples {
-                    self.sampleBank[sample.id] = sample
-                }
-                //The () is intentionally and how we return "Void" in Swift
-                completion(.success(()))
-            case .failure(let error):
-                completion(.failure(error))
-            }
-        })
-    }
-
-    // Not using for now
-    func loadPackages(packagePaths: [String]) {
-//        for path in packagePaths {
-//            guard let samples = AudioPackageExtractor.extractAudioPackage(path: path) else {
-//                fatalError("Error: Cannot unwrap audioPackages")
-//            }
-//            for sample in samples {
-//                sampleBank[sample.id] = sample
-//            }
-//        }
     }
 }
 

@@ -1,4 +1,5 @@
 import AVFoundation
+import Cordova
 
 // For overview of how Cordova plugins are written in Swift:
 // https://simonprickett.dev/writing-a-cordova-plugin-in-swift-3-for-ios/
@@ -22,7 +23,7 @@ import AVFoundation
 
             do {
                 // TODO: Initialize AudioKit and stuff
-                try self.manager.setup(with: channelDefinitions)
+                try self.manager.setup(channels: channelDefinitions)
             } catch {
                 // TODO: Set pluginResult error details if anything goes wrong
                 // if (error) {
@@ -37,32 +38,82 @@ import AVFoundation
         })
     }
 
-    @objc(loadSample:) func loadSample(command: CDVInvokedUrlCommand) {
+    @objc(getStoredSampleList:) func getStoredSampleList(command: CDVInvokedUrlCommand) {
+        DispatchQueue.main.async(execute: {
+            SampleStorage.getStoredSampleList(completion: { result in
+                switch result {
+                    case .success(let sampleList):
+                        print(sampleList)
+                        let pluginResult = CDVPluginResult(
+                            status: CDVCommandStatus_OK,
+                            messageAs: sampleList
+                        )
+                        self.commandDelegate!.send(pluginResult, callbackId: command.callbackId)
+                    case .failure(let error):
+                        print(error)
+                        let pluginResult = CDVPluginResult(
+                            status: CDVCommandStatus_ERROR,
+                            messageAs: error  // TODO: what format is this and how should it be passed?
+                        )
+                        self.commandDelegate!.send(pluginResult, callbackId: command.callbackId)
+                }
+            })
+        })
+    }
+
+    @objc(storeSample:) func storeSample(command: CDVInvokedUrlCommand) {
         DispatchQueue.main.async(execute: {
             var pluginResult = CDVPluginResult(status: CDVCommandStatus_ERROR)
-            defer { self.commandDelegate!.send(pluginResult, callbackId: command.callbackId) }
 
-            let sampleId = command.arguments[0] as! String
-            let audioData = command.arguments[1] as! Data  // TODO: how to do we deal with optional vs required?
+            let packageId = command.arguments[0] as! String
+            let sampleId = command.arguments[1] as! String
+            let audioData = command.arguments[2] as! Data  // TODO: how to do we deal with optional vs required?
 
-            do {
-                let sample = try self.manager.loadSample(sampleId: sampleId, audioData: audioData)
-                pluginResult = CDVPluginResult(
-                    status: CDVCommandStatus_OK,
-                    messageAs: [
-                        "sampleId": sample.id,
-                        "duration": sample.duration,
-                    ]
-                )
-            } catch {
-                // TODO: Set pluginResult error details if anything goes wrong
-                // if (error) {
-                //   pluginResult = CDVPluginResult(
-                //     status: CDVCommandStatus_ERROR,
-                //     messageAs: "err-code"
-                //   )
-                // }
-            }
+            SampleStorage.storeSample(completion: { result in
+                switch result {
+                    case .success(let sample):
+                        print(sampleList)
+                        let pluginResult = CDVPluginResult(
+                            status: CDVCommandStatus_OK,
+                            messageAs: sample
+                        )
+                        self.commandDelegate!.send(pluginResult, callbackId: command.callbackId)
+                    case .failure(let error):
+                        print(error)
+                        let pluginResult = CDVPluginResult(
+                            status: CDVCommandStatus_ERROR,
+                            messageAs: error  // TODO: what format is this and how should it be passed?
+                        )
+                        self.commandDelegate!.send(pluginResult, callbackId: command.callbackId)
+                }
+            })
+        })
+    }
+
+    @objc(purgeSamples:) func purgeSamples(command: CDVInvokedUrlCommand) {
+        DispatchQueue.main.async(execute: {
+            var pluginResult = CDVPluginResult(status: CDVCommandStatus_ERROR)
+
+            let packageAndSampleIds = command.arguments[0] as! [String]
+
+            SampleStorage.deleteSamples(completion: { result in
+                switch result {
+                    case .success(let message):
+                        print(message)
+                        let pluginResult = CDVPluginResult(
+                            status: CDVCommandStatus_OK,
+                            messageAs: message
+                        )
+                        self.commandDelegate!.send(pluginResult, callbackId: command.callbackId)
+                    case .failure(let error):
+                        print(error)
+                        let pluginResult = CDVPluginResult(
+                            status: CDVCommandStatus_ERROR,
+                            messageAs: error  // TODO: what format is this and how should it be passed?
+                        )
+                        self.commandDelegate!.send(pluginResult, callbackId: command.callbackId)
+                }
+            })
         })
     }
 

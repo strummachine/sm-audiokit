@@ -13,13 +13,11 @@ class ViewController: UIViewController {
     @IBOutlet weak var scheduleSampleTextField: UITextField!
     
     @IBOutlet weak var playingSampleLabel: UILabel!
-    
-    var availableSamples: [String: Sample] = [:]
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setLabel(with: "Loading")
-        AudioManager.shared.deleteAllFiles(completion: { result in
+        SampleStorage.deleteAllStoredSamples(completion: { result in
             switch result {
                 case .success(let message):
                     print(message)
@@ -35,16 +33,17 @@ class ViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         do {
-            AudioManager.shared.loadTestPackage(completion: { result in
+            let testPackageUrl = try AudioPackageExtractor.getTestPackageUrl()
+            AudioPackageExtractor.load(url: testPackageUrl, completion: { result in
                 switch result {
-                case .success():
-                    self.availableSamples = AudioManager.shared.sampleBank
+                case .success(let samples):
                     self.setLabel(with: "Ready")
                     
-                    AudioManager.shared.getSampleList(completion: { result in
+                    SampleStorage.getStoredSampleList(completion: { result in
                         switch result {
                         case .success(let sampleList):
-                            print(sampleList)
+                            print("Samples loaded from test package:")
+                            print(sampleList.sorted().map({" · \($0)"}).joined(separator: "\n"))
                         case .failure(let error):
                             print(error)
                         }
@@ -66,7 +65,7 @@ class ViewController: UIViewController {
             
             let channels : [[String:String]] = [guitarChannel,drumChannel,testChannel]
 
-            try AudioManager.shared.setup(with: channels)
+            try AudioManager.shared.setup(channels: channels)
             try AudioManager.shared.startEngine()
             NotificationCenter.default.addObserver(self, selector: #selector(updateLabel), name: Notification.Name("PlayerCompletion"), object: nil)
         } catch let error as AudioManagerError {
@@ -79,7 +78,7 @@ class ViewController: UIViewController {
 
     @IBAction func tappedRandomSample(_ sender: Any) {
         
-        let shuffled = self.availableSamples.shuffled()
+        let shuffled = SampleStorage.sampleBank.shuffled()
         let randomSample = shuffled[0].value
         let channelName = randomSample.id.hasSuffix("--") ? "guitar" : "drums"
 
@@ -95,7 +94,7 @@ class ViewController: UIViewController {
     }
     
     @IBAction func tappedScheduled200ms(_ sender: Any) {
-        guard let testTone = self.availableSamples["test-tone"] else { return }
+        guard let testTone = SampleStorage.sampleBank["test-tone"] else { return }
         do {
             let delay = 0.5
             try AudioManager.shared.setBrowserTime(5.0)

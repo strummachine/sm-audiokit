@@ -11,8 +11,7 @@ enum AudioPackageError: Error, CustomStringConvertible {
     case unableToFindPathForResrouce
     case unableToLoadDataFromURL(error: Error)
     case unableToSerializeJSON(error: Error)
-    case unableToRetrieveDocumentsDirectory(error: Error)
-    case unableToStoreSampleToDisk(error: Error)
+    case errorStoringSample(error: Error)
     case unknownError
 
     var description: String {
@@ -23,10 +22,8 @@ enum AudioPackageError: Error, CustomStringConvertible {
                 return String("Unable to load data from URL. Error message:\(error.localizedDescription)")
             case .unableToSerializeJSON(let error):
                 return String("Unable to serialize JSON. Error message:\(error.localizedDescription)")
-            case .unableToRetrieveDocumentsDirectory(let error):
-                return String("Unable to retrive documents directory. Error message:\(error.localizedDescription)")
-            case .unableToStoreSampleToDisk(let error):
-                return String("Unable to store sample to disk. Error message:\(error.localizedDescription)")
+            case .errorStoringSample(let error):
+                return String("Error from SampleStorage:\(error.localizedDescription)")
             case .unknownError:
                 return "Unkown Error occured"
         }
@@ -37,14 +34,20 @@ enum SampleStorageError: Error, CustomStringConvertible {
     case cannotGetSampleList(error: Error)
     case cannotUnwrapDocumentsDirectoryURL
     case cannotDeleteSamples(error: Error)
+    case unableToRetrieveDocumentsDirectory(error: Error)
+    case unableToStoreSampleToDisk(error: Error)
     var description: String {
         switch self {
-        case .cannotGetSampleList(let error):
-            return String("Error: Unable to retrieve sample list:\(error)")
-        case .cannotUnwrapDocumentsDirectoryURL:
-            return "Error: Unable to unwrap Documents Directory URL"
-        case .cannotDeleteSamples(let error):
-            return String("Error: Unable to delete samples:\(error)")
+            case .cannotGetSampleList(let error):
+                return String("Error: Unable to retrieve sample list:\(error)")
+            case .cannotUnwrapDocumentsDirectoryURL:
+                return "Error: Unable to unwrap Documents Directory URL"
+            case .cannotDeleteSamples(let error):
+                return String("Error: Unable to delete samples:\(error)")
+            case .unableToRetrieveDocumentsDirectory(let error):
+                return String("Unable to retrive documents directory. Error message:\(error.localizedDescription)")
+            case .unableToStoreSampleToDisk(let error):
+                return String("Unable to store sample to disk. Error message:\(error.localizedDescription)")
         }
     }
 }
@@ -82,8 +85,8 @@ enum SamplePlaybackError: Error, CustomStringConvertible {
     
     var description: String {
         switch self {
-        case .cannotLoadPlayer:
-            return "Cannot load player"
+            case .cannotLoadPlayer:
+                return "Cannot load player"
         }
     }
 }
