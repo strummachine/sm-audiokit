@@ -12,12 +12,14 @@ import AudioKitEX
 
 class Channel {
     let id: String
+    let fader: Fader
     let mixer: Mixer
 
     init(id: String, mainMixer: Mixer) {
         self.id = id
-        self.mixer = Mixer(volume: 1.0, name: "channel:\(id)")
-        mainMixer.addInput(self.mixer)
+        self.mixer = Mixer(name: "channel:\(id)")
+        self.fader = Fader(self.mixer)
+        mainMixer.addInput(self.fader)
     }
 
     private var _volume = 1.0
@@ -27,8 +29,10 @@ class Channel {
         }
         set {
             _volume = newValue
-            // TODO: Ramp volume over 50-80ms to avoid clicks
-            mixer.volume = Float(_muted ? 0.0 : _volume)
+            let newVolume = Float(_muted ? 0.0 : _volume)
+            fader.stopAutomation()
+            fader.$leftGain.ramp(to: newVolume, duration: 0.25)
+            fader.$rightGain.ramp(to: newVolume, duration: 0.25)
         }
     }
 
@@ -39,8 +43,10 @@ class Channel {
         }
         set {
             _muted = newValue
-            // TODO: Ramp over 50-80ms to avoid clicks
-            mixer.volume = Float(_muted ? 0.0 : _volume)
+            let newVolume = Float(_muted ? 0.0 : _volume)
+            fader.stopAutomation()
+            fader.$leftGain.ramp(to: newVolume, duration: 0.25)
+            fader.$rightGain.ramp(to: newVolume, duration: 0.25)
         }
     }
 
@@ -49,7 +55,7 @@ class Channel {
             return Double(mixer.pan)
         }
         set {
-            // TODO: Ramp over 50-80ms to avoid clicks
+            // TODO: Ramp over 50-80ms to avoid clicks (maybe)
             mixer.pan = Float(newValue)
         }
     }
