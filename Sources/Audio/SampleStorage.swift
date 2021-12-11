@@ -17,7 +17,7 @@ class SampleStorage {
         
         ////Combine sampleId and packageId into the filename, they are sperated with unicode character
         DispatchQueue.global(qos: .utility).async {
-            let combinedFileName = String(sampleId+SpecialStringTypes.Pi.rawValue+packageId)
+            let combinedFileName = String(packageId+SpecialStringTypes.Pi.rawValue+sampleId)
             
             writeFileToDisk(with: audioData, fileName: combinedFileName, completion: { result in
                 switch result {
