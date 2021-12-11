@@ -18,7 +18,6 @@ class AudioManager {
 
     var channels: [String: Channel] = [:]
     var playbacks: [String: SamplePlayback] = [:]
-    var sampleBank: [String: Sample] = [:]
 
     var browserTimeOffset: Double = 0.0
     
@@ -50,7 +49,7 @@ class AudioManager {
 
 // MARK: - Setup methods
 extension AudioManager {
-    public func setup(with channels:[[String: String]]) throws {
+    public func setup(channels: [[String: String]]) throws {
         do {
             try setAVAudioSession(asActive: true)
             for channel in channels {
@@ -146,25 +145,8 @@ extension AudioManager {
     
 }
 
-// MARK: - Sample Methods
+// MARK: - Sample Playback
 extension AudioManager {
-    public func loadSample(sampleId: String, audioData: Data) throws -> Sample {
-        let sampleTuple = SampleStorage.storeSample(sampleId: sampleId, audioData: audioData)
-        if let sample = sampleTuple.0 {
-            sampleBank[sample.id] = sample
-            return sample
-        }
-        else {
-            if let error = sampleTuple.1 {
-                throw error
-            }
-            else {
-                throw AudioPackageError.unknownError
-            }
-        }
-    }
-
-    
     public func playSample(sampleId: String,
                     channel: String,
                     playbackId: String,
@@ -175,7 +157,7 @@ extension AudioManager {
                     fadeInDuration: Double = 0.0) throws -> SamplePlayback {
         // Grab sample and channel
         
-        guard let sample = self.sampleBank[sampleId] else {
+        guard let sample = SampleStorage.sampleBank[sampleId] else {
             throw AudioManagerError.cannotFindSample(sampleId: sampleId)
         }
         guard let channel = self.channels[channel] else {
@@ -263,34 +245,6 @@ extension AudioManager {
     public func setBrowserTime(_ browserTime: Double) throws {
         let systemTime = AVAudioTime.seconds(forHostTime: mach_absolute_time())
         self.browserTimeOffset = systemTime - browserTime
-    }
-}
-
-// MARK: - Audio Package Methods
-extension AudioManager {
-    func loadTestPackage() {
-        do {
-            let samples = try AudioPackageExtractor.extractAudioPackage()
-            for sample in samples {
-                sampleBank[sample.id] = sample
-            }
-        } catch {
-            print(error.localizedDescription)
-        }
-
-
-    }
-
-    // Not using for now
-    func loadPackages(packagePaths: [String]) {
-//        for path in packagePaths {
-//            guard let samples = AudioPackageExtractor.extractAudioPackage(path: path) else {
-//                fatalError("Error: Cannot unwrap audioPackages")
-//            }
-//            for sample in samples {
-//                sampleBank[sample.id] = sample
-//            }
-//        }
     }
 }
 

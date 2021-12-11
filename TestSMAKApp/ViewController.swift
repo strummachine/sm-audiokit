@@ -7,17 +7,24 @@
 
 import UIKit
 import AVFoundation
+import CryptoKit
 class ViewController: UIViewController {
 
     @IBOutlet weak var scheduleSampleTextField: UITextField!
     
     @IBOutlet weak var playingSampleLabel: UILabel!
-    
-    var availableSamples: [String: Sample] = [:]
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        self.setLabel(with: "Loading")
+        SampleStorage.deleteAllStoredSamples(completion: { result in
+            switch result {
+                case .success(let message):
+                    print(message)
+                case .failure(let error):
+                    print(error)
+            }
+        })
         // Do any additional setup after loading the view.
         //        AudioManager.shared.channels["guitar"]?.setPan(0.9)
         //        AudioManager.shared.channels["drums"]?.setPan(0.1)
@@ -26,6 +33,26 @@ class ViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         do {
+            let testPackageUrl = try AudioPackageExtractor.getTestPackageUrl()
+            AudioPackageExtractor.load(url: testPackageUrl, completion: { result in
+                switch result {
+                case .success(let samples):
+                    self.setLabel(with: "Ready")
+                    
+                    SampleStorage.getStoredSampleList(completion: { result in
+                        switch result {
+                        case .success(let sampleList):
+                            print("Samples loaded from test package:")
+                            print(sampleList.sorted().map({" · \($0)"}).joined(separator: "\n"))
+                        case .failure(let error):
+                            print(error)
+                        }
+                    })
+                    
+                case .failure(let error):
+                    print(error)
+                }
+            })
             let guitarChannel: [String: String] =
             [ChannelDictConstants.id.rawValue : "guitar",
              ChannelDictConstants.polyphonyLimit.rawValue : "20"]
@@ -37,12 +64,9 @@ class ViewController: UIViewController {
              ChannelDictConstants.polyphonyLimit.rawValue : "20"]
             
             let channels : [[String:String]] = [guitarChannel,drumChannel,testChannel]
-            
-            try AudioManager.shared.setup(with: channels)
+
+            try AudioManager.shared.setup(channels: channels)
             try AudioManager.shared.startEngine()
-            AudioManager.shared.loadTestPackage()
-            self.setLabel(with: "Ready")
-            availableSamples = AudioManager.shared.sampleBank
             NotificationCenter.default.addObserver(self, selector: #selector(updateLabel), name: Notification.Name("PlayerCompletion"), object: nil)
         } catch let error as AudioManagerError {
             print(error.localizedDescription)
@@ -54,7 +78,7 @@ class ViewController: UIViewController {
 
     @IBAction func tappedRandomSample(_ sender: Any) {
         
-        let shuffled = self.availableSamples.shuffled()
+        let shuffled = SampleStorage.sampleBank.shuffled()
         let randomSample = shuffled[0].value
         let channelName = randomSample.id.hasSuffix("--") ? "guitar" : "drums"
 
@@ -70,7 +94,7 @@ class ViewController: UIViewController {
     }
     
     @IBAction func tappedScheduled200ms(_ sender: Any) {
-        guard let testTone = self.availableSamples["test-tone"] else { return }
+        guard let testTone = SampleStorage.sampleBank["test-tone"] else { return }
         do {
             let delay = 0.5
             try AudioManager.shared.setBrowserTime(5.0)
