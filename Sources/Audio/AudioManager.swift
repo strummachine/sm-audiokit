@@ -48,13 +48,10 @@ class AudioManager {
 
 // MARK: - Setup methods
 extension AudioManager {
-    public func setup(channels: [[String: String]], polyphonyLimit: Int) throws {
+    public func setup(channelIds: [String], polyphonyLimit: Int) throws {
         do {
             try setAVAudioSession(asActive: true)
-            for channel in channels {
-                guard let id = channel["id"] else {
-                    throw AudioManagerError.cannotFindChannelId(channelId: "id")
-                }
+            for id in channelIds {
                 self.channels[id] = Channel(id: id, mainMixer: self.mainMixer)
             }
             self.playerPool.createPlayers(count: polyphonyLimit)

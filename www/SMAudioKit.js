@@ -12,12 +12,8 @@ function execNativeWithArgs(methodName, transformArgs) {
  * Initialize AudioKit engine
  */
 exports.initialize = execNativeWithArgs('initialize', (args) => [
-  args.channels.map(({ id, polyphonyLimit }) => {
-    return { 
-      id: id,
-      polyphonyLimit: "" + polyphonyLimit // convert to string
-    }
-  }),
+  args.channels,
+  args.polyphonyLimit,
 ]);
 
 exports.getStoredSampleList = execNativeWithArgs('getStoredSampleList', (args) => []);
