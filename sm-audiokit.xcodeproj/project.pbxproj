@@ -56,6 +56,7 @@
 		A3BD588127617AA10079D160 /* AudioPackageExtractor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AudioPackageExtractor.swift; sourceTree = "<group>"; };
 		A3BD588227617AA10079D160 /* SamplePlayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SamplePlayer.swift; sourceTree = "<group>"; };
 		A3BD588327617AA10079D160 /* SampleStorage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SampleStorage.swift; sourceTree = "<group>"; };
+		A3D8A0B7276421BC0072D421 /* CordovaAudioKitPlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = CordovaAudioKitPlugin.swift; path = Sources/CordovaAudioKitPlugin.swift; sourceTree = "<group>"; };
 		FC6BBFBC2762224200282ABD /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		FC6BBFBE2762263100282ABD /* AudioManager+Notifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AudioManager+Notifications.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -86,8 +87,7 @@
 		A3BD585627617A700079D160 = {
 			isa = PBXGroup;
 			children = (
-				A3B641CE27617C4A000A3FA3 /* plugin.xml */,
-				A3B641CF27617C4A000A3FA3 /* www */,
+				A3D8A0B4276420820072D421 /* Plugin */,
 				A3BD587627617AA10079D160 /* Sources */,
 				A3BD586127617A700079D160 /* TestSMAKApp */,
 				A3BD586027617A700079D160 /* Products */,
@@ -151,6 +151,16 @@
 				FC6BBFBE2762263100282ABD /* AudioManager+Notifications.swift */,
 			);
 			path = Audio;
+			sourceTree = "<group>";
+		};
+		A3D8A0B4276420820072D421 /* Plugin */ = {
+			isa = PBXGroup;
+			children = (
+				A3D8A0B7276421BC0072D421 /* CordovaAudioKitPlugin.swift */,
+				A3B641CF27617C4A000A3FA3 /* www */,
+				A3B641CE27617C4A000A3FA3 /* plugin.xml */,
+			);
+			name = Plugin;
 			sourceTree = "<group>";
 		};
 		FC6BBFBB2762224200282ABD /* Frameworks */ = {
@@ -405,7 +415,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = UNPG3B9P9H;
+				DEVELOPMENT_TEAM = S9D8JPJ767;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = TestSMAKApp/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -434,7 +444,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = UNPG3B9P9H;
+				DEVELOPMENT_TEAM = S9D8JPJ767;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = TestSMAKApp/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
