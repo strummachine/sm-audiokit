@@ -7,7 +7,7 @@
 
 import Foundation
 import AVFoundation
-import UIKit
+//import UIKit
 
 extension AudioManager {
     internal func registerForNotifications() {
@@ -15,14 +15,14 @@ extension AudioManager {
                              selector: #selector(handleInterruption),
                              name: AVAudioSession.interruptionNotification,
                              object: nil)
-        notifier.addObserver(self,
-                             selector: #selector(enterBackground),
-                             name: UIApplication.didEnterBackgroundNotification,
-                             object: nil)
-        notifier.addObserver(self,
-                             selector: #selector(enterForeground),
-                             name: UIApplication.willEnterForegroundNotification,
-                             object: nil)
+//        notifier.addObserver(self,
+//                             selector: #selector(enterBackground),
+//                             name: UIApplication.didEnterBackgroundNotification,
+//                             object: nil)
+//        notifier.addObserver(self,
+//                             selector: #selector(enterForeground),
+//                             name: UIApplication.willEnterForegroundNotification,
+//                             object: nil)
         notifier.addObserver(self,
                              selector: #selector(handleRouteChange),
                              name: AVAudioSession.routeChangeNotification,
@@ -75,17 +75,17 @@ extension AudioManager {
         }
     }
 
-    @objc func enterBackground() {
-        print("Entering background")
-        self.applicationState = .background
-        stopEngine()
-    }
-
-    @objc func enterForeground() {
-        print("Entering Foreground")
-        self.applicationState = .foreground
-        restartEngine()
-    }
+//    @objc func enterBackground() {
+//        print("Entering background")
+//        self.applicationState = .background
+//        stopEngine()
+//    }
+//
+//    @objc func enterForeground() {
+//        print("Entering Foreground")
+//        self.applicationState = .foreground
+//        restartEngine()
+//    }
     
     func getCategory()
     {
@@ -110,8 +110,8 @@ extension AudioManager {
     }
 }
 
-enum ApplicationState: String {
-    case foreground = "Foreground"
-    case resignActive = "resignActive"
-    case background = "background"
-}
+//enum ApplicationState: String {
+//    case foreground = "Foreground"
+//    case resignActive = "resignActive"
+//    case background = "background"
+//}

@@ -24,8 +24,6 @@ class AudioManager {
     
     internal var notifier = NotificationCenter.default
     
-    public var applicationState : ApplicationState = .foreground
-    
     init() {
         
     }
