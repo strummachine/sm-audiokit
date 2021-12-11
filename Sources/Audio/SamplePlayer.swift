@@ -134,6 +134,8 @@ class SamplePlayer {
     
     func stopImmediately() {
         self.player.stop()
+        self.playback?.samplePlayer = nil
+        self.playback = nil
     }
 }
 
