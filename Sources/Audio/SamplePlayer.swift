@@ -69,10 +69,12 @@ class SamplePlayer {
                 self.player.stop()
                 try self.player.load(url: sample.url)
             } catch {
-                print("Error: Cannot load sample:\(error.localizedDescription)")
+                print("Error: Cannot load sample: \(error.localizedDescription)")
                 throw SamplePlaybackError.cannotLoadPlayer
             }
             self.sampleId = sample.id
+        } else {
+            self.player.seek(time: 0)
         }
 
         self.startTime = atTime
