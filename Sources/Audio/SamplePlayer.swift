@@ -90,6 +90,7 @@ class SamplePlayer {
         self.channel = channel
         channel.mixer.addInput(self.outputNode)
 
+        self.player.seek(time: 0)
         self.player.play(from: offset, to: nil, at: AVAudioTime(hostTime: atTime.hostTime), completionCallbackType: .dataPlayedBack)
 
         if fadeInDuration > 0 {
