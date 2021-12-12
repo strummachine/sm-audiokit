@@ -126,11 +126,13 @@ import AVFoundation
 
     @objc(deleteSamples:) func deleteSamples(command: CDVInvokedUrlCommand) {
         DispatchQueue.main.async(execute: {
-            var pluginResult = CDVPluginResult(status: CDVCommandStatus_ERROR)
+            let packageAndSampleDict = command.arguments[0] as? [[String: String]] ?? []
 
-            let packageAndSampleIds = command.arguments[0] as! [String]
+            let packageIdsAndSampleIds = packageAndSampleDict.map({ ps in
+                PackageIdAndSampleId(packageId: ps["packageId"]!, sampleId: ps["sampleId"]!)
+            })
 
-            SampleStorage.deleteSamples(packageAndSampleIds, completion: { result in
+            SampleStorage.deleteSamples(packageIdsAndSampleIds, completion: { result in
                 switch result {
                     case .success(let message):
                         print(message)

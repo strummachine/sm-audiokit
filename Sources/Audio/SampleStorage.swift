@@ -134,7 +134,7 @@ class SampleStorage {
     }
     
     /// On success will return a string -- we can have this string give a list of the deleted files if necessary
-    public static func deleteSamples(_ samplesToDelete:[String], completion: @escaping (Result<String,SampleStorageError>)-> Void) {
+    public static func deleteSamples(_ toDelete:[PackageIdAndSampleId], completion: @escaping (Result<String,SampleStorageError>)-> Void) {
         DispatchQueue.global(qos: .utility).async {
             /// Get the document directory url
             guard let documentsUrl = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
@@ -152,10 +152,14 @@ class SampleStorage {
                     options: .skipsHiddenFiles
                 )
 
+                let filenamesToDelete = toDelete.map({ ps in
+                    "\(ps.packageId)\(fileSeparator)\(ps.sampleId).mp3"
+                })
+
                 /// Filter the files we need to delete.
                 ///
                 //FIXME: We probably need additional checks, or cut off the path etc..
-                let filesToDelete = fileURLs.filter{!samplesToDelete.contains($0.absoluteString)}
+                let filesToDelete = fileURLs.filter{!filenamesToDelete.contains($0.absoluteString)}
                 for fileURL in filesToDelete {
                     ////4. We probably don't need this check but it is good practice.
                     if fileURL.pathExtension == "mp3"{
