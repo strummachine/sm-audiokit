@@ -68,7 +68,9 @@ import AVFoundation
             let sampleId = command.arguments[1] as! String
             let audioData = command.arguments[2] as! Data  // TODO: how to do we deal with optional vs required?
 
-            SampleStorage.storeSample(sampleId: sampleId, packageId: packageId, audioData: audioData, completion: { result in
+            let pns = PackageIdAndSampleId(packageId: packageId, sampleId: sampleId)
+
+            SampleStorage.storeSample(packageIdAndSampleId: pns, audioData: audioData, completion: { result in
                 switch result {
                     case .success(let sample):
                         let pluginResult = CDVPluginResult(

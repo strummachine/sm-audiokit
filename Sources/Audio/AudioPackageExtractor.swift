@@ -14,7 +14,7 @@ class AudioPackageExtractor {
     
     public static func getTestPackageUrl() throws -> URL {
         let pathForFile = Bundle.main.path(forResource: "testbed_mono_mp3", ofType: "audio-package")!
-
+        
         let url = URL(fileURLWithPath: pathForFile)
         
         return url
@@ -53,7 +53,7 @@ class AudioPackageExtractor {
                 fatalError()
             }
         }
-
+        
         /// Prep array of [Sample] for successfull read and return
         var results: [Sample] = []
         
@@ -66,10 +66,12 @@ class AudioPackageExtractor {
             /// Calculate byte range for this file and slice byte array accordingly
             let byteRange = nextFileByteOffset..<(nextFileByteOffset+sampleDef.length)
             let bytesForAudioPacket: [UInt8] = Array(data.bytes[byteRange])
-          
+            
             /// Save audio data to disk and create Sample
             
-            SampleStorage.storeSample(sampleId: sampleDef.name, packageId: Date().dateAndTimetoString(), audioData: Data(bytesForAudioPacket), completion: { result in
+            let pns = PackageIdAndSampleId(packageId: Date().dateAndTimetoString(), sampleId: sampleDef.name)
+            
+            SampleStorage.storeSample(packageIdAndSampleId: pns, audioData: Data(bytesForAudioPacket), completion: { result in
                 switch result {
                 case .success(let sample):
                     /// Add Sample to results
@@ -101,15 +103,17 @@ class AudioPackageExtractor {
             ////8. Calculate byte range for this file and slice byte array accordingly
             let byteRange = nextFileByteOffset..<(nextFileByteOffset+sampleDef.length)
             let bytesForAudioPacket: [UInt8] = Array(data.bytes[byteRange])
-          
+            
             ////9. Save audio data to disk and create Sample
             
-            SampleStorage.storeSample(sampleId: sampleDef.name, packageId: Date().dateAndTimetoString(), audioData: Data(bytesForAudioPacket), completion: { result in
+            let pns = PackageIdAndSampleId(packageId: Date().dateAndTimetoString(), sampleId: sampleDef.name)
+            
+            SampleStorage.storeSample(packageIdAndSampleId: pns, audioData: Data(bytesForAudioPacket), completion: { result in
                 switch result {
                 case .success(let sample):
                     ////10. Add Sample to results
                     results.append(sample)
-                  
+                    
                     ////11. Calculate byte offset for start of next file
                     nextFileByteOffset += sampleDef.length
                 case .failure(let error):
@@ -138,7 +142,7 @@ class AudioPackageExtractor {
         
         let manifestJSON = bytes[4..<firstFileByteOffset]
         let manifestJSONString = "{\"samples\" : \(String(decoding: manifestJSON, as: UTF8.self))}"
-
+        
         return (Data(manifestJSONString.utf8), firstFileByteOffset)
     }
     
@@ -215,7 +219,7 @@ extension Date {
         formatter.dateFormat = format
         return formatter.string(from: self)
     }
-   
+    
     func timeIn24HourFormat() -> String {
         let formatter = DateFormatter()
         formatter.dateStyle = .none
