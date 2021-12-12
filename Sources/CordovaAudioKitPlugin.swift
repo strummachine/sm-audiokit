@@ -118,7 +118,7 @@ import AVFoundation
                         print(error)
                         let pluginResult = CDVPluginResult(
                             status: CDVCommandStatus_ERROR,
-                            messageAs: error.description  // TODO: what format is this and how should it be passed?
+                            messageAs: error.description
                         )
                         self.commandDelegate!.send(pluginResult, callbackId: command.callbackId)
                 }
@@ -147,7 +147,7 @@ import AVFoundation
                         print(error)
                         let pluginResult = CDVPluginResult(
                             status: CDVCommandStatus_ERROR,
-                            messageAs: error.description // TODO: what format is this and how should it be passed?
+                            messageAs: error.description
                         )
                         self.commandDelegate!.send(pluginResult, callbackId: command.callbackId)
                 }
@@ -157,7 +157,7 @@ import AVFoundation
 
     // MARK: starting/stopping playback session
 
-    @objc(gonnaPlay:) func gonnaPlay(command: CDVInvokedUrlCommand) {
+    @objc(startEngine:) func startEngine(command: CDVInvokedUrlCommand) {
         DispatchQueue.main.async(execute: {
             var pluginResult = CDVPluginResult(status: CDVCommandStatus_ERROR)
             defer { self.commandDelegate!.send(pluginResult, callbackId: command.callbackId) }
@@ -165,37 +165,26 @@ import AVFoundation
             let browserTime = (command.arguments[0] as! Double)
 
             do {
-                try self.manager.startEngine()
                 try self.manager.setBrowserTime(browserTime)
-                try self.manager.setAVAudioSession(asActive: true)
-
+                try self.manager.startEngine()
                 pluginResult = CDVPluginResult(status: CDVCommandStatus_OK)
             } catch {
-                print("ERROR in gonnaPlay")
+                print("ERROR in startEngine")
                 print(error)
-                // TODO: Set pluginResult error details if anything goes wrong
-                // if (error) {
-                //   pluginResult = CDVPluginResult(
-                //     status: CDVCommandStatus_ERROR,
-                //     messageAs: "err-code"
-                //   )
-                // }
+                pluginResult = CDVPluginResult(
+                    status: CDVCommandStatus_ERROR,
+                    messageAs: error.localizedDescription
+                )
             }
         })
     }
 
-    @objc(gonnaStop:) func gonnaStop(command: CDVInvokedUrlCommand) {
+    @objc(stopEngine:) func stopEngine(command: CDVInvokedUrlCommand) {
         DispatchQueue.main.async(execute: {
             var pluginResult = CDVPluginResult(status: CDVCommandStatus_ERROR)
             defer { self.commandDelegate!.send(pluginResult, callbackId: command.callbackId) }
 
-            do {
-                self.manager.stopEngine()
-                try self.manager.setAVAudioSession(asActive: false)
-            } catch {
-
-            }
-
+            self.manager.stopEngine()
             pluginResult = CDVPluginResult(status: CDVCommandStatus_OK)
         })
     }
@@ -235,13 +224,10 @@ import AVFoundation
                     ]
                 )
             } catch {
-                // TODO: Set pluginResult error details if anything goes wrong
-                // if (error) {
-                //   pluginResult = CDVPluginResult(
-                //     status: CDVCommandStatus_ERROR,
-                //     messageAs: "err-code"
-                //   )
-                // }
+                pluginResult = CDVPluginResult(
+                    status: CDVCommandStatus_ERROR,
+                    messageAs: error.localizedDescription
+                )
             }
         })
     }
@@ -265,17 +251,12 @@ import AVFoundation
                     volume: volume,
                     fadeDuration: fadeDuration
                 )
-                pluginResult = CDVPluginResult(
-                    status: CDVCommandStatus_OK
-                )
+                pluginResult = CDVPluginResult(status: CDVCommandStatus_OK)
             } catch {
-                // TODO: Set pluginResult error details if anything goes wrong
-                // if (error) {
-                //   pluginResult = CDVPluginResult(
-                //     status: CDVCommandStatus_ERROR,
-                //     messageAs: "err-code"
-                //   )
-                // }
+                pluginResult = CDVPluginResult(
+                    status: CDVCommandStatus_ERROR,
+                    messageAs: error.localizedDescription
+                )
             }
         })
     }
@@ -295,17 +276,12 @@ import AVFoundation
                     atTime: atTime,
                     fadeDuration: fadeDuration
                 )
-                pluginResult = CDVPluginResult(
-                    status: CDVCommandStatus_OK
-                )
+                pluginResult = CDVPluginResult(status: CDVCommandStatus_OK)
             } catch {
-                // TODO: Set pluginResult error details if anything goes wrong
-                // if (error) {
-                //   pluginResult = CDVPluginResult(
-                //     status: CDVCommandStatus_ERROR,
-                //     messageAs: "err-code"
-                //   )
-                // }
+                pluginResult = CDVPluginResult(
+                    status: CDVCommandStatus_ERROR,
+                    messageAs: error.localizedDescription
+                )
             }
         })
     }
@@ -368,8 +344,7 @@ import AVFoundation
     }
 
     @objc override func onReset() {
-        // TODO: handle Cordova page reload as described here:
-        // https://cordova.apache.org/docs/en/latest/guide/platforms/ios/plugin.html#plugin-initialization-and-lifetime
+        self.manager.teardown()
     }
 
     // @objc func onMemoryWarning() {

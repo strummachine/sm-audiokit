@@ -35,7 +35,7 @@ exports.storeSample = execNativeWithArgs('storeSample', (args) => [
 /**
  * Prepare to play audio soon; configures AVAudioSession, syncs clock
  */
-exports.gonnaPlay = execNativeWithArgs('gonnaPlay', (args) => [
+exports.startEngine = execNativeWithArgs('startEngine', (args) => [
   // passes seconds since app was loaded; unlike Date.now(), this is unaffected by NTP updates
   performance.now() /* which is in ms */ * 0.001
 ]);
@@ -43,7 +43,7 @@ exports.gonnaPlay = execNativeWithArgs('gonnaPlay', (args) => [
 /**
  * Audio is stopping; can deactivate AVAudioSession
  */
-exports.gonnaStop = execNativeWithArgs('gonnaStop', (args) => []);
+exports.stopEngine = execNativeWithArgs('stopEngine', (args) => []);
 
 // === Master Channel
 

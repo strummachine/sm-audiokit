@@ -54,28 +54,22 @@ enum SampleStorageError: Error, CustomStringConvertible {
 
 enum AudioManagerError: Error, CustomStringConvertible {
     case audioEngineCannotStart(error: Error)
+    case audioEngineNotRunning
     case cannotFindSample(sampleId: String)
     case cannotFindChannel(channel: String)
     case cannotFindChannelId(channelId: String)
-    case cannotUnwrapMainMixerNode
-    case cannotUnwrapLastRenderTime
-    case cannotUnwrapDocumentsDirectoryURL
     var description: String {
         switch self {
             case .audioEngineCannotStart(let error):
-                return String("Audio engine cannot start. Error message:\(error.localizedDescription)")
+                return String("Audio engine cannot start. Error message: \(error.localizedDescription)")
+            case .audioEngineNotRunning:
+                return String("Audio engine not running.")
             case .cannotFindSample(let sampleId):
-                return String("Cannot find sample with sampleId:\(sampleId)")
+                return String("Cannot find sample with sampleId '\(sampleId)'")
             case .cannotFindChannel(let channel):
-                return String("Cannot find channel with channelId:\(channel)")
+                return String("Cannot find channel with channelId '\(channel)'")
             case .cannotFindChannelId(let id):
-                return String("Cannot unwrap channel id with id:\(id)")
-            case .cannotUnwrapDocumentsDirectoryURL:
-                return "Cannot unwrap Documents Directory URL"
-            case .cannotUnwrapMainMixerNode:
-                return "Cannot unwrap main mixer node. Most likely nil or engine is not running"
-            case .cannotUnwrapLastRenderTime:
-                return "Cannot Unwrap lastRenderTime. Most likely nil or engine is not running"
+                return String("Cannot unwrap channel id with id '\(id)'")
         }
     }
 }

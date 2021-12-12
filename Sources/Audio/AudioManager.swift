@@ -24,33 +24,19 @@ class AudioManager {
     
     internal var notifier = NotificationCenter.default
     
-    init() {
-        
+    init() {}
+
+    // MARK: Setup and Teardown
+
+    var isSetup: Bool {
+        get { self.channels.count > 0 }
     }
 
-    private func start() throws {
-        do {
-            try engine.start()
-            print("Started Audio Engine")
-        } catch {
-            throw AudioManagerError.audioEngineCannotStart(error: error)
-        }
-    }
-    private func stop() {
-        engine.stop()
-        do {
-            try self.setAVAudioSession(asActive: false)
-        } catch {
-            print("Error: Cannot set avaudiosession as false:\(error)")
-        }
-    }
-}
-
-// MARK: - Setup methods
-extension AudioManager {
     public func setup(channelIds: [String], polyphonyLimit: Int) throws {
+        guard !isSetup else { return }
+        self.engine.rebuildGraph()
         do {
-            try setAVAudioSession(asActive: true)
+            try setAVAudioSession(asActive: false)
             for id in channelIds {
                 self.channels[id] = Channel(id: id, mainMixer: self.mainMixer)
             }
@@ -64,10 +50,19 @@ extension AudioManager {
     
     public func teardown() {
         DispatchQueue.main.async {
+            print("Tearing down AudioManager")
             self.playerPool.stopAllPlayers()
             self.playerPool.removeAllPlayers()
             self.channels.removeAll()
-            self.stop()
+
+            self.engine.stop()
+            do {
+                try self.setAVAudioSession(asActive: false)
+            } catch {
+                print("Error: Cannot set avaudiosession as false:\(error)")
+            }
+
+            self.deregisterNotificationObservers()
         }
     }
     
@@ -75,7 +70,7 @@ extension AudioManager {
         #if os(iOS)
         if asActive {
             do {
-                Settings.bufferLength = .short
+                Settings.bufferLength = .veryLong
                 try AVAudioSession.sharedInstance().setPreferredIOBufferDuration(Settings.bufferLength.duration)
                 try AVAudioSession.sharedInstance().setCategory(.playback, options: [.mixWithOthers])
                 try AVAudioSession.sharedInstance().setActive(true)
@@ -94,63 +89,62 @@ extension AudioManager {
         }
         #endif
     }
-}
 
+    // MARK: Master engine stop/start methods for app states
 
-// MARK: - Master engine stop/start methods for app states
-extension AudioManager {
     public func startEngine() throws {
         // TODO: we could add some checks to make sure channels are setup etc...
         do {
-            try start()
+            try self.engine.start()
+            print("Started Audio Engine")
+            try self.setAVAudioSession(asActive: true)
         } catch {
-            throw error
+            throw AudioManagerError.audioEngineCannotStart(error: error)
         }
     }
     
     public func stopEngine() {
-        turnOffAllPlayers()
-        stop()
+        print("Stopping Engine")
+        // TODO: Make actually smooth fade out by ramping channel faders?
+        self.playerPool.stopAllPlayers()
+        engine.stop()
+        do {
+            try self.setAVAudioSession(asActive: false)
+        } catch {
+            print("Error: Cannot set avaudiosession as false:\(error)")
+        }
     }
     
     public func restartEngine() {
         DispatchQueue.main.async {
             do {
                 try self.setAVAudioSession(asActive: true)
-                try self.start()
+                do {
+                    try self.engine.start()
+                    print("Started Audio Engine")
+                } catch {
+                    throw AudioManagerError.audioEngineCannotStart(error: error)
+                }
             } catch {
                 print(error)
             }
         }
     }
-    
-    // TODO: - Make actually smooth fade out
-    private func turnOffAllPlayers() {
-//        channels.forEach({ channel in
-//            let value = channel.value
-//            let fader = Fader(value.mixer, gain: value.mixer.volume)
-//            self.mainMixer.addInput(fader)
-//            fader.start()
-//            fader.$leftGain.ramp(to: 0.0, duration: 0.25)
-//            fader.$rightGain.ramp(to: 0.0, duration: 0.25)
-//        })
-        self.playerPool.stopAllPlayers()
-    }
-    
-}
 
-// MARK: - Sample Playback
-extension AudioManager {
+    // MARK: Sample Playback
+
     public func playSample(sampleId: String,
-                    channel: String,
-                    playbackId: String,
-                    atTime: Double,
-                    volume: Double = 1.0,
-                    offset: Double = 0.0,
-                    playbackRate: Double = 1.0,
-                    fadeInDuration: Double = 0.0) throws -> SamplePlayback {
-        // Grab sample and channel
-        
+                           channel: String,
+                           playbackId: String,
+                           atTime: Double,
+                           volume: Double = 1.0,
+                           offset: Double = 0.0,
+                           playbackRate: Double = 1.0,
+                           fadeInDuration: Double = 0.0
+    ) throws -> SamplePlayback {
+        guard self.engine.avEngine.isRunning else {
+            throw AudioManagerError.audioEngineNotRunning
+        }
         guard let sample = SampleStorage.sampleBank[sampleId] else {
             throw AudioManagerError.cannotFindSample(sampleId: sampleId)
         }
@@ -181,29 +175,30 @@ extension AudioManager {
             throw error
         }
     }
-}
 
-// MARK: - Playback manipulation
-extension AudioManager {
+    // MARK: Playback manipulation
+
     func setPlaybackVolume(playbackId: String, atTime: Double, volume: Double, fadeDuration: Double) {
+        guard self.engine.avEngine.isRunning else { return }
         let time = browserTimeToAudioTime(atTime)
         playbacks[playbackId]?.fade(at: time, to: volume, duration: fadeDuration)
     }
 
     // This one doesn't need to be implemented for v1
     func setPlaybackRate(playbackId: String, atTime: Double, playbackRate: Double, transitionDuration: Double) {
+        guard self.engine.avEngine.isRunning else { return }
         let time = browserTimeToAudioTime(atTime)
         playbacks[playbackId]?.changePlaybackRate(at: time, to: playbackRate, duration: transitionDuration)
     }
 
     func stopPlayback(playbackId: String, atTime: Double, fadeDuration: Double = 0.0) {
+        guard self.engine.avEngine.isRunning else { return }
         let time = browserTimeToAudioTime(atTime)
         playbacks[playbackId]?.stop(at: time, fadeDuration: fadeDuration)
     }
-}
 
-// MARK: - Channels
-extension AudioManager {
+    // MARK: Channels
+
     public func setChannelVolume(channel: String, volume: Double) {
         channels[channel]?.volume = volume
     }
@@ -219,10 +214,9 @@ extension AudioManager {
     public func setMasterVolume(volume: Double) {
         mainMixer.volume = Float(volume)
     }
-}
 
-// MARK: - Audio Clock Timing Methods
-extension AudioManager {
+    // MARK: Audio Clock Timing Methods
+
     public func browserTimeToAudioTime(_ browserTime: Double) -> AVAudioTime {
         return AVAudioTime(hostTime: 0).offset(seconds: self.browserTimeOffset + browserTime)
     }
