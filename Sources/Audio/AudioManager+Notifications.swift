@@ -36,6 +36,10 @@ extension AudioManager {
                              name: AVAudioSession.mediaServicesWereResetNotification,
                              object: nil)
     }
+
+    internal func deregisterNotificationObservers() {
+        notifier.removeObserver(self)
+    }
     
     @objc internal func handleInterruption(_ notification: Notification) {
         guard let info = notification.userInfo,
@@ -45,10 +49,10 @@ extension AudioManager {
         }
         if type == .began {
             print("In handleInterruption: type == .began")
-            restartEngine()
-        } else if type == .ended {
-             print("In handleInterruption: type == .ended")
             stopEngine()
+        } else if type == .ended {
+            print("In handleInterruption: type == .ended")
+            restartEngine()
         }
     }
 
