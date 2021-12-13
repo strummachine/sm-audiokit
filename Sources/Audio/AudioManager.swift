@@ -31,6 +31,8 @@ class AudioManager {
         get { self.channels.count > 0 }
     }
 
+    internal private(set) var acceptingCommands = false
+
     public func setup(channels: [ChannelDefinition]) throws {
         guard !isSetup else { return }
         self.engine.rebuildGraph()
@@ -102,6 +104,7 @@ class AudioManager {
             try self.engine.start()
             print("Started Audio Engine")
             try self.setAVAudioSession(asActive: true)
+            self.acceptingCommands = true
         } catch {
             throw AudioManagerError.audioEngineCannotStart(error: error)
         }
@@ -109,6 +112,7 @@ class AudioManager {
     
     public func stopEngine() {
         print("Stopping Engine")
+        self.acceptingCommands = false
         // TODO: Make actually smooth fade out by ramping channel faders?
         for channel in self.channels.values {
             channel.playerPool.stopAllPlayers()
@@ -128,6 +132,7 @@ class AudioManager {
                 do {
                     try self.engine.start()
                     print("Started Audio Engine")
+                    self.acceptingCommands = true
                 } catch {
                     throw AudioManagerError.audioEngineCannotStart(error: error)
                 }
@@ -148,7 +153,7 @@ class AudioManager {
                            playbackRate: Double = 1.0,
                            fadeInDuration: Double = 0.0
     ) throws -> SamplePlayback {
-        guard self.engine.avEngine.isRunning else {
+        guard self.acceptingCommands else {
             throw AudioManagerError.audioEngineNotRunning
         }
         guard let sample = SampleStorage.sampleBank[sampleId] else {
@@ -184,20 +189,20 @@ class AudioManager {
     // MARK: Playback manipulation
 
     func setPlaybackVolume(playbackId: String, atTime: Double, volume: Double, fadeDuration: Double) {
-        guard self.engine.avEngine.isRunning else { return }
+        guard self.acceptingCommands else { return }
         let time = browserTimeToAudioTime(atTime)
         playbacks[playbackId]?.fade(at: time, to: volume, duration: fadeDuration)
     }
 
     // This one doesn't need to be implemented for v1
     func setPlaybackRate(playbackId: String, atTime: Double, playbackRate: Double, transitionDuration: Double) {
-        guard self.engine.avEngine.isRunning else { return }
+        guard self.acceptingCommands else { return }
         let time = browserTimeToAudioTime(atTime)
         playbacks[playbackId]?.changePlaybackRate(at: time, to: playbackRate, duration: transitionDuration)
     }
 
     func stopPlayback(playbackId: String, atTime: Double, fadeDuration: Double = 0.0) {
-        guard self.engine.avEngine.isRunning else { return }
+        guard self.acceptingCommands else { return }
         let time = browserTimeToAudioTime(atTime)
         playbacks[playbackId]?.stop(at: time, fadeDuration: fadeDuration)
     }
