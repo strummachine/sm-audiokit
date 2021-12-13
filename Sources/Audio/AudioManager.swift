@@ -124,6 +124,15 @@ class AudioManager {
             print("Error: Cannot set avaudiosession as false:\(error)")
         }
     }
+
+    public func stopEngineDueToInterruption() {
+        print("Stopping engine due to an interruption")
+        self.acceptingCommands = false
+        for channel in self.channels.values {
+            channel.playerPool.stopAllPlayers()
+        }
+        engine.stop()
+    }
     
     public func restartEngine() {
         DispatchQueue.main.async {

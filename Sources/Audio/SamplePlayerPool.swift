@@ -23,8 +23,7 @@ class SamplePlayerPool {
     }
     
     public func stopAllPlayers() {
-        print("[SamplePlayerPool] Stopping all players")
-        for player in players {
+        for player in players.filter({!$0.available}) {
             player.stopImmediately()
         }
     }

@@ -122,12 +122,18 @@ class SamplePlayer {
 
     func scheduleStop(at: AVAudioTime?, fadeDuration maybeFadeDuration: Double?) {
         let fadeDuration = maybeFadeDuration ?? 0.05
+        let secondsUntilDone = ((at ?? AVAudioTime.now()).timeIntervalSince(otherTime: AVAudioTime.now()) ?? 0) + fadeDuration
+
+        guard secondsUntilDone > -fadeDuration else {
+            self.player.stop()
+            self.player.completionHandler?()
+            return
+        }
+
         self.scheduleFade(at: at ?? AVAudioTime.now(), to: 0.0, duration: fadeDuration)
 
         let origPlaybackId = self.playbackId
-        guard let lastRenderTime = self.player.avAudioNode.lastRenderTime else { return }
-        let delayFromNow = at?.timeIntervalSince(otherTime: lastRenderTime) ?? 0
-        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + (delayFromNow + fadeDuration + 0.01)) {
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + (secondsUntilDone + 0.01)) {
             guard origPlaybackId == self.playbackId else { return }  // make sure this player hasn't been reassigned
             self.player.stop()
             self.player.completionHandler?()
@@ -136,8 +142,7 @@ class SamplePlayer {
     
     func stopImmediately() {
         self.player.stop()
-        self.playback?.samplePlayer = nil
-        self.playback = nil
+        self.player.completionHandler?()
     }
 }
 

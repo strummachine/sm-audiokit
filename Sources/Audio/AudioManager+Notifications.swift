@@ -49,10 +49,10 @@ extension AudioManager {
         }
         if type == .began {
             print("In handleInterruption: type == .began")
-            stopEngine()
+            stopEngineDueToInterruption()
         } else if type == .ended {
             print("In handleInterruption: type == .ended")
-            restartEngine()
+//            restartEngine()
         }
     }
 

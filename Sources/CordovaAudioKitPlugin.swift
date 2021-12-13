@@ -196,6 +196,15 @@ import AVFoundation
     // MARK: Sample playback
 
     @objc(playSample:) func playSample(command: CDVInvokedUrlCommand) {
+        guard self.manager.acceptingCommands else {
+            let pluginResult = CDVPluginResult(
+                status: CDVCommandStatus_ERROR,
+                messageAs: "Audio engine not running"
+            )
+            self.commandDelegate!.send(pluginResult, callbackId: command.callbackId)
+            return
+        }
+
         DispatchQueue.main.async(execute: {
             var pluginResult = CDVPluginResult(status: CDVCommandStatus_ERROR)
             defer { self.commandDelegate!.send(pluginResult, callbackId: command.callbackId) }
@@ -230,7 +239,7 @@ import AVFoundation
             } catch {
                 pluginResult = CDVPluginResult(
                     status: CDVCommandStatus_ERROR,
-                    messageAs: error.localizedDescription
+                    messageAs: "Sample playback failed: \(error)"
                 )
             }
         })
