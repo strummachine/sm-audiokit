@@ -30,6 +30,7 @@ class SamplePlayer {
 
     init() {
         self.player = AudioPlayer()
+        self.player.loadMonoFileAsStereoBuffer = false
         self.varispeed = VariSpeed(player)
         self.varispeedAU = (self.varispeed.avAudioNode as! AVAudioUnitVarispeed)
         self.varispeedAU.bypass = true
@@ -59,6 +60,7 @@ class SamplePlayer {
         playbackRate: Double = 1.0,
         fadeInDuration: Double = 0.0
     ) throws -> SamplePlayback {
+        self.player.stop()
         self.playback?.samplePlayer = nil
         self.playback = nil
         self.channel?.mixer.removeInput(self.outputNode)
@@ -68,15 +70,12 @@ class SamplePlayer {
 
         if sample.id != self.sampleId {
             do {
-                self.player.stop()
-                try self.player.load(url: sample.url)
+                try self.player.load(url: sample.url, buffered: true)
             } catch {
                 print("Error: Cannot load sample: \(error.localizedDescription)")
                 throw SamplePlaybackError.cannotLoadPlayer
             }
             self.sampleId = sample.id
-        } else {
-            self.player.seek(time: 0)
         }
 
         self.startTime = atTime
@@ -90,7 +89,6 @@ class SamplePlayer {
         self.channel = channel
         channel.mixer.addInput(self.outputNode)
 
-        self.player.seek(time: 0)
         self.player.play(from: offset, to: nil, at: AVAudioTime(hostTime: atTime.hostTime), completionCallbackType: .dataPlayedBack)
 
         if fadeInDuration > 0 {

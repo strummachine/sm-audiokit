@@ -494,7 +494,7 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/strummachine/AudioKit.git";
 			requirement = {
-				branch = completion-on-main-thread;
+				branch = luke;
 				kind = branch;
 			};
 		};
