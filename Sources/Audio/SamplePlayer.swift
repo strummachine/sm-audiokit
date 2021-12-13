@@ -30,7 +30,6 @@ class SamplePlayer {
 
     init() {
         self.player = AudioPlayer()
-        self.player.loadMonoFileAsStereoBuffer = false
         self.varispeed = VariSpeed(player)
         self.varispeedAU = (self.varispeed.avAudioNode as! AVAudioUnitVarispeed)
         self.varispeedAU.bypass = true
@@ -68,15 +67,12 @@ class SamplePlayer {
         self.fader.stopAutomation()
         self.fadeAutomationEvents = []
 
-        if sample.id != self.sampleId {
             do {
-                try self.player.load(url: sample.url, buffered: true)
+            try self.player.load(url: sample.url, buffered: false)
             } catch {
                 print("Error: Cannot load sample: \(error.localizedDescription)")
                 throw SamplePlaybackError.cannotLoadPlayer
             }
-            self.sampleId = sample.id
-        }
 
         self.startTime = atTime
 
