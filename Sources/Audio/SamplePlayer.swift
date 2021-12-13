@@ -7,6 +7,7 @@ import CAudioKitEX
 class SamplePlayer {
     var player: AudioPlayer
     var varispeed: VariSpeed
+    private var varispeedAU: AVAudioUnitVarispeed
     var fader: Fader
     var fadeAutomationEvents: [AutomationEvent] = []
     var outputNode: Node {
@@ -30,7 +31,8 @@ class SamplePlayer {
     init() {
         self.player = AudioPlayer()
         self.varispeed = VariSpeed(player)
-        self.varispeed.stop()
+        self.varispeedAU = (self.varispeed.avAudioNode as! AVAudioUnitVarispeed)
+        self.varispeedAU.bypass = true
         self.fader = Fader(self.varispeed, gain: 1.0)
         self.fader.stop()
         self.player.completionHandler = {
@@ -38,7 +40,7 @@ class SamplePlayer {
             if self.player.isPlaying { return }
             self.fader.stopAutomation()
             // we don't bypass the fader node because we'll get a click
-            self.varispeed.stop()
+            self.varispeedAU.bypass = true
             self.playback?.samplePlayer = nil
             self.playback = nil
             self.channel?.mixer.removeInput(self.outputNode)
@@ -79,11 +81,7 @@ class SamplePlayer {
 
         self.startTime = atTime
 
-        if playbackRate != 1.0 {
-            self.varispeed.start()
-        } else {
-            self.varispeed.stop()
-        }
+        self.varispeedAU.bypass = (playbackRate == 1.0)
         self.varispeed.rate = Float(playbackRate)
 
         self.fader.gain = fadeInDuration > 0 ? 0 : Float(volume)
