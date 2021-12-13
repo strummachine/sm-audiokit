@@ -6,6 +6,8 @@ function execNativeWithArgs(methodName, transformArgs) {
   }
 }
 
+exports.apiVersion = 1;
+
 // === Init / Setup
 
 /**
