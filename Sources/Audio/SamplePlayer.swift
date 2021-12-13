@@ -20,8 +20,6 @@ class SamplePlayer {
     }
     var sampleId: String?
 
-    var channel: Channel?
-
     var available: Bool {
         get { self.playback == nil }
     }
@@ -43,15 +41,12 @@ class SamplePlayer {
             self.varispeedAU.bypass = true
             self.playback?.samplePlayer = nil
             self.playback = nil
-            self.channel?.mixer.removeInput(self.outputNode)
-            self.channel = nil
         }
     }
 
 
     func schedulePlayback(
         sample: Sample,
-        channel: Channel,
         playbackId: String,
         atTime: AVAudioTime,
         volume: Double = 1.0,
@@ -62,17 +57,15 @@ class SamplePlayer {
         self.player.stop()
         self.playback?.samplePlayer = nil
         self.playback = nil
-        self.channel?.mixer.removeInput(self.outputNode)
-        self.channel = nil
         self.fader.stopAutomation()
         self.fadeAutomationEvents = []
 
-            do {
+        do {
             try self.player.load(url: sample.url, buffered: false)
-            } catch {
-                print("Error: Cannot load sample: \(error.localizedDescription)")
-                throw SamplePlaybackError.cannotLoadPlayer
-            }
+        } catch {
+            print("Error: Cannot load sample: \(error.localizedDescription)")
+            throw SamplePlaybackError.cannotLoadPlayer
+        }
 
         self.startTime = atTime
 
@@ -81,9 +74,6 @@ class SamplePlayer {
 
         self.fader.gain = fadeInDuration > 0 ? 0 : Float(volume)
         self.fader.start()
-
-        self.channel = channel
-        channel.mixer.addInput(self.outputNode)
 
         self.player.play(from: offset, to: nil, at: AVAudioTime(hostTime: atTime.hostTime), completionCallbackType: .dataPlayedBack)
 

@@ -30,13 +30,8 @@ class SamplePlayerPool {
     }
     
     public func removeAllPlayers() {
-        for player in self.players {
-            if player.available {
-                player.channel?.mixer.removeInput(player.outputNode)
-            }
-            else {
-                print("Player was unavailable during teardown; this should never happen")
-            }
+        if self.players.contains(where: {!$0.available}) {
+            print("Player was unavailable during teardown; this should never happen")
         }
         players.removeAll()
     }

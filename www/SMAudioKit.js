@@ -6,7 +6,7 @@ function execNativeWithArgs(methodName, transformArgs) {
   }
 }
 
-exports.apiVersion = 1;
+exports.apiVersion = 2;
 
 // === Init / Setup
 
@@ -14,8 +14,8 @@ exports.apiVersion = 1;
  * Initialize AudioKit engine
  */
 exports.initialize = execNativeWithArgs('initialize', (args) => [
-  args.channels,
-  args.polyphonyLimit,
+  args.channels.map(c => c.id),
+  args.channels.map(c => c.polyphonyLimit),
 ]);
 
 exports.getStoredSampleList = execNativeWithArgs('getStoredSampleList', (args) => []);
