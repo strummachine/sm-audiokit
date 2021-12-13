@@ -14,12 +14,17 @@ class Channel {
     let id: String
     let fader: Fader
     let mixer: Mixer
+    var playerPool = SamplePlayerPool()
 
-    init(id: String, mainMixer: Mixer) {
+    init(id: String, polyphonyLimit: Int, mainMixer: Mixer) {
         self.id = id
         self.mixer = Mixer(name: "channel:\(id)")
         self.fader = Fader(self.mixer)
         mainMixer.addInput(self.fader)
+        self.playerPool.createPlayers(count: polyphonyLimit)
+        for player in self.playerPool.players {
+            self.mixer.addInput(player.outputNode)
+        }
     }
 
     private var _volume = 1.0
@@ -59,4 +64,9 @@ class Channel {
             mixer.pan = Float(newValue)
         }
     }
+}
+
+struct ChannelDefinition {
+    let id: String
+    let polyphonyLimit: Int
 }

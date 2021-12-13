@@ -53,13 +53,14 @@ class ViewController: UIViewController {
                     print(error)
                 }
             })
-            let guitarChannel: [String: String] = ["id": "guitar"]
-            let drumChannel: [String: String] = ["id": "drums"]
-            let testChannel: [String: String] = ["id": "test"]
 
-            let channels : [[String:String]] = [guitarChannel,drumChannel,testChannel]
+            let channels: [ChannelDefinition] = [
+                ChannelDefinition(id: "guitar", polyphonyLimit: 32),
+                ChannelDefinition(id: "drums", polyphonyLimit: 16),
+                ChannelDefinition(id: "test", polyphonyLimit: 4),
+            ]
 
-            try AudioManager.shared.setup(channels: channels, polyphonyLimit: 24)
+            try AudioManager.shared.setup(channels: channels)
             try AudioManager.shared.startEngine()
             NotificationCenter.default.addObserver(self, selector: #selector(updateLabel), name: Notification.Name("PlayerCompletion"), object: nil)
         } catch let error as AudioManagerError {

@@ -18,13 +18,17 @@ import AVFoundation
             var pluginResult = CDVPluginResult(status: CDVCommandStatus_ERROR)
             defer { self.commandDelegate!.send(pluginResult, callbackId: command.callbackId) }
 
-            let channelDefinitions = command.arguments[0] as! [[String: Any]]
-            let polyphonyLimit = command.arguments[1] as? Int ?? 100
-
-            let channelIds = channelDefinitions.map({ $0["id"] as! String })
-
             do {
-                try self.manager.setup(channelIds: channelIds, polyphonyLimit: polyphonyLimit)
+                let channelIds = command.arguments[0] as! [String]
+                let channelPolyphonyLimits = command.arguments[1] as! [Int]
+
+                var channelDefs: [ChannelDefinition] = []
+                for i in 0..<channelIds.count {
+                    let def = ChannelDefinition(id: channelIds[i], polyphonyLimit: channelPolyphonyLimits[i])
+                    channelDefs.append(def)
+                }
+
+                try self.manager.setup(channels: channelDefs)
                 pluginResult = CDVPluginResult(status: CDVCommandStatus_OK)
             } catch {
                 pluginResult = CDVPluginResult(

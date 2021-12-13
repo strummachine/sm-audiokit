@@ -18,7 +18,6 @@ class AudioManager {
 
     var channels: [String: Channel] = [:]
     var playbacks: [String: SamplePlayback] = [:]
-    var playerPool = SamplePlayerPool()
 
     var browserTimeOffset: Double = 0.0
     
@@ -32,15 +31,18 @@ class AudioManager {
         get { self.channels.count > 0 }
     }
 
-    public func setup(channelIds: [String], polyphonyLimit: Int) throws {
+    public func setup(channels: [ChannelDefinition]) throws {
         guard !isSetup else { return }
         self.engine.rebuildGraph()
         do {
             try setAVAudioSession(asActive: false)
-            for id in channelIds {
-                self.channels[id] = Channel(id: id, mainMixer: self.mainMixer)
+            for channel in channels {
+                self.channels[channel.id] = Channel(
+                    id: channel.id,
+                    polyphonyLimit: channel.polyphonyLimit,
+                    mainMixer: self.mainMixer
+                )
             }
-            self.playerPool.createPlayers(count: polyphonyLimit)
             registerForNotifications()
             engine.output = mainMixer
         } catch {
@@ -51,8 +53,10 @@ class AudioManager {
     public func teardown() {
         DispatchQueue.main.async {
             print("Tearing down AudioManager")
-            self.playerPool.stopAllPlayers()
-            self.playerPool.removeAllPlayers()
+            for channel in self.channels.values {
+                channel.playerPool.stopAllPlayers()
+                channel.mixer.removeAllInputs()
+            }
             self.channels.removeAll()
 
             self.engine.stop()
@@ -106,7 +110,9 @@ class AudioManager {
     public func stopEngine() {
         print("Stopping Engine")
         // TODO: Make actually smooth fade out by ramping channel faders?
-        self.playerPool.stopAllPlayers()
+        for channel in self.channels.values {
+            channel.playerPool.stopAllPlayers()
+        }
         engine.stop()
         do {
             try self.setAVAudioSession(asActive: false)
@@ -155,10 +161,9 @@ class AudioManager {
         let startTime = browserTimeToAudioTime(atTime)
 
         do {
-            let player = self.playerPool.getPlayer(forSample: sample)
+            let player = channel.playerPool.getPlayer(forSample: sample)
             let playback = try player.schedulePlayback(
                 sample: sample,
-                channel: channel,
                 playbackId: playbackId,
                 atTime: startTime,
                 volume: volume,
