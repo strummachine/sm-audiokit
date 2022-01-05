@@ -257,20 +257,13 @@ import AVFoundation
             let volume = (command.arguments[2] as? Double ?? 0.5)
             let fadeDuration = (command.arguments[3] as? Double ?? 0.05)
 
-            do {
-                self.manager.setPlaybackVolume(
-                    playbackId: playbackId,
-                    atTime: atTime,
-                    volume: volume,
-                    fadeDuration: fadeDuration
-                )
-                pluginResult = CDVPluginResult(status: CDVCommandStatus_OK)
-            } catch {
-                pluginResult = CDVPluginResult(
-                    status: CDVCommandStatus_ERROR,
-                    messageAs: error.localizedDescription
-                )
-            }
+            self.manager.setPlaybackVolume(
+                playbackId: playbackId,
+                atTime: atTime,
+                volume: volume,
+                fadeDuration: fadeDuration
+            )
+            pluginResult = CDVPluginResult(status: CDVCommandStatus_OK)
         })
     }
 
@@ -283,19 +276,12 @@ import AVFoundation
             let atTime = (command.arguments[1] as? Double ?? 0)
             let fadeDuration = (command.arguments[2] as? Double ?? 0.05)
 
-            do {
-                self.manager.stopPlayback(
-                    playbackId: playbackId,
-                    atTime: atTime,
-                    fadeDuration: fadeDuration
-                )
-                pluginResult = CDVPluginResult(status: CDVCommandStatus_OK)
-            } catch {
-                pluginResult = CDVPluginResult(
-                    status: CDVCommandStatus_ERROR,
-                    messageAs: error.localizedDescription
-                )
-            }
+            self.manager.stopPlayback(
+                playbackId: playbackId,
+                atTime: atTime,
+                fadeDuration: fadeDuration
+            )
+            pluginResult = CDVPluginResult(status: CDVCommandStatus_OK)
         })
     }
 
