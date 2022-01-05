@@ -102,9 +102,9 @@ class AudioManager {
     public func startEngine() throws {
         // TODO: we could add some checks to make sure channels are setup etc...
         do {
+            try self.setAVAudioSession(asActive: true)
             try self.engine.start()
             print("Started Audio Engine")
-            try self.setAVAudioSession(asActive: true)
             self.acceptingCommands = true
         } catch {
             throw AudioManagerError.audioEngineCannotStart(error: error)
