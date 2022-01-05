@@ -61,7 +61,7 @@ extension AudioManager {
             let reasonValue = info[AVAudioSessionRouteChangeReasonKey] as? UInt,
             let reason = AVAudioSession.RouteChangeReason(rawValue: reasonValue) else {
             if notification.name == .AVAudioEngineConfigurationChange {
-                print(AVAudioSession.sharedInstance().currentRoute)
+                print("Audio output route changed to \(AVAudioSession.sharedInstance().currentRoute.outputs.map({$0.portName}))")
             }
             return
         }
