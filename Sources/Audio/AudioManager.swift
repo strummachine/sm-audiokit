@@ -55,6 +55,7 @@ class AudioManager {
     public func teardown() {
         DispatchQueue.main.async {
             print("Tearing down AudioManager")
+            self.acceptingCommands = false
             for channel in self.channels.values {
                 channel.playerPool.stopAllPlayers()
                 channel.mixer.removeAllInputs()
