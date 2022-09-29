@@ -216,8 +216,6 @@ import AVFoundation
             let volume = (command.arguments[4] as? Double ?? 1.0)
             let offset = (command.arguments[5] as? Double ?? 0.0)
             let fadeInDuration = (command.arguments[6] as? Double ?? 0.0)
-            let playbackRate = (command.arguments[7] as? Double ?? 1.0)
-            // let playDuration = command.arguments[8] as? Double ?? 0  // not used
 
             do {
                 let samplePlayback = try self.manager.playSample(
@@ -227,7 +225,6 @@ import AVFoundation
                     atTime: atTime,
                     volume: volume,
                     offset: offset,
-                    playbackRate: playbackRate,
                     fadeInDuration: fadeInDuration
                 )
                 pluginResult = CDVPluginResult(
@@ -334,9 +331,22 @@ import AVFoundation
             var pluginResult = CDVPluginResult(status: CDVCommandStatus_ERROR)
             defer { self.commandDelegate!.send(pluginResult, callbackId: command.callbackId) }
 
-            let volume = (command.arguments[0] as? Double ?? 0.5)
+            let volume = (command.arguments[0] as? Double ?? 1.0)
 
             self.manager.setMasterVolume(volume: volume)
+
+            pluginResult = CDVPluginResult(status: CDVCommandStatus_OK)
+        })
+    }
+
+    @objc(setMasterPitch:) func setMasterPitch(command: CDVInvokedUrlCommand) {
+        DispatchQueue.main.async(execute: {
+            var pluginResult = CDVPluginResult(status: CDVCommandStatus_ERROR)
+            defer { self.commandDelegate!.send(pluginResult, callbackId: command.callbackId) }
+
+            let cents = (command.arguments[0] as? Double ?? 0.0)
+
+            self.manager.setMasterPitch(cents: cents)
 
             pluginResult = CDVPluginResult(status: CDVCommandStatus_OK)
         })

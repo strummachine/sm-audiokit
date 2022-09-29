@@ -15,6 +15,7 @@ class AudioManager {
     
     let engine = AudioEngine()
     let mainMixer: Mixer = Mixer(volume: 1.0, name: "master")
+    let timePitch: TimePitch
 
     var channels: [String: Channel] = [:]
     var playbacks: [String: SamplePlayback] = [:]
@@ -23,7 +24,10 @@ class AudioManager {
     
     internal var notifier = NotificationCenter.default
     
-    init() {}
+    init() {
+        self.timePitch = TimePitch(self.mainMixer)
+        self.timePitch.bypass()
+    }
 
     // MARK: Setup and Teardown
 
@@ -46,7 +50,7 @@ class AudioManager {
                 )
             }
             registerForNotifications()
-            engine.output = mainMixer
+            engine.output = self.timePitch
         } catch {
             throw error
         }
@@ -226,6 +230,15 @@ class AudioManager {
 
     public func setMasterVolume(volume: Double) {
         mainMixer.volume = Float(volume)
+    }
+
+    public func setMasterPitch(cents: Double) {
+        timePitch.pitch = Float(cents)
+        if cents == 0.0 {
+            self.timePitch.bypass()
+        } else {
+            self.timePitch.start()
+        }
     }
 
     // MARK: Audio Clock Timing Methods

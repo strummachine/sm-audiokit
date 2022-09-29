@@ -6,7 +6,7 @@ function execNativeWithArgs(methodName, transformArgs) {
   }
 }
 
-exports.apiVersion = 2;
+exports.apiVersion = 3;
 
 // === Init / Setup
 
@@ -50,12 +50,16 @@ exports.stopEngine = execNativeWithArgs('stopEngine', (args) => []);
 // === Master Channel
 
 /**
- * Changes volume of master channel over specified time period
+ * Changes volume of master channel
  */
 exports.setMasterVolume = execNativeWithArgs('setMasterVolume', (args) => [
-  args.volume, // number (scale TBD)
+  args.volume, // number (0 to 1)
   // should we just hard-code this into Swift?
   typeof args.fadeDuration == 'number' ? args.fadeDuration : 0.05, // number, defaults to 50ms fade to prevent popping
+]);
+
+exports.setMasterPitchShift = execNativeWithArgs('setMasterPitch', (args) => [
+  args.cents // number
 ]);
 
 // TODO:
