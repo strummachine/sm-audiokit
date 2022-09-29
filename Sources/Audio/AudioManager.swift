@@ -204,13 +204,6 @@ class AudioManager {
         playbacks[playbackId]?.fade(at: time, to: volume, duration: fadeDuration)
     }
 
-    // This one doesn't need to be implemented for v1
-    func setPlaybackRate(playbackId: String, atTime: Double, playbackRate: Double, transitionDuration: Double) {
-        guard self.acceptingCommands else { return }
-        let time = browserTimeToAudioTime(atTime)
-        playbacks[playbackId]?.changePlaybackRate(at: time, to: playbackRate, duration: transitionDuration)
-    }
-
     func stopPlayback(playbackId: String, atTime: Double, fadeDuration: Double = 0.0) {
         guard self.acceptingCommands else { return }
         let time = browserTimeToAudioTime(atTime)

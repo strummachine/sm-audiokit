@@ -117,17 +117,6 @@ exports.setPlaybackVolume = execNativeWithArgs('setPlaybackVolume', (args) => [
 ]);
 
 /**
- * We can hold off on this... initial experiments suggest it is a crappy
- * substitute for actual string bending...
- */
-exports.setPlaybackRate = execNativeWithArgs('changePlaybackRate', (args) => [
-  args.playbackId, // string
-  args.atTime, // number
-  typeof args.playbackRate == 'number' ? args.playbackRate : 1, // number
-  typeof args.tweenDuration == 'number' ? args.tweenDuration : 0.01,
-]);
-
-/**
  * Stop playback at specified time over specified fade duration.
  */
 exports.stopPlayback = execNativeWithArgs('stopPlayback', (args) => [
