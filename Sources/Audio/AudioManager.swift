@@ -15,6 +15,7 @@ class AudioManager {
     
     let engine = AudioEngine()
     let mainMixer: Mixer = Mixer(volume: 1.0, name: "master")
+    let ultimateMixer: Mixer = Mixer(volume: 1.0, name: "ultimate")
     let timePitch: TimePitch
 
     var channels: [String: Channel] = [:]
@@ -27,6 +28,7 @@ class AudioManager {
     init() {
         self.timePitch = TimePitch(self.mainMixer)
         self.timePitch.bypass()
+        self.ultimateMixer.addInput(self.timePitch)
     }
 
     // MARK: Setup and Teardown
@@ -50,7 +52,7 @@ class AudioManager {
                 )
             }
             registerForNotifications()
-            engine.output = self.timePitch
+            engine.output = self.ultimateMixer
         } catch {
             throw error
         }
