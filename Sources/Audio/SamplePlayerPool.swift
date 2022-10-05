@@ -13,13 +13,12 @@ class SamplePlayerPool {
         }
     }
     
-    func getPlayer(forSample sample: Sample) -> SamplePlayer {
+    func getPlayer(forSample sample: Sample) -> SamplePlayer? {
         let sortedPlayers = self.players.sorted { a, b in
             return ((a.startTime?.hostTime ?? 0) < (b.startTime?.hostTime ?? 1))
         }
         return sortedPlayers.first(where: { $0.available && $0.sampleId == nil })
             ?? sortedPlayers.first(where: { $0.available })
-            ?? sortedPlayers.first!
     }
     
     public func stopAllPlayers() {

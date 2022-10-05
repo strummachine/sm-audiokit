@@ -168,7 +168,7 @@ class AudioManager {
                            offset: Double = 0.0,
                            playbackRate: Double = 1.0,
                            fadeInDuration: Double = 0.0
-    ) throws -> SamplePlayback {
+    ) throws -> SamplePlayback? {
         guard self.acceptingCommands else {
             throw AudioManagerError.audioEngineNotRunning
         }
@@ -183,7 +183,10 @@ class AudioManager {
 
         do {
             let player = channel.playerPool.getPlayer(forSample: sample)
-            let playback = try player.schedulePlayback(
+            if player == nil {
+                return nil
+            }
+            let playback = try player!.schedulePlayback(
                 sample: sample,
                 playbackId: playbackId,
                 atTime: startTime,

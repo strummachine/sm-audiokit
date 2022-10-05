@@ -20,9 +20,7 @@ class SamplePlayer {
     }
     var sampleId: String?
 
-    var available: Bool {
-        get { self.playback == nil }
-    }
+    var available = true
 
     var startTime: AVAudioTime?
 
@@ -41,6 +39,7 @@ class SamplePlayer {
             self.varispeedAU.bypass = true
             self.playback?.samplePlayer = nil
             self.playback = nil
+            self.available = true
         }
     }
 
@@ -54,6 +53,7 @@ class SamplePlayer {
         playbackRate: Double = 1.0,
         fadeInDuration: Double = 0.0
     ) throws -> SamplePlayback {
+        self.available = false
         self.player.stop()
         self.playback?.samplePlayer = nil
         self.playback = nil

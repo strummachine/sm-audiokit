@@ -230,7 +230,7 @@ import AVFoundation
                 pluginResult = CDVPluginResult(
                     status: CDVCommandStatus_OK,
                     messageAs: [
-                        "playbackId": samplePlayback.playbackId
+                        "playbackId": samplePlayback != nil ? samplePlayback?.playbackId : UUID().uuidString
                     ]
                 )
             } catch {
