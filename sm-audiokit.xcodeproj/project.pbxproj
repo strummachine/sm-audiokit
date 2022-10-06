@@ -7,6 +7,16 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A30151EA28EF54E5003DB6B9 /* Channel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A30151E028EF54E5003DB6B9 /* Channel.swift */; };
+		A30151EB28EF54E5003DB6B9 /* SampleStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = A30151E128EF54E5003DB6B9 /* SampleStorage.swift */; };
+		A30151EC28EF54E5003DB6B9 /* AudioManager+Notifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = A30151E228EF54E5003DB6B9 /* AudioManager+Notifications.swift */; };
+		A30151ED28EF54E5003DB6B9 /* AudioManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A30151E328EF54E5003DB6B9 /* AudioManager.swift */; };
+		A30151EE28EF54E5003DB6B9 /* SamplePlayback.swift in Sources */ = {isa = PBXBuildFile; fileRef = A30151E428EF54E5003DB6B9 /* SamplePlayback.swift */; };
+		A30151EF28EF54E5003DB6B9 /* AudioPackageExtractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A30151E528EF54E5003DB6B9 /* AudioPackageExtractor.swift */; };
+		A30151F028EF54E5003DB6B9 /* SamplePlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A30151E628EF54E5003DB6B9 /* SamplePlayer.swift */; };
+		A30151F128EF54E5003DB6B9 /* SamplePlayerPool.swift in Sources */ = {isa = PBXBuildFile; fileRef = A30151E728EF54E5003DB6B9 /* SamplePlayerPool.swift */; };
+		A30151F228EF54E5003DB6B9 /* Sample.swift in Sources */ = {isa = PBXBuildFile; fileRef = A30151E828EF54E5003DB6B9 /* Sample.swift */; };
+		A30151F328EF54E5003DB6B9 /* ErrorTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = A30151E928EF54E5003DB6B9 /* ErrorTypes.swift */; };
 		A3B641CC27617B87000A3FA3 /* testbed_mono_mp3.audio-package in Resources */ = {isa = PBXBuildFile; fileRef = A3B641CA27617B87000A3FA3 /* testbed_mono_mp3.audio-package */; };
 		A3B641CD27617B87000A3FA3 /* testbed_stereo_mp3.audio-package in Resources */ = {isa = PBXBuildFile; fileRef = A3B641CB27617B87000A3FA3 /* testbed_stereo_mp3.audio-package */; };
 		A3BD586327617A700079D160 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3BD586227617A700079D160 /* AppDelegate.swift */; };
@@ -15,24 +25,22 @@
 		A3BD586A27617A700079D160 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A3BD586827617A700079D160 /* Main.storyboard */; };
 		A3BD586C27617A710079D160 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A3BD586B27617A710079D160 /* Assets.xcassets */; };
 		A3BD586F27617A710079D160 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A3BD586D27617A710079D160 /* LaunchScreen.storyboard */; };
-		A3BD588527617AA10079D160 /* DispatchTime+Offsets.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3BD587827617AA10079D160 /* DispatchTime+Offsets.swift */; };
-		A3BD588627617AA10079D160 /* AVAudioPCMBuffer+CustomFade.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3BD587927617AA10079D160 /* AVAudioPCMBuffer+CustomFade.swift */; };
-		A3BD588727617AA10079D160 /* ErrorTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3BD587B27617AA10079D160 /* ErrorTypes.swift */; };
-		A3BD588827617AA10079D160 /* Sample.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3BD587C27617AA10079D160 /* Sample.swift */; };
-		A3BD588927617AA10079D160 /* SamplePlayback.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3BD587D27617AA10079D160 /* SamplePlayback.swift */; };
-		A3BD588A27617AA10079D160 /* SamplePlayerPool.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3BD587E27617AA10079D160 /* SamplePlayerPool.swift */; };
-		A3BD588B27617AA10079D160 /* AudioManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3BD587F27617AA10079D160 /* AudioManager.swift */; };
-		A3BD588C27617AA10079D160 /* Channel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3BD588027617AA10079D160 /* Channel.swift */; };
-		A3BD588D27617AA10079D160 /* AudioPackageExtractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3BD588127617AA10079D160 /* AudioPackageExtractor.swift */; };
-		A3BD588E27617AA10079D160 /* SamplePlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3BD588227617AA10079D160 /* SamplePlayer.swift */; };
-		A3BD588F27617AA10079D160 /* SampleStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3BD588327617AA10079D160 /* SampleStorage.swift */; };
-		A3BD589327617AB00079D160 /* AudioKit in Frameworks */ = {isa = PBXBuildFile; productRef = A3BD589227617AB00079D160 /* AudioKit */; };
 		A3BD589627617ABC0079D160 /* CordovaLib in Frameworks */ = {isa = PBXBuildFile; productRef = A3BD589527617ABC0079D160 /* CordovaLib */; };
+		A3F171DA28EF577D00BB693E /* AudioKit in Frameworks */ = {isa = PBXBuildFile; productRef = A3F171D928EF577D00BB693E /* AudioKit */; };
 		FC6BBFBD2762224200282ABD /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FC6BBFBC2762224200282ABD /* AVFoundation.framework */; };
-		FC6BBFBF2762263100282ABD /* AudioManager+Notifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC6BBFBE2762263100282ABD /* AudioManager+Notifications.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		A30151E028EF54E5003DB6B9 /* Channel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Channel.swift; sourceTree = "<group>"; };
+		A30151E128EF54E5003DB6B9 /* SampleStorage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SampleStorage.swift; sourceTree = "<group>"; };
+		A30151E228EF54E5003DB6B9 /* AudioManager+Notifications.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "AudioManager+Notifications.swift"; sourceTree = "<group>"; };
+		A30151E328EF54E5003DB6B9 /* AudioManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AudioManager.swift; sourceTree = "<group>"; };
+		A30151E428EF54E5003DB6B9 /* SamplePlayback.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SamplePlayback.swift; sourceTree = "<group>"; };
+		A30151E528EF54E5003DB6B9 /* AudioPackageExtractor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AudioPackageExtractor.swift; sourceTree = "<group>"; };
+		A30151E628EF54E5003DB6B9 /* SamplePlayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SamplePlayer.swift; sourceTree = "<group>"; };
+		A30151E728EF54E5003DB6B9 /* SamplePlayerPool.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SamplePlayerPool.swift; sourceTree = "<group>"; };
+		A30151E828EF54E5003DB6B9 /* Sample.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Sample.swift; sourceTree = "<group>"; };
+		A30151E928EF54E5003DB6B9 /* ErrorTypes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ErrorTypes.swift; sourceTree = "<group>"; };
 		A3B641CA27617B87000A3FA3 /* testbed_mono_mp3.audio-package */ = {isa = PBXFileReference; lastKnownFileType = file; path = "testbed_mono_mp3.audio-package"; sourceTree = "<group>"; };
 		A3B641CB27617B87000A3FA3 /* testbed_stereo_mp3.audio-package */ = {isa = PBXFileReference; lastKnownFileType = file; path = "testbed_stereo_mp3.audio-package"; sourceTree = "<group>"; };
 		A3B641CE27617C4A000A3FA3 /* plugin.xml */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = plugin.xml; sourceTree = "<group>"; };
@@ -45,20 +53,9 @@
 		A3BD586B27617A710079D160 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		A3BD586E27617A710079D160 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		A3BD587027617A710079D160 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		A3BD587827617AA10079D160 /* DispatchTime+Offsets.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "DispatchTime+Offsets.swift"; sourceTree = "<group>"; };
-		A3BD587927617AA10079D160 /* AVAudioPCMBuffer+CustomFade.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "AVAudioPCMBuffer+CustomFade.swift"; sourceTree = "<group>"; };
-		A3BD587B27617AA10079D160 /* ErrorTypes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ErrorTypes.swift; sourceTree = "<group>"; };
-		A3BD587C27617AA10079D160 /* Sample.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Sample.swift; sourceTree = "<group>"; };
-		A3BD587D27617AA10079D160 /* SamplePlayback.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SamplePlayback.swift; sourceTree = "<group>"; };
-		A3BD587E27617AA10079D160 /* SamplePlayerPool.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SamplePlayerPool.swift; sourceTree = "<group>"; };
-		A3BD587F27617AA10079D160 /* AudioManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AudioManager.swift; sourceTree = "<group>"; };
-		A3BD588027617AA10079D160 /* Channel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Channel.swift; sourceTree = "<group>"; };
-		A3BD588127617AA10079D160 /* AudioPackageExtractor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AudioPackageExtractor.swift; sourceTree = "<group>"; };
-		A3BD588227617AA10079D160 /* SamplePlayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SamplePlayer.swift; sourceTree = "<group>"; };
-		A3BD588327617AA10079D160 /* SampleStorage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SampleStorage.swift; sourceTree = "<group>"; };
 		A3D8A0B7276421BC0072D421 /* CordovaAudioKitPlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = CordovaAudioKitPlugin.swift; path = Sources/CordovaAudioKitPlugin.swift; sourceTree = "<group>"; };
+		A3F171D828EF577000BB693E /* AudioKit */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = AudioKit; path = ../AudioKit; sourceTree = "<group>"; };
 		FC6BBFBC2762224200282ABD /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
-		FC6BBFBE2762263100282ABD /* AudioManager+Notifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AudioManager+Notifications.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -66,7 +63,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A3BD589327617AB00079D160 /* AudioKit in Frameworks */,
+				A3F171DA28EF577D00BB693E /* AudioKit in Frameworks */,
 				A3BD589627617ABC0079D160 /* CordovaLib in Frameworks */,
 				FC6BBFBD2762224200282ABD /* AVFoundation.framework in Frameworks */,
 			);
@@ -87,6 +84,7 @@
 		A3BD585627617A700079D160 = {
 			isa = PBXGroup;
 			children = (
+				A3F171D728EF577000BB693E /* Packages */,
 				A3D8A0B4276420820072D421 /* Plugin */,
 				A3BD587627617AA10079D160 /* Sources */,
 				A3BD586127617A700079D160 /* TestSMAKApp */,
@@ -121,36 +119,18 @@
 		A3BD587627617AA10079D160 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
-				A3BD587727617AA10079D160 /* Extensions */,
-				A3BD587A27617AA10079D160 /* Audio */,
+				A30151E328EF54E5003DB6B9 /* AudioManager.swift */,
+				A30151E228EF54E5003DB6B9 /* AudioManager+Notifications.swift */,
+				A30151E528EF54E5003DB6B9 /* AudioPackageExtractor.swift */,
+				A30151E028EF54E5003DB6B9 /* Channel.swift */,
+				A30151E928EF54E5003DB6B9 /* ErrorTypes.swift */,
+				A30151E828EF54E5003DB6B9 /* Sample.swift */,
+				A30151E428EF54E5003DB6B9 /* SamplePlayback.swift */,
+				A30151E628EF54E5003DB6B9 /* SamplePlayer.swift */,
+				A30151E728EF54E5003DB6B9 /* SamplePlayerPool.swift */,
+				A30151E128EF54E5003DB6B9 /* SampleStorage.swift */,
 			);
 			path = Sources;
-			sourceTree = "<group>";
-		};
-		A3BD587727617AA10079D160 /* Extensions */ = {
-			isa = PBXGroup;
-			children = (
-				A3BD587827617AA10079D160 /* DispatchTime+Offsets.swift */,
-				A3BD587927617AA10079D160 /* AVAudioPCMBuffer+CustomFade.swift */,
-			);
-			path = Extensions;
-			sourceTree = "<group>";
-		};
-		A3BD587A27617AA10079D160 /* Audio */ = {
-			isa = PBXGroup;
-			children = (
-				A3BD587B27617AA10079D160 /* ErrorTypes.swift */,
-				A3BD587C27617AA10079D160 /* Sample.swift */,
-				A3BD587D27617AA10079D160 /* SamplePlayback.swift */,
-				A3BD587E27617AA10079D160 /* SamplePlayerPool.swift */,
-				A3BD587F27617AA10079D160 /* AudioManager.swift */,
-				A3BD588027617AA10079D160 /* Channel.swift */,
-				A3BD588127617AA10079D160 /* AudioPackageExtractor.swift */,
-				A3BD588227617AA10079D160 /* SamplePlayer.swift */,
-				A3BD588327617AA10079D160 /* SampleStorage.swift */,
-				FC6BBFBE2762263100282ABD /* AudioManager+Notifications.swift */,
-			);
-			path = Audio;
 			sourceTree = "<group>";
 		};
 		A3D8A0B4276420820072D421 /* Plugin */ = {
@@ -161,6 +141,14 @@
 				A3B641CE27617C4A000A3FA3 /* plugin.xml */,
 			);
 			name = Plugin;
+			sourceTree = "<group>";
+		};
+		A3F171D728EF577000BB693E /* Packages */ = {
+			isa = PBXGroup;
+			children = (
+				A3F171D828EF577000BB693E /* AudioKit */,
+			);
+			name = Packages;
 			sourceTree = "<group>";
 		};
 		FC6BBFBB2762224200282ABD /* Frameworks */ = {
@@ -188,8 +176,8 @@
 			);
 			name = TestSMAKApp;
 			packageProductDependencies = (
-				A3BD589227617AB00079D160 /* AudioKit */,
 				A3BD589527617ABC0079D160 /* CordovaLib */,
+				A3F171D928EF577D00BB693E /* AudioKit */,
 			);
 			productName = TestSMAKApp;
 			productReference = A3BD585F27617A700079D160 /* TestSMAKApp.app */;
@@ -220,7 +208,6 @@
 			);
 			mainGroup = A3BD585627617A700079D160;
 			packageReferences = (
-				A3BD589127617AB00079D160 /* XCRemoteSwiftPackageReference "AudioKit" */,
 				A3BD589427617ABB0079D160 /* XCRemoteSwiftPackageReference "cordova-ios" */,
 			);
 			productRefGroup = A3BD586027617A700079D160 /* Products */;
@@ -252,21 +239,19 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A3BD588D27617AA10079D160 /* AudioPackageExtractor.swift in Sources */,
-				A3BD588927617AA10079D160 /* SamplePlayback.swift in Sources */,
-				A3BD588627617AA10079D160 /* AVAudioPCMBuffer+CustomFade.swift in Sources */,
-				A3BD588C27617AA10079D160 /* Channel.swift in Sources */,
+				A30151F228EF54E5003DB6B9 /* Sample.swift in Sources */,
+				A30151EA28EF54E5003DB6B9 /* Channel.swift in Sources */,
+				A30151F128EF54E5003DB6B9 /* SamplePlayerPool.swift in Sources */,
+				A30151ED28EF54E5003DB6B9 /* AudioManager.swift in Sources */,
+				A30151EF28EF54E5003DB6B9 /* AudioPackageExtractor.swift in Sources */,
 				A3BD586727617A700079D160 /* ViewController.swift in Sources */,
-				A3BD588527617AA10079D160 /* DispatchTime+Offsets.swift in Sources */,
-				A3BD588E27617AA10079D160 /* SamplePlayer.swift in Sources */,
+				A30151F028EF54E5003DB6B9 /* SamplePlayer.swift in Sources */,
 				A3BD586327617A700079D160 /* AppDelegate.swift in Sources */,
-				A3BD588727617AA10079D160 /* ErrorTypes.swift in Sources */,
-				A3BD588827617AA10079D160 /* Sample.swift in Sources */,
+				A30151EC28EF54E5003DB6B9 /* AudioManager+Notifications.swift in Sources */,
+				A30151EE28EF54E5003DB6B9 /* SamplePlayback.swift in Sources */,
+				A30151F328EF54E5003DB6B9 /* ErrorTypes.swift in Sources */,
 				A3BD586527617A700079D160 /* SceneDelegate.swift in Sources */,
-				A3BD588F27617AA10079D160 /* SampleStorage.swift in Sources */,
-				A3BD588B27617AA10079D160 /* AudioManager.swift in Sources */,
-				FC6BBFBF2762263100282ABD /* AudioManager+Notifications.swift in Sources */,
-				A3BD588A27617AA10079D160 /* SamplePlayerPool.swift in Sources */,
+				A30151EB28EF54E5003DB6B9 /* SampleStorage.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -490,14 +475,6 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		A3BD589127617AB00079D160 /* XCRemoteSwiftPackageReference "AudioKit" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/strummachine/AudioKit.git";
-			requirement = {
-				branch = luke;
-				kind = branch;
-			};
-		};
 		A3BD589427617ABB0079D160 /* XCRemoteSwiftPackageReference "cordova-ios" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/apache/cordova-ios.git";
@@ -509,15 +486,14 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		A3BD589227617AB00079D160 /* AudioKit */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = A3BD589127617AB00079D160 /* XCRemoteSwiftPackageReference "AudioKit" */;
-			productName = AudioKit;
-		};
 		A3BD589527617ABC0079D160 /* CordovaLib */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = A3BD589427617ABB0079D160 /* XCRemoteSwiftPackageReference "cordova-ios" */;
 			productName = CordovaLib;
+		};
+		A3F171D928EF577D00BB693E /* AudioKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = AudioKit;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

@@ -93,7 +93,7 @@ class ViewController: UIViewController {
         do {
             let delay = 0.5
             try AudioManager.shared.setBrowserTime(5.0)
-            let pb = try AudioManager.shared.playSample(sampleId: testTone.id, channel: "test", playbackId: UUID().uuidString, atTime: 5.0 + delay, fadeInDuration: 0.20)
+            let pb = try AudioManager.shared.playSample(sampleId: testTone.id, channel: "test", playbackId: UUID().uuidString, atTime: 5.0 + delay, fadeInDuration: 0.20)!
             AudioManager.shared.setPlaybackVolume(playbackId: pb.playbackId, atTime: 5.0 + delay + 0.5, volume: 0.0, fadeDuration: 0.5)
             DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .milliseconds(Int(delay * 1000)), execute: {
                 self.setLabel(with: "Playing/fading sample: \(testTone.id)")
@@ -132,7 +132,7 @@ class ViewController: UIViewController {
                         if beat % 8 != 7 {
                             try AudioManager.shared.playSample(sampleId: "hat-closed", channel: "drums", playbackId: ("hat"+String(beat)), atTime: timeOfBeat)
                         } else {
-                            let pb = try AudioManager.shared.playSample(sampleId: "hat-open", channel: "drums", playbackId: "hat-open-pb", atTime: timeOfBeat)
+                            let pb = try! AudioManager.shared.playSample(sampleId: "hat-open", channel: "drums", playbackId: "hat-open-pb", atTime: timeOfBeat)!
                             AudioManager.shared.setPlaybackVolume(playbackId: pb.playbackId, atTime: timeOfNextBeat, volume: 0.0, fadeDuration: 0.05)
                         }
                     }
