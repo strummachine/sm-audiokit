@@ -12,15 +12,13 @@ import AudioKitEX
 
 class Channel {
     let id: String
-    let fader: Fader
     let mixer: Mixer
     var playerPool = SamplePlayerPool()
 
     init(id: String, polyphonyLimit: Int, mainMixer: Mixer) {
         self.id = id
         self.mixer = Mixer(name: "channel:\(id)")
-        self.fader = Fader(self.mixer)
-        mainMixer.addInput(self.fader)
+        mainMixer.addInput(self.mixer)
         self.playerPool.createPlayers(count: polyphonyLimit)
         for player in self.playerPool.players {
             self.mixer.addInput(player.outputNode)
@@ -35,9 +33,7 @@ class Channel {
         set {
             _volume = newValue
             let newVolume = Float(_muted ? 0.0 : _volume)
-            fader.stopAutomation()
-            fader.$leftGain.ramp(to: newVolume, duration: 0.25)
-            fader.$rightGain.ramp(to: newVolume, duration: 0.25)
+            mixer.volume = newVolume
         }
     }
 
@@ -49,9 +45,7 @@ class Channel {
         set {
             _muted = newValue
             let newVolume = Float(_muted ? 0.0 : _volume)
-            fader.stopAutomation()
-            fader.$leftGain.ramp(to: newVolume, duration: 0.25)
-            fader.$rightGain.ramp(to: newVolume, duration: 0.25)
+            mixer.volume = newVolume
         }
     }
 
