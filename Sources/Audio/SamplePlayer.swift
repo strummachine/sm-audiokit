@@ -29,11 +29,13 @@ class SamplePlayer {
         self.player.completionHandler = {
             // Check is in case this gets called asynchronously after new playback is scheduled
             if self.player.isPlaying { return }
-            self.fader.stopAutomation()
-            // we don't bypass the fader node because we'll get a click
+            self.fader.stopAutomation()  // not stopping Fader; causes popping
             self.playback?.samplePlayer = nil
             self.playback = nil
-            self.available = true
+            self.player.buffer = nil
+            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.05) {
+                self.available = true
+            }
         }
     }
 
@@ -54,7 +56,8 @@ class SamplePlayer {
         self.fadeAutomationEvents = []
 
         do {
-            try self.player.load(url: sample.url, buffered: false)
+            let buffer = try sample.getBuffer(forPlayer: self.player.playerNode)
+            self.player.load(buffer: buffer)
         } catch {
             print("Error: Cannot load sample: \(error.localizedDescription)")
             throw SamplePlaybackError.cannotLoadPlayer
