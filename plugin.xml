@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<plugin id="cordova-plugin-sm-audiokit" version="0.2.0" xmlns="http://apache.org/cordova/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android">
+<plugin id="cordova-plugin-sm-audiokit" version="0.3.0" xmlns="http://apache.org/cordova/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android">
   <name>sm-audiokit</name>
   <description>AudioKit-powered sample playback on iOS for Strum Machine</description>
   <author>Luke Abbott and Maximilian Maksutovic</author>
@@ -20,27 +20,17 @@
       <clobbers target="cordova.plugins.SMAudioKit" />
     </js-module>
 
+    <source-file src="Sources/AudioManager.swift" />
+    <source-file src="Sources/AudioManager+Notifications.swift" />
+    <source-file src="Sources/AudioPackageExtractor.swift" />
+    <source-file src="Sources/Channel.swift" />
     <source-file src="Sources/CordovaAudioKitPlugin.swift" />
-
-    <source-file src="Sources/Audio/AudioManager.swift" />
-    <source-file src="Sources/Audio/AudioManager+Notifications.swift" />
-    <source-file src="Sources/Audio/AudioPackageExtractor.swift" />
-    <source-file src="Sources/Audio/Channel.swift" />
-    <source-file src="Sources/Audio/ErrorTypes.swift" />
-    <source-file src="Sources/Audio/Sample.swift" />
-    <source-file src="Sources/Audio/SamplePlayback.swift" />
-    <source-file src="Sources/Audio/SamplePlayer.swift" />
-    <source-file src="Sources/Audio/SamplePlayerPool.swift" />
-    <source-file src="Sources/Audio/SampleStorage.swift" />
-
-    <!-- These may not be needed... sm-extras works without them -->
-    <!--
-		<framework src="AVFoundation.framework" />
-		<framework src="CoreAudio.framework" />
-		<framework src="AudioToolbox.framework" />
-    -->
-
-		<!-- <framework src="lib/AudioKit.xcframework" custom="true" embed="true" /> -->
+    <source-file src="Sources/ErrorTypes.swift" />
+    <source-file src="Sources/Sample.swift" />
+    <source-file src="Sources/SamplePlayback.swift" />
+    <source-file src="Sources/SamplePlayer.swift" />
+    <source-file src="Sources/SamplePlayerPool.swift" />
+    <source-file src="Sources/SampleStorage.swift" />
 
   </platform>
 </plugin>
