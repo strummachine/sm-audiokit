@@ -106,8 +106,6 @@ exports.playSample = execNativeWithArgs('playSample', (args) => [
   typeof args.volume == 'number' ? args.volume : DEFAULT_VOLUME, // number (scale TBD)
   typeof args.offset == 'number' ? args.offset : 0, // number, start offset within file
   typeof args.fadeInDuration == 'number' ? args.fadeInDuration : 0,
-  typeof args.playbackRate == 'number' ? args.playbackRate : 1, // number
-  args.playDuration, // can be null
 ]);
 
 /**

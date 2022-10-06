@@ -166,7 +166,6 @@ class AudioManager {
                            atTime: Double,
                            volume: Double = 1.0,
                            offset: Double = 0.0,
-                           playbackRate: Double = 1.0,
                            fadeInDuration: Double = 0.0
     ) throws -> SamplePlayback? {
         guard self.acceptingCommands else {
@@ -192,7 +191,6 @@ class AudioManager {
                 atTime: startTime,
                 volume: volume,
                 offset: offset,
-                playbackRate: playbackRate,
                 fadeInDuration: fadeInDuration
             )
             playbacks[playbackId] = playback
