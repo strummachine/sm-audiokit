@@ -6,7 +6,7 @@ import CAudioKitEX
 
 class SamplePlayer {
     var player: AudioPlayer
-    var fader: Fader
+    var fader: MonoFader
     var fadeAutomationEvents: [AutomationEvent] = []
     var outputNode: Node {
         get { fader }
@@ -24,7 +24,7 @@ class SamplePlayer {
 
     init() {
         self.player = AudioPlayer()
-        self.fader = Fader(self.player, gain: 1.0)
+        self.fader = MonoFader(self.player, gain: 1.0)
         self.fader.stop()
         self.player.completionHandler = {
             // Check is in case this gets called asynchronously after new playback is scheduled
