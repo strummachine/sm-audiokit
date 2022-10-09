@@ -28,19 +28,19 @@ class Sample {
                                               frameCapacity: AVAudioFrameCount(file.length))!
             try file.read(into: fileBuffer)
 
-            let destBuffer = AVAudioPCMBuffer(pcmFormat: player.outputFormat(forBus: 0), frameCapacity: AVAudioFrameCount(file.duration * player.outputFormat(forBus: 0).sampleRate))!
-            let converter = AVAudioConverter(from: file.processingFormat, to: player.outputFormat(forBus: 0))!
+            let outputFormat = player.outputFormat(forBus: 0)
+            let destBuffer = AVAudioPCMBuffer(pcmFormat: outputFormat, frameCapacity: AVAudioFrameCount(file.duration * outputFormat.sampleRate))!
+            let converter = AVAudioConverter(from: file.processingFormat, to: outputFormat)!
 
             let inputCallback: AVAudioConverterInputBlock = { inNumPackets, outStatus in
                 outStatus.pointee = AVAudioConverterInputStatus.haveData
                 return fileBuffer
             }
-
             var error: NSError? = nil
             let status = converter.convert(to: destBuffer, error: &error, withInputFrom: inputCallback)
             assert(status != .error)
             let endTime = AVAudioTime.seconds(forHostTime: mach_absolute_time())
-            print("Decoding", file.url.lastPathComponent.padding(toLength: 30, withPad: " ", startingAt: 0), Int(file.processingFormat.sampleRate), Int((endTime - startTime) * 1000))
+            print("Decoding", file.url.lastPathComponent.padding(toLength: 40, withPad: " ", startingAt: 0), Int(file.processingFormat.sampleRate), Int((endTime - startTime) * 1000), "ms")
 
             self.buffer = destBuffer
         }
