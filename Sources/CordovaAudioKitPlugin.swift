@@ -43,24 +43,24 @@ import AVFoundation
         DispatchQueue.main.async(execute: {
             SampleStorage.getStoredSampleList(completion: { result in
                 switch result {
-                    case .success(let storedSamples):
-                        let pluginResult = CDVPluginResult(
-                            status: CDVCommandStatus_OK,
-                            messageAs: storedSamples.map({ ss in
-                                return [
-                                    "sampleId": ss.sampleId,
-                                    "packageId": ss.packageId
-                                ]
-                            })
-                        )
-                        self.commandDelegate!.send(pluginResult, callbackId: command.callbackId)
-                    case .failure(let error):
-                        print(error)
-                        let pluginResult = CDVPluginResult(
-                            status: CDVCommandStatus_ERROR,
-                            messageAs: error.description  // TODO: what format is this and how should it be passed?
-                        )
-                        self.commandDelegate!.send(pluginResult, callbackId: command.callbackId)
+                case .success(let storedSamples):
+                    let pluginResult = CDVPluginResult(
+                        status: CDVCommandStatus_OK,
+                        messageAs: storedSamples.map({ ss in
+                            return [
+                                "sampleId": ss.sampleId,
+                                "packageId": ss.packageId
+                            ]
+                        })
+                    )
+                    self.commandDelegate!.send(pluginResult, callbackId: command.callbackId)
+                case .failure(let error):
+                    print(error)
+                    let pluginResult = CDVPluginResult(
+                        status: CDVCommandStatus_ERROR,
+                        messageAs: error.description  // TODO: what format is this and how should it be passed?
+                    )
+                    self.commandDelegate!.send(pluginResult, callbackId: command.callbackId)
                 }
             })
         })
@@ -76,22 +76,22 @@ import AVFoundation
 
             SampleStorage.storeSample(packageIdAndSampleId: pns, audioData: audioData, completion: { result in
                 switch result {
-                    case .success(let sample):
-                        let pluginResult = CDVPluginResult(
-                            status: CDVCommandStatus_OK,
-                            messageAs: [
-                                "sampleId": sample.id,
-                                "duration": sample.duration
-                            ]
-                        )
-                        self.commandDelegate!.send(pluginResult, callbackId: command.callbackId)
-                    case .failure(let error):
-                        print(error)
-                        let pluginResult = CDVPluginResult(
-                            status: CDVCommandStatus_ERROR,
-                            messageAs: error.description // TODO: what format is this and how should it be passed?
-                        )
-                        self.commandDelegate!.send(pluginResult, callbackId: command.callbackId)
+                case .success(let sample):
+                    let pluginResult = CDVPluginResult(
+                        status: CDVCommandStatus_OK,
+                        messageAs: [
+                            "sampleId": sample.id,
+                            "duration": sample.duration
+                        ]
+                    )
+                    self.commandDelegate!.send(pluginResult, callbackId: command.callbackId)
+                case .failure(let error):
+                    print(error)
+                    let pluginResult = CDVPluginResult(
+                        status: CDVCommandStatus_ERROR,
+                        messageAs: error.description // TODO: what format is this and how should it be passed?
+                    )
+                    self.commandDelegate!.send(pluginResult, callbackId: command.callbackId)
                 }
             })
         })
@@ -107,24 +107,24 @@ import AVFoundation
 
             SampleStorage.loadSamplesFromDisk(packageIdsAndSampleIds, completion: { result in
                 switch result {
-                    case .success(let samples):
-                        let pluginResult = CDVPluginResult(
-                            status: CDVCommandStatus_OK,
-                            messageAs: samples.map({ sample in
-                                return [
-                                    "sampleId": sample.id,
-                                    "duration": sample.duration
-                                ]
-                            })
-                        )
-                        self.commandDelegate!.send(pluginResult, callbackId: command.callbackId)
-                    case .failure(let error):
-                        print(error)
-                        let pluginResult = CDVPluginResult(
-                            status: CDVCommandStatus_ERROR,
-                            messageAs: error.description
-                        )
-                        self.commandDelegate!.send(pluginResult, callbackId: command.callbackId)
+                case .success(let samples):
+                    let pluginResult = CDVPluginResult(
+                        status: CDVCommandStatus_OK,
+                        messageAs: samples.map({ sample in
+                            return [
+                                "sampleId": sample.id,
+                                "duration": sample.duration
+                            ]
+                        })
+                    )
+                    self.commandDelegate!.send(pluginResult, callbackId: command.callbackId)
+                case .failure(let error):
+                    print(error)
+                    let pluginResult = CDVPluginResult(
+                        status: CDVCommandStatus_ERROR,
+                        messageAs: error.description
+                    )
+                    self.commandDelegate!.send(pluginResult, callbackId: command.callbackId)
                 }
             })
         })
@@ -140,20 +140,20 @@ import AVFoundation
 
             SampleStorage.deleteSamples(packageIdsAndSampleIds, completion: { result in
                 switch result {
-                    case .success(let message):
-                        print(message)
-                        let pluginResult = CDVPluginResult(
-                            status: CDVCommandStatus_OK,
-                            messageAs: message
-                        )
-                        self.commandDelegate!.send(pluginResult, callbackId: command.callbackId)
-                    case .failure(let error):
-                        print(error)
-                        let pluginResult = CDVPluginResult(
-                            status: CDVCommandStatus_ERROR,
-                            messageAs: error.description
-                        )
-                        self.commandDelegate!.send(pluginResult, callbackId: command.callbackId)
+                case .success(let message):
+                    print(message)
+                    let pluginResult = CDVPluginResult(
+                        status: CDVCommandStatus_OK,
+                        messageAs: message
+                    )
+                    self.commandDelegate!.send(pluginResult, callbackId: command.callbackId)
+                case .failure(let error):
+                    print(error)
+                    let pluginResult = CDVPluginResult(
+                        status: CDVCommandStatus_ERROR,
+                        messageAs: error.description
+                    )
+                    self.commandDelegate!.send(pluginResult, callbackId: command.callbackId)
                 }
             })
         })
@@ -194,6 +194,90 @@ import AVFoundation
     }
 
     // MARK: Sample playback
+
+    @objc(sendBatchedCommands:) func sendBatchedCommands(command: CDVInvokedUrlCommand) {
+        guard self.manager.acceptingCommands else {
+            let pluginResult = CDVPluginResult(
+                status: CDVCommandStatus_ERROR,
+                messageAs: "Audio engine not running"
+            )
+            self.commandDelegate!.send(pluginResult, callbackId: command.callbackId)
+            return
+        }
+
+        DispatchQueue.global(qos: .userInitiated).async(execute: {
+            var pluginResult = CDVPluginResult(status: CDVCommandStatus_ERROR)
+            defer { self.commandDelegate!.send(pluginResult, callbackId: command.callbackId) }
+
+            var results = []
+            for cmdNameAndArgs in (command.arguments[0] as! [[Any]]) {
+                let cmdName = cmdNameAndArgs[0] as? String ?? ""
+                let args = cmdNameAndArgs[1] as? [Any] ?? []
+
+                switch cmdName {
+                case "playSample":
+                    let sampleId = args[0] as? String ?? ""
+                    let channel = args[1] as? String ?? ""
+                    let playbackId = args[2] as? String ?? ""
+                    let atTime = (args[3] as? Double ?? 0)
+                    let volume = (args[4] as? Double ?? 1.0)
+                    let offset = (args[5] as? Double ?? 0.0)
+                    let fadeInDuration = (args[6] as? Double ?? 0.0)
+
+                    do {
+                        let samplePlayback = try self.manager.playSample(
+                            sampleId: sampleId,
+                            channel: channel,
+                            playbackId: playbackId,
+                            atTime: atTime,
+                            volume: volume,
+                            offset: offset,
+                            fadeInDuration: fadeInDuration
+                        )
+                        results.append([ "playbackId": samplePlayback != nil ? samplePlayback?.playbackId : UUID().uuidString ])
+                    } catch {
+                        results.append(["error": error.localizedDescription])
+                    }
+
+                case "setPlaybackVolume":
+                    let playbackId = args[0] as? String ?? ""
+                    let atTime = (args[1] as? Double ?? 0)
+                    let volume = (args[2] as? Double ?? 0.5)
+                    let fadeDuration = (args[3] as? Double ?? 0.05)
+
+                    self.manager.setPlaybackVolume(
+                        playbackId: playbackId,
+                        atTime: atTime,
+                        volume: volume,
+                        fadeDuration: fadeDuration
+                    )
+                    results.append([:])
+
+                case "stopPlayback":
+                    let playbackId = args[0] as? String ?? ""
+                    let atTime = (args[1] as? Double ?? 0)
+                    let fadeDuration = (args[2] as? Double ?? 0.05)
+
+                    self.manager.stopPlayback(
+                        playbackId: playbackId,
+                        atTime: atTime,
+                        fadeDuration: fadeDuration
+                    )
+                    results.append([:])
+
+                default:
+                    results.append([:])
+                }
+            }
+
+            pluginResult = CDVPluginResult(
+                status: CDVCommandStatus_OK,
+                messageAs: results
+            )
+        })
+    }
+
+    // MARK: Playback manipulation
 
     @objc(playSample:) func playSample(command: CDVInvokedUrlCommand) {
         guard self.manager.acceptingCommands else {

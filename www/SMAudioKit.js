@@ -1,12 +1,12 @@
 var exec = require("cordova/exec");
 
 function execNativeWithArgs(methodName, transformArgs) {
-  return function(args, success, error) {
+  return function (args, success, error) {
     exec(success, error, "CordovaAudioKitPlugin", methodName, transformArgs(args));
   }
 }
 
-exports.apiVersion = 3;
+exports.apiVersion = 4;
 
 // === Init / Setup
 
@@ -90,42 +90,55 @@ exports.setChannelMuted = execNativeWithArgs('setChannelMuted', (args) => [
 
 function generateRandomPlaybackId() {
   return (
-    Math.floor(Math.random() * 3600000000).toString(36) + 
+    Math.floor(Math.random() * 3600000000).toString(36) +
     (Math.floor(performance.now() * 100) % 3600000).toString(36)
   );
+}
+
+const argsTransformers = {
+  'playSample': (args) => [
+      args.sampleId, // string (file to play)
+      args.channel, // string
+      args.playbackId || generateRandomPlaybackId(), // string
+      args.atTime, // number
+      typeof args.volume == 'number' ? args.volume : DEFAULT_VOLUME, // number (scale TBD)
+      typeof args.offset == 'number' ? args.offset : 0, // number, start offset within file
+      typeof args.fadeInDuration == 'number' ? args.fadeInDuration : 0,
+    ],
+  'setPlaybackVolume': (args) => [
+      args.playbackId, // string
+      args.atTime, // number
+      typeof args.volume == 'number' ? args.volume : 1, // number (scale TBD)
+      typeof args.fadeDuration == 'number' ? args.fadeDuration : 0.01,
+    ],
+  'stopPlayback': (args) => [
+      args.playbackId, // string
+      args.atTime, // number, stop immediately if nullish
+      typeof args.fadeDuration == 'number' ? args.fadeDuration : 0.01,
+    ]
+}
+
+/**
+ * Batched calls
+ */
+exports.sendBatchedCommands = (commands, success, error) => {
+  exec(success, error, "CordovaAudioKitPlugin", "sendBatchedCommands", [commands.map(([ name, args ]) => {
+    return [ name, argsTransformers[ name ]?.(args) ];
+  })]);
 }
 
 /**
  * @returns { playbackId: string }
  */
-exports.playSample = execNativeWithArgs('playSample', (args) => [
-  args.sampleId, // string (file to play)
-  args.channel, // string
-  args.playbackId || generateRandomPlaybackId(), // string
-  args.atTime, // number
-  typeof args.volume == 'number' ? args.volume : DEFAULT_VOLUME, // number (scale TBD)
-  typeof args.offset == 'number' ? args.offset : 0, // number, start offset within file
-  typeof args.fadeInDuration == 'number' ? args.fadeInDuration : 0,
-]);
+exports.playSample = execNativeWithArgs('playSample', argsTransformers.playSample);
 
-/**
- * Schedule fade volume of playback over specified duration.
- */
-exports.setPlaybackVolume = execNativeWithArgs('setPlaybackVolume', (args) => [
-  args.playbackId, // string
-  args.atTime, // number
-  typeof args.volume == 'number' ? args.volume : 1, // number (scale TBD)
-  typeof args.fadeDuration == 'number' ? args.fadeDuration : 0.01,
-]);
+exports.setPlaybackVolume = execNativeWithArgs('setPlaybackVolume', argsTransformers.setPlaybackVolume);
 
-/**
- * Stop playback at specified time over specified fade duration.
- */
-exports.stopPlayback = execNativeWithArgs('stopPlayback', (args) => [
-  args.playbackId, // string
-  args.atTime, // number, stop immediately if nullish
-  typeof args.fadeDuration == 'number' ? args.fadeDuration : 0.01,
-]);
+exports.stopPlayback = execNativeWithArgs('stopPlayback', argsTransformers.stopPlayback);
+
+
+
+
 
 // LATER: Recording to MP3, with or without the mic
 // LATER: Tuner stuff: activate, poll, deactivate
