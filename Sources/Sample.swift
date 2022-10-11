@@ -8,7 +8,7 @@
 import Foundation
 import AVFoundation
 
-class Sample {
+final class Sample {
     var id: String
     var url: URL
     var duration: Double
@@ -19,9 +19,12 @@ class Sample {
         self.duration = duration
     }
 
+    private let lock = NSLock()
+
     private var buffer: AVAudioPCMBuffer?
     func getBuffer(forPlayer player: AVAudioPlayerNode) throws -> AVAudioPCMBuffer {
-        if self.buffer == nil {
+        lock.lock()
+        guard let buffer = self.buffer else {
             let startTime = AVAudioTime.seconds(forHostTime: mach_absolute_time())
             let file = try AVAudioFile(forReading: self.url)
             let fileBuffer = AVAudioPCMBuffer(pcmFormat: file.processingFormat,
@@ -43,8 +46,11 @@ class Sample {
             print("Decoding", file.url.lastPathComponent.padding(toLength: 40, withPad: " ", startingAt: 0), Int(file.processingFormat.sampleRate), Int((endTime - startTime) * 1000), "ms")
 
             self.buffer = destBuffer
+            lock.unlock()
+            return destBuffer
         }
-        return self.buffer!
+        lock.unlock()
+        return buffer
 //        let bufferCopy = AVAudioPCMBuffer(pcmFormat: self.buffer!.format, frameCapacity: self.buffer!.frameLength)!
 //        bufferCopy.copy(from: self.buffer!)
 //        return bufferCopy

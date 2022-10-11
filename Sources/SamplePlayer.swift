@@ -4,41 +4,38 @@ import AVFoundation
 import AudioKitEX
 import CAudioKitEX
 
-class SamplePlayer {
-    var player: AudioPlayer
-    var fader: MonoFader
-    var fadeAutomationEvents: [AutomationEvent] = []
-    var outputNode: Node {
+final class SamplePlayer {
+    static private var queue = DispatchQueue(label: "com.strummachine.mobileapp.SamplePlayerDispatchQueue", qos: .default)
+
+    public private(set) var pool: SamplePlayerPool
+    public private(set) var player = BasicAudioPlayer()
+
+    public private(set) var fader: MonoFader
+    public private(set) var fadeAutomationEvents: [AutomationEvent] = []
+
+    public private(set) var playbackId: String?
+    public private(set) var playbackStartTime: AVAudioTime?
+
+    public var outputNode: Node {
         get { fader }
     }
 
-    var playback: SamplePlayback?
-    var playbackId: String? {
-        get { self.playback?.playbackId }
-    }
-    var sampleId: String?
-
-    var available = true
-
-    var startTime: AVAudioTime?
-
-    init() {
-        self.player = AudioPlayer()
+    public init(pool: SamplePlayerPool) {
+        self.pool = pool
         self.fader = MonoFader(self.player, gain: 1.0)
-        self.fader.stop()
+        self.fader.bypass()
         self.player.completionHandler = {
-            // Check is in case this gets called asynchronously after new playback is scheduled
-            if self.player.isPlaying { return }
-            self.fader.stopAutomation()  // not stopping Fader; causes popping
-            self.playback?.samplePlayer = nil
-            self.playback = nil
-            self.player.buffer = nil
-            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.05) {
-                self.available = true
+            SamplePlayer.queue.async {
+                self.fader.stopAutomation()  // not stopping Fader; causes popping
+                self.pool.returnPlayer(self)
             }
         }
     }
 
+    func reset() {
+        playbackId = nil
+        playbackStartTime = nil
+    }
 
     func schedulePlayback(
         sample: Sample,
@@ -47,86 +44,91 @@ class SamplePlayer {
         volume: Double = 1.0,
         offset: Double = 0.0,
         fadeInDuration: Double = 0.0
-    ) throws -> SamplePlayback {
-        self.available = false
-        self.player.stop()
-        self.playback?.samplePlayer = nil
-        self.playback = nil
-        self.fader.stopAutomation()
-        self.fadeAutomationEvents = []
+    ) throws {
+        self.playbackId = playbackId
+        self.playbackStartTime = AVAudioTime(hostTime: atTime.hostTime)
 
+        var buffer: AVAudioPCMBuffer?
         do {
-            let buffer = try sample.getBuffer(forPlayer: self.player.playerNode)
-            self.player.load(buffer: buffer)
+            buffer = try sample.getBuffer(forPlayer: self.player.playerNode)
         } catch {
             print("Error: Cannot load sample: \(error.localizedDescription)")
             throw SamplePlaybackError.cannotLoadPlayer
         }
 
-        self.startTime = atTime
+        SamplePlayer.queue.async {
+            self.player.stop()
+            self.player.buffer = buffer
+            self.fader.stopAutomation()
+            self.fadeAutomationEvents = []
 
-        self.fader.gain = fadeInDuration > 0 ? 0 : Float(volume)
-        self.fader.start()
+            guard let scheduleTime = self.playbackStartTime else {
+                return
+            }
 
-        self.player.play(from: offset, to: nil, at: AVAudioTime(hostTime: atTime.hostTime), completionCallbackType: .dataPlayedBack)
+            self.fader.gain = fadeInDuration > 0 ? 0 : Float(volume)
+            self.fader.start()
 
-        if fadeInDuration > 0 {
-            self.fadeInAtStart(to: volume, duration: fadeInDuration)
+            self.player.play(from: offset, to: nil, at: scheduleTime, completionCallbackType: .dataPlayedBack)
+
+            if fadeInDuration > 0 {
+                self.setFade(at: scheduleTime, to: volume, duration: fadeInDuration)
+            }
         }
-
-        self.playback = SamplePlayback(samplePlayer: self, sampleId: sample.id, playbackId: playbackId, duration: sample.duration - offset)
-
-        return self.playback!
     }
 
-    private func fadeInAtStart(to volume: Double, duration: Double) {
+    /// This should only be called when already in the proper thread
+    private func setFade(at startTime: AVAudioTime, to volume: Double, duration: Double) {
+        guard let scheduleTime = self.playbackStartTime else {
+            print("Tried to set fade for player with no playbackStartTime")
+            return
+        }
+        let delay = startTime.timeIntervalSince(otherTime: scheduleTime)!
+        // TODO: Fit curve of exponental function from Web Audio?
         self.fadeAutomationEvents.append(
             AutomationEvent(
                 targetValue: Float(volume),
-                startTime: 0, // TODO: or offset?
+                startTime: Float(delay), // TODO: or offset?
                 rampDuration: Float(duration)
             )
         )
-        self.fader.automateGain(events: self.fadeAutomationEvents, startTime: self.startTime)
+        self.fader.automateGain(events: self.fadeAutomationEvents, startTime: scheduleTime)
     }
 
     func scheduleFade(at: AVAudioTime, to: Double, duration: Double) {
-        let delay = at.timeIntervalSince(otherTime: self.startTime!) ?? 0
-
-        // TODO: Fit curve of exponental function from Web Audio (Luke)
-
-        self.fadeAutomationEvents.append(
-            AutomationEvent(
-                targetValue: Float(to),
-                startTime: Float(delay),
-                rampDuration: Float(duration)
-            )
-        )
-        self.fader.automateGain(events: self.fadeAutomationEvents, startTime: self.startTime)
+        SamplePlayer.queue.async {
+            self.setFade(at: at, to: to, duration: duration)
+        }
     }
 
     func scheduleStop(at: AVAudioTime?, fadeDuration maybeFadeDuration: Double?) {
-        let fadeDuration = maybeFadeDuration ?? 0.05
-        let secondsUntilDone = ((at ?? AVAudioTime.now()).timeIntervalSince(otherTime: AVAudioTime.now()) ?? 0) + fadeDuration
+        SamplePlayer.queue.async {
+            let fadeDuration = maybeFadeDuration ?? 0.05
+            let secondsUntilDone = ((at ?? AVAudioTime.now()).timeIntervalSince(otherTime: AVAudioTime.now()) ?? 0) + fadeDuration
 
-        guard secondsUntilDone > -fadeDuration else {
-            self.player.stop()
-            self.player.completionHandler?()
-            return
-        }
+            guard secondsUntilDone > -fadeDuration else {
+                self.player.stop()
+                self.player.completionHandler?()
+                return
+            }
 
-        self.scheduleFade(at: at ?? AVAudioTime.now(), to: 0.0, duration: fadeDuration)
+            self.setFade(at: at ?? AVAudioTime.now(), to: 0.0, duration: fadeDuration)
 
-        let origPlaybackId = self.playbackId
-        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + (secondsUntilDone + 0.01)) {
-            guard origPlaybackId == self.playbackId else { return }  // make sure this player hasn't been reassigned
-            self.player.stop()
-            self.player.completionHandler?()
+            let origPlaybackId = self.playbackId
+            SamplePlayer.queue.asyncAfter(deadline: DispatchTime.now() + (secondsUntilDone + 0.01)) {
+                guard origPlaybackId == self.playbackId else { return }  // make sure this player hasn't been reassigned
+                self.player.stop()
+                self.player.completionHandler?()
+            }
         }
     }
-    
+
     func stopImmediately() {
-        self.player.stop()
-        self.player.completionHandler?()
+        SamplePlayer.queue.async {
+            self.player.stop()
+            self.fader.stopAutomation()  // not stopping Fader; causes popping
+            self.pool.returnPlayer(self)
+        }
     }
+
 }

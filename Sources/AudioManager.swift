@@ -19,7 +19,6 @@ class AudioManager {
     let timePitch: TimePitch
 
     var channels: [String: Channel] = [:]
-    var playbacks: [String: SamplePlayback] = [:]
 
     var browserTimeOffset: Double = 0.0
     
@@ -167,7 +166,7 @@ class AudioManager {
                            volume: Double = 1.0,
                            offset: Double = 0.0,
                            fadeInDuration: Double = 0.0
-    ) throws -> SamplePlayback? {
+    ) throws -> String? {
         guard self.acceptingCommands else {
             throw AudioManagerError.audioEngineNotRunning
         }
@@ -181,11 +180,10 @@ class AudioManager {
         let startTime = browserTimeToAudioTime(atTime)
 
         do {
-            let player = channel.playerPool.getPlayer(forSample: sample)
-            if player == nil {
+            guard let player = channel.playerPool.reservePlayer(playbackId: playbackId) else {
                 return nil
             }
-            let playback = try player!.schedulePlayback(
+            try player.schedulePlayback(
                 sample: sample,
                 playbackId: playbackId,
                 atTime: startTime,
@@ -193,8 +191,7 @@ class AudioManager {
                 offset: offset,
                 fadeInDuration: fadeInDuration
             )
-            playbacks[playbackId] = playback
-            return playback
+            return playbackId
         } catch let error as SamplePlaybackError {
             throw error
         } catch {
@@ -208,13 +205,17 @@ class AudioManager {
     func setPlaybackVolume(playbackId: String, atTime: Double, volume: Double, fadeDuration: Double) {
         guard self.acceptingCommands else { return }
         let time = browserTimeToAudioTime(atTime)
-        playbacks[playbackId]?.fade(at: time, to: volume, duration: fadeDuration)
+        SamplePlayerPool.withPlayer(playbackId: playbackId, { player in
+            player.scheduleFade(at: time, to: volume, duration: fadeDuration)
+        })
     }
 
     func stopPlayback(playbackId: String, atTime: Double, fadeDuration: Double = 0.0) {
         guard self.acceptingCommands else { return }
         let time = browserTimeToAudioTime(atTime)
-        playbacks[playbackId]?.stop(at: time, fadeDuration: fadeDuration)
+        SamplePlayerPool.withPlayer(playbackId: playbackId, { player in
+            player.scheduleStop(at: time, fadeDuration: fadeDuration)
+        })
     }
 
     // MARK: Channels

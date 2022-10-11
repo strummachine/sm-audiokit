@@ -1,36 +1,79 @@
 import Foundation
 import AudioKit
 
-class SamplePlayerPool {
-    var players = [SamplePlayer]()
-    var size: Int {
-        get { self.players.count }
+final class SamplePlayerPool {
+    var arrayLock = NSRecursiveLock()
+
+    static var globalArrayLock = NSRecursiveLock()
+    static var globalPlayerDict = [String:SamplePlayer]()
+
+    static func withPlayer(playbackId: String, _ code: @escaping (_ value: SamplePlayer) -> ()) {
+        globalArrayLock.lock()
+        let player = globalPlayerDict[playbackId]
+        globalArrayLock.unlock()
+        if player != nil {
+            code(player!)
+        }
     }
 
+    var players = [SamplePlayer]()
+    var playersInUse = [String:SamplePlayer]()
+    var playersAvailable = [SamplePlayer]()
+
     func createPlayers(count: Int) {
+        SamplePlayerPool.globalArrayLock.lock()
         for _ in 0..<count {
-            self.players.append(SamplePlayer())
+            let player = SamplePlayer(pool: self)
+            self.players.append(player)
+            self.playersAvailable.append(player)
         }
+        SamplePlayerPool.globalArrayLock.unlock()
     }
     
-    func getPlayer(forSample sample: Sample) -> SamplePlayer? {
-        let sortedPlayers = self.players.sorted { a, b in
-            return ((a.startTime?.hostTime ?? 0) < (b.startTime?.hostTime ?? 1))
+    func debugLine() -> String {
+        SamplePlayerPool.globalArrayLock.lock()
+        let result = String(repeating: "X", count: self.playersInUse.count) + String(repeating: "-", count: self.playersAvailable.count)
+        SamplePlayerPool.globalArrayLock.unlock()
+        return result
+    }
+
+    func reservePlayer(playbackId: String) -> SamplePlayer? {
+        SamplePlayerPool.globalArrayLock.lock()
+        let player = playersAvailable.popLast()
+        if let availablePlayer = player {
+            playersInUse[playbackId] = availablePlayer
+            SamplePlayerPool.globalPlayerDict[playbackId] = player
         }
-        return sortedPlayers.first(where: { $0.available && $0.sampleId == nil })
-            ?? sortedPlayers.first(where: { $0.available })
+        SamplePlayerPool.globalArrayLock.unlock()
+        return player
+    }
+
+    func returnPlayer(_ player: SamplePlayer) {
+        SamplePlayerPool.globalArrayLock.lock()
+        if let playbackId = player.playbackId {
+            player.reset()
+            playersInUse.removeValue(forKey: playbackId)
+            SamplePlayerPool.globalPlayerDict.removeValue(forKey: playbackId)
+        }
+        playersAvailable.insert(player, at: 0)
+        SamplePlayerPool.globalArrayLock.unlock()
     }
     
     public func stopAllPlayers() {
-        for player in players.filter({!$0.available}) {
+        SamplePlayerPool.globalArrayLock.lock()
+        for player in players {
             player.stopImmediately()
         }
+        SamplePlayerPool.globalArrayLock.unlock()
     }
-    
+
+    /*
     public func removeAllPlayers() {
-        if self.players.contains(where: {!$0.available}) {
-            print("Player was unavailable during teardown; this should never happen")
-        }
+        SamplePlayerPool.globalArrayLock.lock()
         players.removeAll()
+        playersInUse.removeAll()
+        playersAvailable.removeAll()
+        SamplePlayerPool.globalArrayLock.unlock()
     }
+     */
 }
