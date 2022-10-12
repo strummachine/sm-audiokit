@@ -8,12 +8,6 @@ public class BasicAudioPlayer: Node {
     /// Nodes providing input to this node.
     public var connections: [Node] { [] }
 
-//    public var connectionFormat: AVAudioFormat? {
-//        get {
-//            return AVAudioFormat(standardFormatWithSampleRate: 44100, channels: 1)
-//        }
-//    }
-
     /// The underlying player node
     public private(set) var playerNode = AVAudioPlayerNode()
 
@@ -33,8 +27,6 @@ public class BasicAudioPlayer: Node {
     }
 
     /// Completion handler to be called when file or buffer is done playing.
-    /// This also will be called when looping from disk,
-    /// but no completion is called when looping seamlessly when buffered
     public var completionHandler: AVAudioNodeCompletionHandler?
 
     /// The buffer to use with the player. This can be set while the player is playing
@@ -52,7 +44,6 @@ public class BasicAudioPlayer: Node {
         get { _editStartTime }
         set {
             _editStartTime = min(max(newValue, 0), duration)
-
         }
     }
 
