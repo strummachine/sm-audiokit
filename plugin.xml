@@ -23,6 +23,7 @@
     <source-file src="Sources/AudioManager.swift" />
     <source-file src="Sources/AudioManager+Notifications.swift" />
     <source-file src="Sources/AudioPackageExtractor.swift" />
+    <source-file src="Sources/BasicAudioPlayer.swift" />
     <source-file src="Sources/Channel.swift" />
     <source-file src="Sources/CordovaAudioKitPlugin.swift" />
     <source-file src="Sources/ErrorTypes.swift" />
